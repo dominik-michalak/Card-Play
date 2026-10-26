@@ -1,0 +1,19 @@
+{
+  "name": "@cardplay/server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file=../.env src/index.ts",
+    "build": "tsup",
+    "start": "node --env-file=../.env dist/index.js"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "tsup": "^9.0.0",
+    "tsx": "^4.23.15"
+  }
+}

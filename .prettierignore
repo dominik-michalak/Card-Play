@@ -1,0 +1,5 @@
+node_modules
+dist
+docs
+rules
+package-lock.json

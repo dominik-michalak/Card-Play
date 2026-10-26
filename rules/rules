@@ -1,0 +1,19 @@
+War:
+- liczba graczy (1v1 czy więcej) i rozdanie kart (talia 52, czy jokery?),
+- jak wygląda runda i co robi „wojna" (ile kart zakrytych, co przy remisie),
+- co gdy graczowi skończą się karty w trakcie wojny,
+- koniec gry: wygrywa, kto zbierze wszystkie karty. potrzebny limit rund przeciw nieskończonym grom i wynik po jego przekroczeniu (remis czy wygrana wg liczby kart),
+- co się dzieje przy pustym stosie: czy zebrane karty są tasowane przed dobieraniem, czy wracają w kolejności (to wpływa na determinizm i testy),
+- czy gracz klika każdą rundę, czy ruch jest automatyczny (decyduje, czy GameAction ma jakiś typ poza „flip").
+
+ogólne (dla etapów 5–8):
+- limit czasu na ruch i zasady przy rozłączeniu (porażka walkowerem po jakim czasie, albo pauza),
+- ile graczy może być w pokoju czekającym i czy gotowość startuje grę automatycznie,
+- wynik przy remisie lub porzuceniu gry: czy liczy się do Elo (SAD: winnerId null).
+
+na późniejsze etapy (nie blokuje teraz, ale warto w rules/):
+- Makao: wariant (karty funkcyjne 2, 3, 4, walet, as, król, ich skutki), reguły żądań, kara za nie dobrane karty, kolejność przy 2–4 graczach, koniec rundy,
+- Texas Clinch: pełne reguły,
+- Poker: wariant (np. Texas Hold'em), blindy, zakłady, limity stawek (no limit / pot limit), początkowa pula żetonów, side pots,
+- boty: oczekiwany poziom (losowy legalny ruch wystarcza?),
+- osiągnięcia: lista i warunki.
