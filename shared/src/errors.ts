@@ -9,6 +9,9 @@ export const ERROR_CODES = [
   'INVALID_ACTION',
   'GAME_OVER',
   'GAME_RULES_NOT_DEFINED',
+  'ACCOUNT_EXISTS',
+  'NOT_FOUND',
+  'INTERNAL_ERROR',
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
 
