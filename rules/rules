@@ -1,19 +1,252 @@
-War:
-- liczba graczy (1v1 czy więcej) i rozdanie kart (talia 52, czy jokery?),
-- jak wygląda runda i co robi „wojna" (ile kart zakrytych, co przy remisie),
-- co gdy graczowi skończą się karty w trakcie wojny,
-- koniec gry: wygrywa, kto zbierze wszystkie karty. potrzebny limit rund przeciw nieskończonym grom i wynik po jego przekroczeniu (remis czy wygrana wg liczby kart),
-- co się dzieje przy pustym stosie: czy zebrane karty są tasowane przed dobieraniem, czy wracają w kolejności (to wpływa na determinizm i testy),
-- czy gracz klika każdą rundę, czy ruch jest automatyczny (decyduje, czy GameAction ma jakiś typ poza „flip").
+# CardPlay — reguły gier i polityki rozgrywki
 
-ogólne (dla etapów 5–8):
-- limit czasu na ruch i zasady przy rozłączeniu (porażka walkowerem po jakim czasie, albo pauza),
-- ile graczy może być w pokoju czekającym i czy gotowość startuje grę automatycznie,
-- wynik przy remisie lub porzuceniu gry: czy liczy się do Elo (SAD: winnerId null).
+> Status: decyzje produktowe do implementacji. Reguły są celowo jednoznaczne,
+> aby serwer mógł je egzekwować i aby dało się je testować deterministycznie.
+> Serwer jest jedynym źródłem prawdy o stanie gry.
 
-na późniejsze etapy (nie blokuje teraz, ale warto w rules/):
-- Makao: wariant (karty funkcyjne 2, 3, 4, walet, as, król, ich skutki), reguły żądań, kara za nie dobrane karty, kolejność przy 2–4 graczach, koniec rundy,
-- Texas Clinch: pełne reguły,
-- Poker: wariant (np. Texas Hold'em), blindy, zakłady, limity stawek (no limit / pot limit), początkowa pula żetonów, side pots,
-- boty: oczekiwany poziom (losowy legalny ruch wystarcza?),
-- osiągnięcia: lista i warunki.
+## 1. Wspólne reguły online
+
+### Pokoje i gotowość
+
+| Gra | Liczba graczy | Pojemność pokoju |
+| --- | ---: | ---: |
+| Wojna | dokładnie 2 | 2 |
+| Makao | 2–4 | 2–4, wybrane przez hosta |
+| Texas Clinch | 2–4 | 2–4, wybrane przez hosta |
+| Poker | 2–6 | 2–6, wybrane przez hosta |
+
+- Przy tworzeniu prywatnego pokoju host ustawia `targetPlayers` w dopuszczalnym
+  zakresie. Pokój nie ma widzów w MVP.
+- Gdy jest dokładnie `targetPlayers` uczestników i wszyscy mają stan `ready`,
+  serwer rozpoczyna 3-sekundowe odliczanie, a po nim gra startuje automatycznie.
+- Zmiana gotowości lub opuszczenie pokoju w trakcie odliczania anuluje start.
+- Matchmaking rankingowy tworzy pokój z minimalną wymaganą liczbą graczy:
+  2 dla wszystkich gier w pierwszej wersji.
+
+### Czas, rozłączenie i wynik
+
+- Gracz ma 30 sekund na akcję wymagającą decyzji. Serwer ostrzega po 20 sekundach.
+- Przekroczenie limitu jest porażką walkowerem (`timeout_forfeit`).
+- Rozłączenie pauzuje grę na maksymalnie 60 sekund i zatrzymuje licznik ruchu.
+  Powrót z tym samym uwierzytelnionym użytkownikiem i do tego samego pokoju
+  wznawia grę, a gracz dostaje wtedy pełne 30 sekund na ruch.
+- Po 60 sekundach rozłączenia gracz przegrywa walkowerem (`disconnect_forfeit`).
+- Jeśli rozłączeni są wszyscy gracze i żaden nie wróci w ciągu 60 sekund, mecz ma
+  stan `cancelled`.
+- Jeśli infrastruktura serwera przerwie mecz bez wskazania winnego, mecz ma stan
+  `cancelled`: `winnerId = null`, brak zmiany Elo i brak zaliczenia do statystyk.
+- Walkower (`timeout_forfeit`, `disconnect_forfeit`) w grze 1v1 kończy mecz od
+  razu. W Makao i Pokerze z 3+ graczami eliminuje wyłącznie nieobecnego gracza,
+  a gra toczy się dalej, aż zostanie jeden gracz. Szczegóły Pokera w sekcji 5.
+- Remis ma `winnerId = null`, `terminationReason = draw` i nie zmienia Elo.
+- Elo liczone jest wzorem ogólnym parami (każdy z każdym), ale rankingowy
+  matchmaking v1 tworzy wyłącznie mecze 1v1.
+- Wygrana walkowerem w meczu rankingowym normalnie zmienia Elo: zwycięzca ma
+  wynik wygrany, a nieobecny gracz wynik przegrany.
+- Mecze prywatne i z botem nie zmieniają Elo.
+
+### Losowość i testowalność
+
+- W produkcji serwer tasuje karty przez kryptograficznie bezpieczne API runtime.
+- Klient nigdy nie dostaje kolejności talii ani ziarna losowości przed końcem gry.
+- Kod gry przyjmuje generator losowości jako zależność. Testy używają generatora
+  z ustalonym seedem, dzięki czemu ich wynik jest powtarzalny.
+- Każdy stan końcowy zawiera `terminationReason`, np. `all_cards`,
+  `round_limit`, `timeout_forfeit`, `disconnect_forfeit`, `double_timeout`,
+  `draw` lub `cancelled`.
+
+## 2. Wojna
+
+### Konfiguracja
+
+- Gra jest wyłącznie 1v1.
+- Używana jest jedna standardowa talia 52 kart bez jokerów.
+- Kolory nie mają znaczenia; kolejność rang to `2 < 3 < ... < 10 < J < Q < K < A`.
+- Serwer tasuje talię i rozdaje po 26 kart każdemu graczowi, zakrytych.
+- Każdy gracz otrzymuje własny stos dobierania. Nie ma osobnego stosu kart
+  zebranych ani ręki gracza.
+
+### Przebieg rundy
+
+1. Każdy gracz wysyła akcję `flip` dla następnej rundy.
+2. Gdy serwer otrzyma poprawne `flip` od obu graczy, odkrywa wierzchnią kartę
+   obu stosów i porównuje ich rangi.
+3. Wyższa karta wygrywa całą pulę ze stołu.
+4. Remis wywołuje wojnę: każdy gracz dokłada kolejno trzy karty zakryte,
+   a następnie jedną kartę odkrytą. Porównywane są tylko nowe odkryte karty.
+5. Jeżeli nowe odkryte karty także są równe, wojna powtarza się, zachowując
+   wszystkie karty na stole w jednej puli.
+
+### Brak kart podczas wojny
+
+- Przed każdą częścią wojny serwer sprawdza, czy każdy gracz ma co najmniej
+  cztery karty: trzy zakryte i jedną odkrytą.
+- Jeżeli tylko jeden gracz nie ma czterech kart, natychmiast przegrywa grę.
+- Jeżeli obaj nie mają czterech kart, wygrywa gracz z większą liczbą kart
+  pozostałych w stosie. Przy równej liczbie kart wynik to remis.
+- Ta zasada nie próbuje „ratować” wojny ostatnią kartą; ogranicza liczbę
+  wariantów i daje prosty, testowalny wynik.
+
+### Kolejność kart i limit rund
+
+- Pula jest dokładana na dół stosu zwycięzcy w kolejności, w której serwer
+  dołożył karty na stół: dla każdego odkrycia najpierw karta gracza siedzącego
+  na niższym `seatIndex`, potem drugiego gracza. Ta sama reguła dotyczy kart
+  zakrytych podczas wojny.
+- Zwycięska pula **nie jest tasowana**. Zachowanie pozostaje deterministyczne
+  dla ustalonego tasowania startowego i sekwencji akcji.
+- Jeżeli przed rozpoczęciem zwykłej rundy gracz ma pusty stos, drugi gracz
+  wygrywa przez `all_cards`.
+- Maksymalna liczba zwykłych rund wynosi 1000. Wojny należą do rundy, która je
+  rozpoczęła. Po limicie wygrywa gracz z większą liczbą kart; przy równej liczbie
+  kart następuje remis (`round_limit`).
+- Akcja `flip` nie wybiera karty i jest wyłącznie potwierdzeniem rozpoczęcia
+  następnej rundy. Dzięki temu klient nie steruje wynikiem gry.
+- Jeśli w limicie 30 sekund `flip` wyśle tylko jeden gracz, drugi przegrywa przez
+  `timeout_forfeit`. Jeśli nie wyśle go żaden, wynik to remis z
+  `terminationReason = double_timeout`, `winnerId = null`, bez zmiany Elo.
+
+### Minimalne przypadki testowe
+
+- poprawne rozdanie 26/26 kart bez jokerów;
+- zwykła runda, wojna oraz wielokrotna wojna;
+- brak czterech kart u jednego i u obu graczy;
+- zachowanie kolejności zwycięskiej puli;
+- limit 1000 rund oraz oba warianty wyniku po limicie;
+- odrzucenie `flip` od osoby spoza pokoju, w złym stanie gry lub drugi raz w tej
+  samej rundzie;
+- `timeout_forfeit` jednego gracza oraz `double_timeout` obu;
+- sanitizacja: przeciwnik nie widzi kart w stosie drugiego gracza.
+
+## 3. Makao — wariant CardPlay v1
+
+Makao nie ma jednego uniwersalnego regulaminu. Poniższy wariant ogranicza
+niejednoznaczne karty funkcyjne, aby implementacja była realistyczna w projekcie
+inżynierskim.
+
+### Start i zwykły ruch
+
+- 2–4 graczy, jedna talia 52 kart, bez jokerów.
+- Każdy dostaje 5 kart. Pierwsza karta stosu odrzuconych nie może być funkcyjna;
+  serwer odkłada kolejne karty, aż znajdzie zwykłą kartę, a odłożone karty wracają
+  do talii przed jej przetasowaniem.
+- Kolejność gry jest zgodna z ruchem wskazówek zegara.
+- W ruchu gracz zagrywa kartę o tym samym kolorze albo randze co karta na wierzchu
+  stosu, albo dobiera jedną kartę. Dobrana karta może zostać zagrana od razu,
+  jeśli jest legalna.
+- Gdy stos dobierania jest pusty, serwer zostawia najwyższą kartę stosu odrzuconych,
+  tasuje wszystkie pozostałe odrzucone karty i tworzy z nich nowy stos dobierania.
+- Jeśli po tej operacji nadal brakuje kart do dobrania (oba stosy wyczerpane),
+  gracz dobiera tyle kart, ile faktycznie istnieje, nawet zero. Kara lub dobieranie
+  uznawane są wtedy za wykonane.
+- W zwykłym ruchu gracz zagrywa dokładnie jedną kartę. Wyjątkiem jest dokładanie
+  jednej karty 2, 3 lub 4 jako odpowiedzi na aktywną karę.
+
+### Karty funkcyjne
+
+| Karta | Efekt |
+| --- | --- |
+| 2 | Następny gracz ma karę +2 karty. Może dołożyć 2 albo 3, aby zwiększyć karę. |
+| 3 | Następny gracz ma karę +3 karty. Może dołożyć 2 albo 3, aby zwiększyć karę. |
+| 4 | Następny gracz traci jedną kolejkę. Może dołożyć 4, aby kara wzrosła o kolejną pominiętą kolejkę. |
+| Walet | Gracz żąda rangi od 5 do 10. Następny legalny ruch musi spełnić żądanie. |
+| As | Gracz żąda jednego z czterech kolorów. Następny legalny ruch musi spełnić żądanie. |
+| Król i dama | Zwykłe karty; w v1 nie mają efektu funkcyjnego. |
+
+- Karty 2 i 3 dokładane w odpowiedzi na karę dobierania można zagrać niezależnie od
+  koloru i rangi karty na wierzchu, np. 3♠ na 2♥. Analogicznie 4 na karę pominięcia.
+- Aktywną karę dobierania można odrzucić wyłącznie zagraniem 2 albo 3. Jeśli
+  gracz tego nie zrobi, dobiera całą skumulowaną karę i traci ruch.
+- Aktywną karę pominięcia można odrzucić wyłącznie zagraniem 4. Jeśli gracz tego
+  nie zrobi, serwer pomija wymaganą liczbę jego kolejek.
+- Żądanie waleta może dotyczyć wyłącznie rang 5–10. Żądanie asa dotyczy koloru.
+  Karty funkcyjne nie omijają aktywnego żądania.
+- Żądanie obowiązuje wyłącznie następnego gracza i tylko w jego jednym ruchu.
+  Jeśli nie ma wymaganej karty, dobiera jedną; może ją zagrać tylko wtedy, gdy
+  spełnia żądanie. W przeciwnym razie kończy ruch, a żądanie wygasa.
+- Po zagraniu przedostatniej karty klient musi w tej samej akcji wysłać
+  `declaredMacao: true`. W przeciwnym razie dowolny inny gracz może wysłać akcję
+  `report_macao`. Jest ona przyjmowana poza turą, wyłącznie przed przyjęciem
+  następnej poprawnej akcji w grze. Zgłoszony gracz dobiera 5 kart.
+- Legalne zagranie ostatniej karty, także funkcyjnej, kończy rundę od razu; efekt
+  tej karty nie jest już wykonywany.
+- Wygrywa gracz, który legalnie pozbędzie się wszystkich kart. W grze 3–4 osobowej
+  po pierwszej wygranej runda kończy się; nie ustalamy klasyfikacji pozostałych miejsc.
+
+## 4. Texas Clinch
+
+`Texas Clinch` nie ma wiarygodnego, powszechnie opisanego zbioru reguł. W obu
+dokumentach projektu jest osobną grą względem Pokera, więc nie należy go potajemnie
+zastępować Texas Hold'em.
+
+Decyzja dla MVP (potwierdzona): `texas_clinch` jest widoczny w lobby, a jego moduł
+istnieje, ale rozpoczęcie rozgrywki zwraca błąd `GAME_RULES_NOT_DEFINED`. Przed implementacją należy stworzyć
+osobny, zatwierdzony regulamin: cel gry, rozkład kart, fazy ruchu, dozwolone akcje,
+porównanie wyniku, remis oraz stan końcowy. To nie blokuje Wojny, Makao ani Pokera.
+
+## 5. Poker — No-Limit Texas Hold'em
+
+- 2–6 graczy, jedna talia 52 kart bez jokerów.
+- Wszyscy zaczynają z 1000 żetonów. Gra nie używa prawdziwych pieniędzy,
+  rebuyów ani add-onów.
+- Blindy zaczynają od 10/20 i podwajają się co 10 rozegranych rozdań:
+  20/40, 40/80 itd. Button przesuwa się o jedno aktywne miejsce po każdym rozdaniu.
+- Każdy otrzymuje dwie prywatne karty. Na stole pojawia się flop (3), turn (1)
+  i river (1); przed każdą z tych faz serwer odkłada jedną kartę jako burn card.
+- Rozgrywka ma cztery rundy zakładów: pre-flop, flop, turn i river. Legalne akcje
+  to `fold`, `check`, `call`, `bet`, `raise` i `all_in`.
+- Stawki są no-limit: można postawić od minimalnej legalnej stawki do wszystkich
+  własnych żetonów. Pełne podbicie musi być co najmniej wielkości poprzedniego
+  pełnego podbicia. Krótkie all-in nie otwiera ponownie licytacji dla graczy,
+  którzy już wykonali akcję.
+- Gracz all-in uczestniczy wyłącznie w pulach, do których wniósł wkład. Nadwyżki
+  tworzą side poty dostępne jedynie dla uprawnionych graczy.
+- Przy showdownie wygrywa najlepszy pięciokartowy układ spośród siedmiu kart.
+  Kolory nie rozstrzygają remisu; równe układy dzielą pulę możliwie równo, a
+  niepodzielny żeton trafia do pierwszego uprawnionego gracza na lewo od buttona.
+- Mecz kończy się, gdy tylko jeden gracz ma żetony. To on jest zwycięzcą meczu.
+- Heads-up (2 graczy): button jest jednocześnie małym blindem i działa pierwszy
+  przed flopem, a po flopie jako ostatni (standard Texas Hold'em).
+- Walkower (`timeout_forfeit`, `disconnect_forfeit`) w trakcie rozdania: gracz
+  automatycznie pasuje (`fold`). W puli zostają wyłącznie żetony, które już
+  postawił; reszta jego stosu nie trafia do puli, bo dawałoby to pozostałym
+  darmową przewagę. Po zakończeniu rozdania gracz jest usuwany ze stołu.
+  W meczu 1v1 walkower kończy mecz od razu.
+
+## 6. Boty i osiągnięcia
+
+### Boty v1
+
+- Bot działa wyłącznie na serwerze.
+- Wybiera losową legalną akcję z ustalonego generatora pseudolosowego dla testów.
+- Nie oszukuje: otrzymuje wyłącznie ten sam widok stanu, który otrzymałby gracz.
+- Mecze z botem są nierankingowe i nie zmieniają Elo.
+
+### Osiągnięcia v1
+
+| Id | Warunek |
+| --- | --- |
+| `first_win` | Pierwsza zakończona zwycięska gra przeciw człowiekowi. |
+| `war_chain_3` | Wygranie w Wojnie puli po co najmniej trzech kolejnych odkrytych porównaniach wykonanych wewnątrz wojny; początkowy remis, który ją wywołał, się nie liczy. |
+| `macao_clean_finish` | Wygranie Makao bez kary za brak deklaracji Makao. |
+| `macao_comeback` | Wygranie Makao po posiadaniu co najmniej 15 kart na ręce. |
+| `poker_all_in_win` | Gracz, który w danym rozdaniu poszedł all-in, otrzymał dodatnią wypłatę z co najmniej jednej puli. |
+| `poker_eliminator` | Wygranie meczu Poker przez zebranie wszystkich żetonów. |
+| `fair_play_10` | Ukończenie 10 meczów przeciw ludziom bez walkowera. |
+| `streak_5` | Pięć kolejnych zwycięstw rankingowych w tej samej grze. |
+
+Odblokowanie wykonuje backend jako idempotentną operację po zapisie wyniku,
+nigdy klient.
+
+## Źródła i uzasadnienie wariantów
+
+- Standardowa Wojna jest zwykle rozgrywana talią 52 kart bez jokerów, po 26 kart,
+  z asem jako najwyższą rangą i wojną po remisie. Wariant trzech kart zakrytych
+  oraz jednej odkrytej jest popularny, ale nie jedyny: [Card Game Nook](https://www.cardgamenook.com/how-to-play/war),
+  [Card Games Cafe](https://cardgamescafe.com/rules/war-card-game).
+- Brak pojedynczego standardu Makao jest widoczny w rozbieżnych opisach kart
+  funkcyjnych; wybrano ograniczony wariant, a nie mieszankę zasad: [Maluchy.pl](https://www.maluchy.pl/makao-zasady-gry-instrukcja%2C1493/),
+  [Karciak](https://karciak.pl/gra/makao).
+- Definicje side potów, all-in, blindów, rund zakładów i minimalnego podbicia
+  wynikają ze standardowego Texas Hold'em: [PokerStars](https://www.pokerstars.com/help/articles/poker-rules-master/217502/),
+  [World Poker Federation](https://worldpokerfederation.org/poker/how-to-play-poker/variants-and-rules/how-to-play-texas-holdem/).

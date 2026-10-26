@@ -4,7 +4,7 @@ export type Config = {
   isProduction: boolean;
 };
 
-function requireEnv(env: NodeJS.ProcessEnv, name: string): string {
+export function requireEnv(env: NodeJS.ProcessEnv, name: string): string {
   const value = env[name];
   if (!value) {
     throw new Error(`missing required env variable: ${name}`);

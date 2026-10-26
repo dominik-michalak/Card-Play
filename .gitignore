@@ -1,6 +1,5 @@
-# Local project documentation and generated verification suites
+# Local project documentation
 docs/
-tests/
 
 # Local secrets
 .env
