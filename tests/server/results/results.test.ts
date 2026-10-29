@@ -317,6 +317,23 @@ describe('finishGame in a ranked 1v1', () => {
   });
 });
 
+describe('getRating', () => {
+  it('is 1000 for a player who has no rating yet', async () => {
+    const { gamers } = await seedGame({ mode: 'competitive' });
+    expect(await results.getRating(gamers[0]!.id, 'war')).toBe(1000);
+  });
+
+  it('returns the stored rating of that game only', async () => {
+    const { gamers } = await seedGame({ mode: 'competitive' });
+    await app.db.insert(userRatings).values([
+      { userId: gamers[0]!.id, gameType: 'war', elo: 1234 },
+      { userId: gamers[0]!.id, gameType: 'macao', elo: 888 },
+    ]);
+    expect(await results.getRating(gamers[0]!.id, 'war')).toBe(1234);
+    expect(await results.getRating(gamers[0]!.id, 'macao')).toBe(888);
+  });
+});
+
 describe('finishGame after a turn limit', () => {
   it('accepts turn_limit and rates a clear winner like any other result', async () => {
     const { roomId, gamers, state } = await seedGame({ mode: 'competitive' });

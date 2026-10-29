@@ -42,6 +42,7 @@ type ActiveGame = {
   deadlineAt: number | null;
   deadlineTimer: NodeJS.Timeout | null;
   forfeitTimers: Map<string, NodeJS.Timeout>;
+  botTimers: Map<string, NodeJS.Timeout>;
   // actions and timers of one game run one after another
   queue: Promise<unknown>;
   finished: boolean;
@@ -63,18 +64,46 @@ export function createGameRunner(options: GameRunnerOptions) {
     exclusive(game, task).catch((error: unknown) => console.error(error));
   }
 
-  function broadcastState(game: ActiveGame): void {
-    const turnDeadlineAt =
-      game.deadlineAt === null ? null : new Date(game.deadlineAt).toISOString();
-    for (const userId of game.playerIds) {
-      const view = game.definition.module.sanitize(game.state, userId);
-      sink.state(game.roomId, userId, { ...view, turnDeadlineAt });
-    }
-  }
-
   const activeIds = (game: ActiveGame): string[] => game.definition.activePlayerIds(game.state);
   const everyoneActiveIsBack = (game: ActiveGame): boolean =>
     activeIds(game).every((id) => game.connected.has(id));
+  const botIds = (game: ActiveGame): string[] =>
+    game.state.players.filter((p) => p.isBot).map((p) => p.id);
+
+  // a bot answers a moment after the table changes, and only when it has something to do
+  function scheduleBots(game: ActiveGame): void {
+    for (const botId of botIds(game)) {
+      if (game.finished || game.botTimers.has(botId)) continue;
+      if (!game.definition.botAction(game.state, botId)) continue;
+      const timer = setTimeout(() => {
+        game.botTimers.delete(botId);
+        background(game, () => runBot(game, botId));
+      }, timings.botDelayMs);
+      timer.unref();
+      game.botTimers.set(botId, timer);
+    }
+  }
+
+  // decides on the state as it is now; a paused game resumes through broadcastState
+  async function runBot(game: ActiveGame, botId: string): Promise<void> {
+    if (game.finished || !everyoneActiveIsBack(game)) return;
+    const action = game.definition.botAction(game.state, botId);
+    if (!action) return;
+    const { newState, events } = game.definition.module.applyAction(game.state, action, botId);
+    await settle(game, newState, events);
+  }
+
+  function broadcastState(game: ActiveGame): void {
+    const turnDeadlineAt =
+      game.deadlineAt === null ? null : new Date(game.deadlineAt).toISOString();
+    const bots = botIds(game);
+    for (const userId of game.playerIds) {
+      if (bots.includes(userId)) continue; // bots have no socket
+      const view = game.definition.module.sanitize(game.state, userId);
+      sink.state(game.roomId, userId, { ...view, turnDeadlineAt });
+    }
+    scheduleBots(game);
+  }
 
   function clearDeadline(game: ActiveGame): void {
     if (game.deadlineTimer) {
@@ -114,6 +143,8 @@ export function createGameRunner(options: GameRunnerOptions) {
       clearTimeout(timer);
     }
     game.forfeitTimers.clear();
+    game.botTimers.forEach((timer) => clearTimeout(timer));
+    game.botTimers.clear();
     games.delete(game.roomId);
     const outcome = await results.finishGame(game.recordId, result, finalState);
     sink.finished(game.roomId, result, outcome.ratings);
@@ -181,10 +212,12 @@ export function createGameRunner(options: GameRunnerOptions) {
       definition,
       state,
       playerIds: players.map((p) => p.id),
-      connected: new Set(attachedIds),
+      // bots are always present
+      connected: new Set([...attachedIds, ...players.filter((p) => p.isBot).map((p) => p.id)]),
       deadlineAt: null,
       deadlineTimer: null,
       forfeitTimers: new Map(),
+      botTimers: new Map(),
       queue: Promise.resolve(),
       finished: false,
     };
@@ -257,6 +290,8 @@ export function createGameRunner(options: GameRunnerOptions) {
       clearDeadline(game);
       game.forfeitTimers.forEach((timer) => clearTimeout(timer));
       game.forfeitTimers.clear();
+      game.botTimers.forEach((timer) => clearTimeout(timer));
+      game.botTimers.clear();
     }
     games.clear();
   }

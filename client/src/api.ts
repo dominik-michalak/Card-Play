@@ -19,7 +19,12 @@ export type ApiOptions = {
   fetchFn?: typeof fetch;
 };
 
-export type CreateRoomRequest = { gameType: GameKey; targetPlayers?: number };
+export type CreateRoomRequest = {
+  gameType: GameKey;
+  targetPlayers?: number;
+  // a private room unless the player wants the bot as the opponent
+  mode?: 'private' | 'bot';
+};
 export type LeaveResult = { roomId: string; roomClosed: boolean; newHostId: string | null };
 
 // The access token lives only in this closure (never in storage); the refresh token is an

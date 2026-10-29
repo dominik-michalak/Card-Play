@@ -1,6 +1,12 @@
 export const GAME_KEYS = ['war', 'macao', 'texas_clinch', 'poker'] as const;
 export type GameKey = (typeof GAME_KEYS)[number];
 
+// games with a matchmaking queue (1v1)
+export const MATCHMAKING_GAMES: readonly GameKey[] = ['war', 'macao'];
+
+// games that have a bot opponent (1v1 only)
+export const BOT_GAMES: readonly GameKey[] = ['war', 'macao'];
+
 // min/max players per game, from the project plan
 export const GAME_PLAYER_LIMITS: Record<GameKey, { min: number; max: number }> = {
   war: { min: 2, max: 2 },

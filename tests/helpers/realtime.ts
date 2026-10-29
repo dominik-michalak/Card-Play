@@ -6,12 +6,21 @@ import { createApp } from '../../server/src/app';
 import { createResultsService } from '../../server/src/modules/results/results.service';
 import { createRoomsService } from '../../server/src/modules/rooms/rooms.service';
 import { createSocketServer } from '../../server/src/realtime/socket-server';
+import type { MatchRules } from '../../server/src/matchmaking/pairing';
 import type { Timings } from '../../server/src/realtime/timings';
 import { testConfig } from './app';
 import { openTestDb } from './db';
 import { tokenFor } from './users';
 
-export const FAST: Timings = { countdownMs: 80, turnMs: 400, disconnectMs: 300, lobbyGraceMs: 300 };
+export const FAST: Timings = {
+  countdownMs: 80,
+  turnMs: 400,
+  disconnectMs: 300,
+  lobbyGraceMs: 300,
+  botDelayMs: 30,
+  matchTickMs: 30,
+  matchAcceptMs: 800,
+};
 
 type Received = { name: string; payload: unknown };
 
@@ -66,13 +75,22 @@ export class TestClient {
   }
 }
 
-export async function startRealtimeServer(timings: Timings = FAST) {
+export async function startRealtimeServer(
+  timings: Timings = FAST,
+  options: { matchRules?: MatchRules } = {},
+) {
   const config = testConfig();
   const { db, pool } = openTestDb();
   const roomService = createRoomsService(db);
   const results = createResultsService(db);
   const http = createServer(createApp(config, db, { roomService }));
-  const realtime = createSocketServer(http, { config, roomService, results, timings });
+  const realtime = createSocketServer(http, {
+    config,
+    roomService,
+    results,
+    timings,
+    matchRules: options.matchRules,
+  });
   await new Promise<void>((resolve) => http.listen(0, '127.0.0.1', resolve));
   const url = `http://127.0.0.1:${(http.address() as AddressInfo).port}`;
   const clients: TestClient[] = [];
@@ -99,6 +117,8 @@ export async function startRealtimeServer(timings: Timings = FAST) {
     results,
     connectAs: (userId: string) => open(tokenFor(config, userId)),
     connectWithToken: open,
+    // disconnecting leaves any matchmaking queue, so tests do not see each other's players
+    closeClients: () => clients.splice(0).forEach((c) => c.close()),
     close: async () => {
       clients.forEach((c) => c.close());
       await realtime.close();

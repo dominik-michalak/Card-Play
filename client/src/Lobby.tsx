@@ -1,6 +1,16 @@
-import { GAME_PLAYER_LIMITS, type GameKey, type Room } from '@cardplay/shared';
+import {
+  BOT_GAMES,
+  GAME_PLAYER_LIMITS,
+  MATCHMAKING_GAMES,
+  type GameKey,
+  type MatchmakingMode,
+  type Room,
+} from '@cardplay/shared';
 import { useState, type FormEvent } from 'react';
 import { ApiError, type Api } from './api';
+import { useMatchmaking } from './hooks';
+import { matchModeLabel } from './matchmaking-state';
+import type { RealtimeSocket } from './realtime';
 
 // games that have a server module; the others cannot be started yet
 export const PLAYABLE_GAMES: { key: GameKey; label: string }[] = [
@@ -8,13 +18,21 @@ export const PLAYABLE_GAMES: { key: GameKey; label: string }[] = [
   { key: 'macao', label: 'Makao' },
 ];
 
-type Props = { api: Api; onEnter: (room: Room) => void };
+const gameLabel = (key: GameKey) => PLAYABLE_GAMES.find((g) => g.key === key)?.label ?? key;
+const gamesWith = (supported: readonly GameKey[]) =>
+  PLAYABLE_GAMES.filter((g) => supported.includes(g.key));
 
-export function Lobby({ api, onEnter }: Props) {
+type Props = { api: Api; socket: RealtimeSocket; onEnter: (room: Room) => void };
+
+export function Lobby({ api, socket, onEnter }: Props) {
   const [gameType, setGameType] = useState<GameKey>(PLAYABLE_GAMES[0]!.key);
   const limits = GAME_PLAYER_LIMITS[gameType];
   const [targetPlayers, setTargetPlayers] = useState(limits.min);
+  const [botGame, setBotGame] = useState<GameKey>(gamesWith(BOT_GAMES)[0]!.key);
+  const [queueGame, setQueueGame] = useState<GameKey>(gamesWith(MATCHMAKING_GAMES)[0]!.key);
+  const [queueMode, setQueueMode] = useState<MatchmakingMode>('competitive');
   const [error, setError] = useState<string | null>(null);
+  const matchmaking = useMatchmaking(socket, api, onEnter);
 
   async function run(action: () => Promise<Room>) {
     setError(null);
@@ -36,10 +54,75 @@ export function Lobby({ api, onEnter }: Props) {
     void run(() => api.joinRoom(code));
   }
 
+  const queued = matchmaking.state.queued;
+  const message = error ?? matchmaking.state.message;
+
   return (
     <div>
       <h2>Lobby</h2>
-      {error && <p role="alert">{error}</p>}
+      {message && <p role="alert">{message}</p>}
+
+      <section>
+        <h3>Szukaj przeciwnika</h3>
+        {queued ? (
+          <p>
+            Szukamy przeciwnika: {gameLabel(queued.gameType)}, {matchModeLabel(queued.mode)}…{' '}
+            <button onClick={matchmaking.leave}>Anuluj</button>
+          </p>
+        ) : (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              matchmaking.join(queueGame, queueMode);
+            }}
+          >
+            <label>
+              Gra
+              <select value={queueGame} onChange={(e) => setQueueGame(e.target.value as GameKey)}>
+                {gamesWith(MATCHMAKING_GAMES).map((g) => (
+                  <option key={g.key} value={g.key}>
+                    {g.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Tryb
+              <select
+                value={queueMode}
+                onChange={(e) => setQueueMode(e.target.value as MatchmakingMode)}
+              >
+                <option value="competitive">Rankingowy (zmienia Elo)</option>
+                <option value="unrated">Towarzyski</option>
+              </select>
+            </label>
+            <button type="submit">Szukaj</button>
+          </form>
+        )}
+      </section>
+
+      <section>
+        <h3>Gra z botem</h3>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void run(() => api.createRoom({ gameType: botGame, mode: 'bot' }));
+          }}
+        >
+          <label>
+            Gra
+            <select value={botGame} onChange={(e) => setBotGame(e.target.value as GameKey)}>
+              {gamesWith(BOT_GAMES).map((g) => (
+                <option key={g.key} value={g.key}>
+                  {g.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button type="submit">Zagraj z botem</button>
+        </form>
+      </section>
+
       <form onSubmit={create}>
         <h3>Nowy pokój prywatny</h3>
         <label>

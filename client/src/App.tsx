@@ -89,7 +89,7 @@ function Home({ api, user }: { api: Api; user: SessionUser }) {
           onLeft={() => setRoom(null)}
         />
       ) : (
-        <Lobby api={api} onEnter={setRoom} />
+        <Lobby api={api} socket={socket} onEnter={setRoom} />
       )}
     </>
   );

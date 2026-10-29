@@ -1,4 +1,10 @@
-import type { GameResult, GameState, RatingChange, TerminationReason } from '@cardplay/shared';
+import type {
+  GameKey,
+  GameResult,
+  GameState,
+  RatingChange,
+  TerminationReason,
+} from '@cardplay/shared';
 import { and, eq, inArray, isNull } from 'drizzle-orm';
 import type { Db } from '../../db/client';
 import {
@@ -163,7 +169,16 @@ export function createResultsService(db: Db) {
     return open.length;
   }
 
-  return { startGame, finishGame, cancelUnfinishedGames };
+  // 1000 until the player has finished a game of that kind
+  async function getRating(userId: string, gameType: GameKey): Promise<number> {
+    const [row] = await db
+      .select({ elo: userRatings.elo })
+      .from(userRatings)
+      .where(and(eq(userRatings.userId, userId), eq(userRatings.gameType, gameType)));
+    return row?.elo ?? 1000;
+  }
+
+  return { startGame, finishGame, cancelUnfinishedGames, getRating };
 }
 
 type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];

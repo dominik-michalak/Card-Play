@@ -86,6 +86,28 @@ describe('client realtime flow', () => {
     expect(first.socket.connected).toBe(false);
   });
 
+  it('finds an opponent through the queue and starts a game in the match room', async () => {
+    const first = await player('queue_a');
+    const second = await player('queue_b');
+    await waitUntil(() => first.socket.connected && second.socket.connected);
+    const found = [first, second].map((p) =>
+      once<{ roomId: string }>(p.socket, 'matchmaking:found'),
+    );
+
+    for (const p of [first, second]) {
+      p.socket.emit('matchmaking:join', { gameType: 'war', mode: 'unrated' });
+    }
+    const [firstFound] = await Promise.all(found);
+    const roomId = firstFound!.roomId;
+
+    // what the lobby does after "found": fetch the room, then join it
+    const room = await first.api.currentRoom();
+    expect(room).toMatchObject({ id: roomId, mode: 'unrated', inviteCode: null });
+    const started = once<{ state: ClientGameState }>(first.socket, 'game:state_update');
+    for (const p of [first, second]) p.socket.emit('room:join', { roomId });
+    expect((await started).state.gameKey).toBe('war');
+  });
+
   it('waits for connect() when autoConnect is off', async () => {
     const { api, socket: eager } = await player('lazy');
     const lazy = connectRealtime(api, { url: server.url, autoConnect: false });

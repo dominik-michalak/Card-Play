@@ -7,6 +7,9 @@ export const GAME_MODES = ['competitive', 'unrated', 'private', 'bot'] as const;
 export type GameMode = (typeof GAME_MODES)[number];
 
 export const ROOM_STATUSES = ['waiting', 'in_progress', 'finished'] as const;
+// queues of the matchmaking: rated and for fun, each with its own players
+export type MatchmakingMode = Extract<GameMode, 'competitive' | 'unrated'>;
+
 export type RoomStatus = (typeof ROOM_STATUSES)[number];
 
 // persisted membership; `ready` is live lobby state added by the socket layer

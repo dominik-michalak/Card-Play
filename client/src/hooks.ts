@@ -1,5 +1,7 @@
-import type { Room, ServerToClientEvents } from '@cardplay/shared';
-import { useEffect, useReducer, useState } from 'react';
+import type { GameKey, MatchmakingMode, Room, ServerToClientEvents } from '@cardplay/shared';
+import { useEffect, useReducer, useRef, useState } from 'react';
+import type { Api } from './api';
+import { initialMatchmakingState, matchmakingReducer } from './matchmaking-state';
 import type { RealtimeSocket } from './realtime';
 import { initialRoomState, roomReducer } from './room-state';
 
@@ -46,4 +48,43 @@ export function useRoomSession(socket: RealtimeSocket, room: Room) {
   }, [socket, room.id]);
 
   return { state, dismissError: () => dispatch({ type: 'dismiss_error' }) };
+}
+
+// the matchmaking queue of the lobby; a found match is fetched and handed to `onFound`
+export function useMatchmaking(socket: RealtimeSocket, api: Api, onFound: (room: Room) => void) {
+  const [state, dispatch] = useReducer(matchmakingReducer, initialMatchmakingState);
+  const foundRef = useRef(onFound);
+  foundRef.current = onFound;
+
+  useEffect(() => {
+    const onStatus = (status: Payload<'matchmaking:status'>) =>
+      dispatch({ type: 'status', status });
+    const onMatch = () => {
+      dispatch({ type: 'found' });
+      api.currentRoom().then(
+        (room) => room && foundRef.current(room),
+        () => dispatch({ type: 'error', message: 'Nie udało się pobrać pokoju meczu' }),
+      );
+    };
+    const onError = (e: Payload<'error'>) => dispatch({ type: 'error', message: e.message });
+
+    socket.on('matchmaking:status', onStatus);
+    socket.on('matchmaking:found', onMatch);
+    socket.on('error', onError);
+    return () => {
+      socket.off('matchmaking:status', onStatus);
+      socket.off('matchmaking:found', onMatch);
+      socket.off('error', onError);
+      // leaving the lobby ends the search, so a room opened meanwhile cannot break a match
+      socket.emit('matchmaking:leave');
+    };
+  }, [socket, api]);
+
+  return {
+    state,
+    join: (gameType: GameKey, mode: MatchmakingMode) =>
+      socket.emit('matchmaking:join', { gameType, mode }),
+    leave: () => socket.emit('matchmaking:leave'),
+    dismiss: () => dispatch({ type: 'dismiss' }),
+  };
 }

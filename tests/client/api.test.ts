@@ -111,6 +111,16 @@ describe('rooms', () => {
     expect((await host.currentRoom())?.players).toHaveLength(1);
   });
 
+  it('creates a bot room that needs no invite code', async () => {
+    const api = newApi();
+    await api.register(alice);
+
+    const room = await api.createRoom({ gameType: 'macao', mode: 'bot' });
+
+    expect(room).toMatchObject({ mode: 'bot', inviteCode: null, targetPlayers: 2 });
+    expect((await api.currentRoom())?.id).toBe(room.id);
+  });
+
   it('exposes the server error of a full room', async () => {
     const [a, b, c] = [newApi(), newApi(), newApi()];
     await a.register(alice);

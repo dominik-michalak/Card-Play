@@ -1,4 +1,4 @@
-import { GAME_PLAYER_LIMITS, type Room, type RoomStatus } from '@cardplay/shared';
+import { GAME_PLAYER_LIMITS, type GameKey, type Room, type RoomStatus } from '@cardplay/shared';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import type { Db } from '../../db/client';
 import { gameRooms, roomPlayers, users } from '../../db/schema';
@@ -123,7 +123,10 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
   }
 
   async function createRoom(userId: string, input: CreateRoomInput): Promise<Room> {
-    const targetPlayers = input.targetPlayers ?? GAME_PLAYER_LIMITS[input.gameType].min;
+    const vsBot = input.mode === 'bot';
+    const targetPlayers = vsBot
+      ? 2
+      : (input.targetPlayers ?? GAME_PLAYER_LIMITS[input.gameType].min);
     // a code collision aborts the transaction, so each attempt gets a new one
     for (let attempt = 0; attempt < MAX_CODE_ATTEMPTS; attempt++) {
       try {
@@ -134,10 +137,11 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
             .insert(gameRooms)
             .values({
               gameType: input.gameType,
-              mode: 'private',
+              mode: vsBot ? 'bot' : 'private',
               targetPlayers,
               createdBy: userId,
-              inviteCode: newInviteCode(),
+              // nobody joins a bot room, so it needs no code
+              inviteCode: vsBot ? null : newInviteCode(),
             })
             .returning();
           await tx.insert(roomPlayers).values({ roomId: room!.id, userId, seatIndex: 0 });
@@ -150,6 +154,33 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
       }
     }
     throw new Error('could not generate a unique invite code');
+  }
+
+  // a room made by matchmaking: both players are seated at once and nobody else can join
+  async function createMatchRoom(
+    gameType: GameKey,
+    mode: 'competitive' | 'unrated',
+    userIds: [string, string],
+  ): Promise<Room> {
+    if (userIds[0] === userIds[1]) {
+      throw new Error('a player cannot be matched with themselves');
+    }
+    const room = await db.transaction(async (tx) => {
+      // locked in id order, so two matches sharing a player cannot deadlock
+      for (const userId of [...userIds].sort()) {
+        await lockUser(tx, userId);
+        await requireNoOtherRoom(tx, userId);
+      }
+      const [created] = await tx
+        .insert(gameRooms)
+        .values({ gameType, mode, targetPlayers: 2, createdBy: userIds[0] })
+        .returning();
+      await tx
+        .insert(roomPlayers)
+        .values(userIds.map((userId, seatIndex) => ({ roomId: created!.id, userId, seatIndex })));
+      return snapshot(tx, created!);
+    });
+    return room;
   }
 
   async function joinByCode(userId: string, code: string): Promise<Room> {
@@ -269,6 +300,7 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
 
   return {
     createRoom,
+    createMatchRoom,
     joinByCode,
     getRoom,
     getCurrentRoom,

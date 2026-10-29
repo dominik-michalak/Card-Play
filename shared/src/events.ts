@@ -1,6 +1,7 @@
 import type { ErrorPayload } from './errors';
 import type { ClientGameState, GameAction, GameEvent, GameResult, RatingChange } from './game';
-import type { RoomPlayer } from './rooms';
+import type { GameKey } from './game';
+import type { MatchmakingMode, RoomPlayer } from './rooms';
 
 export type ChatMessage = { userId: string; username: string; message: string; sentAt: string };
 
@@ -12,6 +13,8 @@ export type ClientToServerEvents = {
   'room:ready': (payload: { roomId: string; ready: boolean }) => void;
   'room:chat': (payload: { roomId: string; message: string }) => void;
   'game:action': (payload: { roomId: string; action: GameAction }) => void;
+  'matchmaking:join': (payload: { gameType: GameKey; mode: MatchmakingMode }) => void;
+  'matchmaking:leave': () => void;
 };
 
 export type ServerToClientEvents = {
@@ -27,5 +30,12 @@ export type ServerToClientEvents = {
     ratings: RatingChange[];
   }) => void;
   'matchmaking:found': (payload: { roomId: string }) => void;
+  // `reason` explains why the player is no longer queued when they did not ask for it
+  'matchmaking:status': (payload: {
+    queued: boolean;
+    gameType?: GameKey;
+    mode?: MatchmakingMode;
+    reason?: 'left' | 'match_failed' | 'opponent_missing';
+  }) => void;
   error: (payload: ErrorPayload) => void;
 };

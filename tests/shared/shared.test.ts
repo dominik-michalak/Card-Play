@@ -110,7 +110,14 @@ describe('contracts', () => {
 
   it('keeps the socket event names from the plan', () => {
     expectTypeOf<keyof ClientToServerEvents>().toEqualTypeOf<
-      'room:join' | 'room:leave' | 'room:seat' | 'room:ready' | 'room:chat' | 'game:action'
+      | 'room:join'
+      | 'room:leave'
+      | 'room:seat'
+      | 'room:ready'
+      | 'room:chat'
+      | 'game:action'
+      | 'matchmaking:join'
+      | 'matchmaking:leave'
     >();
     expectTypeOf<keyof ServerToClientEvents>().toEqualTypeOf<
       | 'room:players'
@@ -120,6 +127,7 @@ describe('contracts', () => {
       | 'game:event'
       | 'game:finished'
       | 'matchmaking:found'
+      | 'matchmaking:status'
       | 'error'
     >();
   });

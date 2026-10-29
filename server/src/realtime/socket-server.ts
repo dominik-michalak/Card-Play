@@ -4,6 +4,7 @@ import {
   type ErrorPayload,
   type GamePlayer,
   type RandomSource,
+  type Room,
   type RoomPlayer,
   type ServerToClientEvents,
 } from '@cardplay/shared';
@@ -17,14 +18,19 @@ import type { ResultsService } from '../modules/results/results.service';
 import type { RoomChange, RoomsService } from '../modules/rooms/rooms.service';
 import { validate } from '../validate';
 import { GAME_REGISTRY } from './game-registry';
+import { botPlayer } from '../bots/bots';
+import type { MatchRules } from '../matchmaking/pairing';
 import { createGameRunner } from './game-runner';
+import { createMatchmaker } from './matchmaker';
 import { createLobbyState } from './lobby-state';
 import {
   actionSchema,
+  matchmakingJoinSchema,
   readySchema,
   roomRefSchema,
   seatSchema,
   type ActionPayload,
+  type MatchmakingJoinPayload,
   type ReadyPayload,
   type RoomRef,
   type SeatPayload,
@@ -45,6 +51,7 @@ export type SocketServerDeps = {
   results: ResultsService;
   timings?: Timings;
   random?: RandomSource;
+  matchRules?: MatchRules;
 };
 
 const MAX_PAYLOAD_BYTES = 10_000;
@@ -92,6 +99,21 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
     beginGame(roomId).catch((error: unknown) => console.error(error));
   });
 
+  const matchmaker = createMatchmaker({
+    roomService,
+    results,
+    timings,
+    rules: deps.matchRules,
+    sink: {
+      found: (userId, roomId) => {
+        io.to(userChannel(userId)).emit('matchmaking:found', { roomId });
+      },
+      status: (userId, status) => {
+        io.to(userChannel(userId)).emit('matchmaking:status', status);
+      },
+    },
+  });
+
   const runner = createGameRunner({
     results,
     timings,
@@ -137,14 +159,21 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
     });
   }
 
+  // the humans a game needs: all seats, or just the host when the bot takes the other one
+  const humansNeeded = (room: Room): number => (room.mode === 'bot' ? 1 : room.targetPlayers);
+
+  function isStartable(room: Room | null): room is Room {
+    return (
+      room?.status === 'waiting' &&
+      room.players.length === humansNeeded(room) &&
+      room.players.every((p) => lobby.isReady(room.id, p.userId))
+    );
+  }
+
   // the countdown runs exactly while the room is full and every player is ready
   async function syncCountdown(roomId: string): Promise<void> {
     const room = await roomService.findRoom(roomId);
-    const startable =
-      room?.status === 'waiting' &&
-      room.players.length === room.targetPlayers &&
-      room.players.every((p) => lobby.isReady(roomId, p.userId));
-    if (startable) {
+    if (isStartable(room)) {
       if (lobby.startCountdown(roomId)) emitCountdown(roomId);
     } else if (lobby.cancelCountdown(roomId)) {
       emitCountdown(roomId);
@@ -154,11 +183,7 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
   // re-checks the room: it may have changed during the countdown
   async function beginGame(roomId: string): Promise<void> {
     const room = await roomService.findRoom(roomId);
-    const startable =
-      room?.status === 'waiting' &&
-      room.players.length === room.targetPlayers &&
-      room.players.every((p) => lobby.isReady(roomId, p.userId));
-    if (!room || !startable) {
+    if (!isStartable(room)) {
       return;
     }
     const players: GamePlayer[] = room.players.map((p) => ({
@@ -166,6 +191,7 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
       username: p.username,
       isBot: false,
     }));
+    if (room.mode === 'bot') players.push(botPlayer());
     try {
       await runner.start(roomId, room.gameType, players, [...(attached.get(roomId) ?? [])]);
       lobby.clearRoom(roomId);
@@ -299,6 +325,12 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
         clearTimeout(graceTimers.get(userId));
         graceTimers.delete(userId);
         bind(socket, roomId);
+        // matchmaking and bot rooms have nobody to wait for: joining is being ready
+        if (room.mode !== 'private' && room.status === 'waiting') {
+          lobby.setReady(roomId, userId, true);
+          await syncCountdown(roomId);
+          await broadcastPlayers(roomId);
+        }
         if (runner.has(roomId)) {
           await runner.playerReconnected(roomId, userId);
         }
@@ -360,8 +392,21 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
       }),
     );
 
+    socket.on(
+      'matchmaking:join',
+      guarded<MatchmakingJoinPayload>(matchmakingJoinSchema, async ({ gameType, mode }) => {
+        await matchmaker.join(userId, gameType, mode);
+      }),
+    );
+
+    socket.on('matchmaking:leave', () => {
+      matchmaker.leave(userId);
+    });
+
     socket.on('disconnect', () => {
       clearTimeout(expiry);
+      // a player who is gone cannot accept a match
+      matchmaker.leave(userId);
       if (sockets.get(userId) === socket) {
         sockets.delete(userId);
       }
@@ -375,6 +420,7 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
 
   async function close(): Promise<void> {
     runner.dispose();
+    matchmaker.dispose();
     lobby.dispose();
     graceTimers.forEach((timer) => clearTimeout(timer));
     graceTimers.clear();

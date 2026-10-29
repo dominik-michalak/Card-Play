@@ -1,3 +1,4 @@
+import { MATCHMAKING_GAMES, type GameKey, type MatchmakingMode } from '@cardplay/shared';
 import Joi from 'joi';
 import { roomIdSchema } from '../modules/rooms/rooms.schemas';
 
@@ -20,6 +21,14 @@ export const actionSchema = Joi.object({
   }).required(),
 });
 
+export const matchmakingJoinSchema = Joi.object({
+  gameType: Joi.string()
+    .valid(...MATCHMAKING_GAMES)
+    .required(),
+  mode: Joi.string().valid('competitive', 'unrated').required(),
+});
+
+export type MatchmakingJoinPayload = { gameType: GameKey; mode: MatchmakingMode };
 export type RoomRef = { roomId: string };
 export type SeatPayload = { roomId: string; seatIndex: number };
 export type ReadyPayload = { roomId: string; ready: boolean };

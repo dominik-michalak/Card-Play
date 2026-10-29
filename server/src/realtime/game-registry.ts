@@ -1,4 +1,5 @@
-import type { GameEvent, GameKey, GameState, ServerGameModule } from '@cardplay/shared';
+import type { GameAction, GameEvent, GameKey, GameState, ServerGameModule } from '@cardplay/shared';
+import { chooseMacaoAction, chooseWarAction } from '../bots/bots';
 import { eliminatePlayer, macaoModule, type MacaoState } from '../games/macao/macao';
 import { forfeitWar, resolveFlipTimeout, warModule, type WarState } from '../games/war/war';
 
@@ -16,6 +17,8 @@ export type RunnerGame = {
   forfeit(state: GameState, playerId: string, reason: ForfeitReason): GameStep;
   // whether these events start a fresh decision window
   startsNewWindow(events: GameEvent[]): boolean;
+  // what the bot does now, or null when it has nothing to do
+  botAction(state: GameState, botId: string): GameAction | null;
 };
 
 // modules are typed with their own state; the registry erases that, because the runner only
@@ -29,6 +32,7 @@ const war: RunnerGame = {
     events: [],
   }),
   startsNewWindow: (events) => events.some((event) => event.type === 'round_resolved'),
+  botAction: (state, botId) => chooseWarAction(state as WarState, botId),
 };
 
 const macao: RunnerGame = {
@@ -40,6 +44,7 @@ const macao: RunnerGame = {
     eliminatePlayer(state as MacaoState, state.currentPlayerId!, 'timeout_forfeit'),
   forfeit: (state, playerId, reason) => eliminatePlayer(state as MacaoState, playerId, reason),
   startsNewWindow: (events) => events.some((event) => event.type === 'turn_started'),
+  botAction: (state, botId) => chooseMacaoAction(state as MacaoState, botId),
 };
 
 export const GAME_REGISTRY: Partial<Record<GameKey, RunnerGame>> = { war, macao };

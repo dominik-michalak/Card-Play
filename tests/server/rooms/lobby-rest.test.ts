@@ -76,6 +76,52 @@ describe('POST /lobbies', () => {
   });
 });
 
+describe('POST /lobbies with a bot', () => {
+  it.each(['war', 'macao'] as const)(
+    'creates a bot room for %s without an invite code',
+    async (gameType) => {
+      const host = await newUser('host');
+
+      const res = await create(host.token, { gameType, mode: 'bot' });
+
+      expect(res.status).toBe(201);
+      expect(res.body).toMatchObject({
+        gameType,
+        mode: 'bot',
+        status: 'waiting',
+        targetPlayers: 2,
+        inviteCode: null,
+        players: [{ userId: host.id, seatIndex: 0 }],
+      });
+    },
+  );
+
+  it.each([
+    ['a game without a bot', { gameType: 'poker', mode: 'bot' }],
+    ['more than one opponent', { gameType: 'macao', mode: 'bot', targetPlayers: 3 }],
+    ['a ranked mode chosen by the client', { gameType: 'war', mode: 'competitive' }],
+    ['an unrated mode chosen by the client', { gameType: 'war', mode: 'unrated' }],
+  ])('rejects %s', async (_name, body) => {
+    const host = await newUser('host');
+    const res = await create(host.token, body);
+    expect(res.status).toBe(400);
+    expect(res.body?.error.code).toBe('INVALID_PAYLOAD');
+  });
+
+  it('still binds the host to one active room', async () => {
+    const host = await newUser('host');
+    await create(host.token, { gameType: 'war', mode: 'bot' });
+    expect((await create(host.token)).body?.error.code).toBe('ROOM_MEMBERSHIP_CONFLICT');
+  });
+
+  it('accepts an explicit private mode', async () => {
+    const host = await newUser('host');
+    const res = await create(host.token, { gameType: 'war', mode: 'private' });
+    expect(res.status).toBe(201);
+    expect(res.body?.inviteCode).toMatch(INVITE_CODE);
+  });
+});
+
 describe('POST /lobbies/join', () => {
   it('seats the guest at the lowest free seat', async () => {
     const [host, guest] = [await newUser('host'), await newUser('guest')];
