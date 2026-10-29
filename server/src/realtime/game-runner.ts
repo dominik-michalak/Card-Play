@@ -211,9 +211,6 @@ export function createGameRunner(options: GameRunnerOptions) {
     attachedIds: string[],
   ): Promise<void> {
     const definition = GAME_REGISTRY[gameKey];
-    if (!definition?.rulesDefined) {
-      throw new HttpError(409, 'GAME_RULES_NOT_DEFINED', 'the rules of this game are not defined');
-    }
     const state = definition.module.createInitialState(players, random);
     const recordId = await results.startGame(roomId, state);
     const game: ActiveGame = {

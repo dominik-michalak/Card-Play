@@ -1,0 +1,1192 @@
+- generic [ref=f15e2]:
+  - banner [ref=f15e3]:
+    - generic [ref=f15e4] [cursor=pointer]
+    - link [ref=f15e7] [cursor=pointer]:
+      - /url: https://www.gry.pl/
+      - img "Zagraj w darmowe gry online" [ref=f15e9]
+    - generic:
+      - generic [ref=f15e10]:
+        - link "" [ref=f15e13] [cursor=pointer]:
+          - /url: /users/auth/gamesgamesconnect
+        - navigation [ref=f15e18]:
+          - list [ref=f15e19]:
+            - listitem [ref=f15e20]:
+              - link [ref=f15e22] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/nowe
+                - paragraph [ref=f15e23]: Nowe
+            - listitem [ref=f15e24]:
+              - link [ref=f15e26] [cursor=pointer]:
+                - /url: /pcgames
+                - paragraph [ref=f15e27]: Gry PC
+            - listitem [ref=f15e28]:
+              - link [ref=f15e30] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/logiczne
+                - paragraph [ref=f15e31]: Logiczne
+              - generic [ref=f15e33]:
+                - list [ref=f15e34]:
+                  - listitem [ref=f15e35]:
+                    - link " Gry Baśnie z 1001 Nocy" [ref=f15e36] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-basnie-z-1001-nocy
+                      - generic [ref=f15e37]: 
+                      - text: Gry Baśnie z 1001 Nocy
+                  - listitem [ref=f15e38]:
+                    - link " Gry 10x10" [ref=f15e39] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/10x10
+                      - generic [ref=f15e40]: 
+                      - text: Gry 10x10
+                  - listitem [ref=f15e41]:
+                    - link "Gry 2048" [ref=f15e42] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/2048
+                  - listitem [ref=f15e43]:
+                    - link " Gry Back to Candyland" [ref=f15e44] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/back-to-candyland
+                      - generic [ref=f15e45]: 
+                      - text: Gry Back to Candyland
+                  - listitem [ref=f15e46]:
+                    - link " Gry Z Balonami" [ref=f15e47] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-z-balonami
+                      - generic [ref=f15e48]: 
+                      - text: Gry Z Balonami
+                  - listitem [ref=f15e49]:
+                    - link " Gry Klocki" [ref=f15e50] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/kolorowe-klocki
+                      - generic [ref=f15e51]: 
+                      - text: Gry Klocki
+                  - listitem [ref=f15e52]:
+                    - link " Gry Logiczne" [ref=f15e53] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-o-mozgu
+                      - generic [ref=f15e54]: 
+                      - text: Gry Logiczne
+                  - listitem [ref=f15e55]:
+                    - link " Gry Bubble Shooter" [ref=f15e56] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-w-kulki
+                      - generic [ref=f15e57]: 
+                      - text: Gry Bubble Shooter
+                - link "Wszystkie gry Gry Logiczne" [ref=f15e59] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/logiczne
+            - listitem [ref=f15e60]:
+              - link [ref=f15e62] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/akcja
+                - paragraph [ref=f15e63]: Akcji
+              - generic [ref=f15e65]:
+                - list [ref=f15e66]:
+                  - listitem [ref=f15e67]:
+                    - link " 2D Gry" [ref=f15e68] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/2d
+                      - generic [ref=f15e69]: 
+                      - text: 2D Gry
+                  - listitem [ref=f15e70]:
+                    - link " Gry 3D" [ref=f15e71] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/3d
+                      - generic [ref=f15e72]: 
+                      - text: Gry 3D
+                  - listitem [ref=f15e73]:
+                    - link " Gry Powietrzne" [ref=f15e74] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/powietrze
+                      - generic [ref=f15e75]: 
+                      - text: Gry Powietrzne
+                  - listitem [ref=f15e76]:
+                    - link " Gry Arkadowe" [ref=f15e77] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-arkadowe
+                      - generic [ref=f15e78]: 
+                      - text: Gry Arkadowe
+                  - listitem [ref=f15e79]:
+                    - link " Gry Wojskowe" [ref=f15e80] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-wojskowe
+                      - generic [ref=f15e81]: 
+                      - text: Gry Wojskowe
+                  - listitem [ref=f15e82]:
+                    - link " Gry Asteroidy" [ref=f15e83] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/asteroidy
+                      - generic [ref=f15e84]: 
+                      - text: Gry Asteroidy
+                  - listitem [ref=f15e85]:
+                    - link " Krwawe gry" [ref=f15e86] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/krwawe-gry-
+                      - generic [ref=f15e87]: 
+                      - text: Krwawe gry
+                  - listitem [ref=f15e88]:
+                    - link " Gry wybuchowe" [ref=f15e89] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-wybuchowe
+                      - generic [ref=f15e90]: 
+                      - text: Gry wybuchowe
+                - link "Wszystkie gry Gry Akcji" [ref=f15e92] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/akcja
+            - listitem [ref=f15e93]:
+              - link [ref=f15e95] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/multiplayery
+                - paragraph [ref=f15e96]: Multiplayer
+              - generic [ref=f15e98]:
+                - list [ref=f15e99]:
+                  - listitem [ref=f15e100]:
+                    - link " Gry .io" [ref=f15e101] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-io
+                      - generic [ref=f15e102]: 
+                      - text: Gry .io
+                  - listitem [ref=f15e103]:
+                    - link " Gry na 2 Osoby" [ref=f15e104] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/2-graczy
+                      - generic [ref=f15e105]: 
+                      - text: Gry na 2 Osoby
+                  - listitem [ref=f15e106]:
+                    - link " Gry Bomb It" [ref=f15e107] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-bomb-it
+                      - generic [ref=f15e108]: 
+                      - text: Gry Bomb It
+                  - listitem [ref=f15e109]:
+                    - link " Gry MMO" [ref=f15e110] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry_mmo
+                      - generic [ref=f15e111]: 
+                      - text: Gry MMO
+                  - listitem [ref=f15e112]:
+                    - link " Proste gry (multiplayer)" [ref=f15e113] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/proste-multiplayer
+                      - generic [ref=f15e114]: 
+                      - text: Proste gry (multiplayer)
+                  - listitem [ref=f15e115]:
+                    - link " Gry Farma (multiplayer)" [ref=f15e116] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/farma-multiplayer
+                      - generic [ref=f15e117]: 
+                      - text: Gry Farma (multiplayer)
+                  - listitem [ref=f15e118]:
+                    - link " Gry Symulacja Multiplayer" [ref=f15e119] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/symulacja-multiplayer
+                      - generic [ref=f15e120]: 
+                      - text: Gry Symulacja Multiplayer
+                  - listitem [ref=f15e121]:
+                    - link " Gry Strategie Multiplayer" [ref=f15e122] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/strategie-multiplayer
+                      - generic [ref=f15e123]: 
+                      - text: Gry Strategie Multiplayer
+                - link "Wszystkie gry Gry Multiplayer" [ref=f15e125] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/multiplayery
+            - listitem [ref=f15e126]:
+              - link [ref=f15e128] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/dla-dziewczynek
+                - paragraph [ref=f15e129]: Dziewczyn
+              - generic [ref=f15e131]:
+                - list [ref=f15e132]:
+                  - listitem [ref=f15e133]:
+                    - link " Gry Ubieranki z Akcesoriami" [ref=f15e134] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry_ubieranki_z_akcesoriami
+                      - generic [ref=f15e135]: 
+                      - text: Gry Ubieranki z Akcesoriami
+                  - listitem [ref=f15e136]:
+                    - link " Gry Avie Pocket" [ref=f15e137] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-avie
+                      - generic [ref=f15e138]: 
+                      - text: Gry Avie Pocket
+                  - listitem [ref=f15e139]:
+                    - link " Gry Z Dzidziusiami" [ref=f15e140] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-z-dzidziusiami-temp-135
+                      - generic [ref=f15e141]: 
+                      - text: Gry Z Dzidziusiami
+                  - listitem [ref=f15e142]:
+                    - link " Gry z małą Hanią" [ref=f15e143] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-z-mala-hania
+                      - generic [ref=f15e144]: 
+                      - text: Gry z małą Hanią
+                  - listitem [ref=f15e145]:
+                    - link " Gry Opieka nad Dziećmi" [ref=f15e146] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/opieka-nad-dziecmi
+                      - generic [ref=f15e147]: 
+                      - text: Gry Opieka nad Dziećmi
+                  - listitem [ref=f15e148]:
+                    - link " Gry O Urodzie" [ref=f15e149] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/uroda
+                      - generic [ref=f15e150]: 
+                      - text: Gry O Urodzie
+                  - listitem [ref=f15e151]:
+                    - link " Gry z tortem i ciastami" [ref=f15e152] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-z-ciastami
+                      - generic [ref=f15e153]: 
+                      - text: Gry z tortem i ciastami
+                  - listitem [ref=f15e154]:
+                    - link " Gry kreskówki" [ref=f15e155] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-kreskowki
+                      - generic [ref=f15e156]: 
+                      - text: Gry kreskówki
+                - link "Wszystkie gry Gry dla dziewczyn" [ref=f15e158] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/dla-dziewczynek
+            - listitem [ref=f15e159]:
+              - link [ref=f15e161] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/symulatory
+                - paragraph [ref=f15e162]: Symulatory
+              - generic [ref=f15e164]:
+                - list [ref=f15e165]:
+                  - listitem [ref=f15e166]:
+                    - link " Gry pieczenie" [ref=f15e167] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-tort
+                      - generic [ref=f15e168]: 
+                      - text: Gry pieczenie
+                  - listitem [ref=f15e169]:
+                    - link " Gry Bar" [ref=f15e170] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/bar
+                      - generic [ref=f15e171]: 
+                      - text: Gry Bar
+                  - listitem [ref=f15e172]:
+                    - link " Gry Biznesowe" [ref=f15e173] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-biznesowe
+                      - generic [ref=f15e174]: 
+                      - text: Gry Biznesowe
+                  - listitem [ref=f15e175]:
+                    - link " Gry Pielęgnowanie" [ref=f15e176] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/pielegnowanie
+                      - generic [ref=f15e177]: 
+                      - text: Gry Pielęgnowanie
+                  - listitem [ref=f15e178]:
+                    - link " Gry Gotowanie" [ref=f15e179] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gotowanie
+                      - generic [ref=f15e180]: 
+                      - text: Gry Gotowanie
+                  - listitem [ref=f15e181]:
+                    - link " Gry Dentysta" [ref=f15e182] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/dentysta
+                      - generic [ref=f15e183]: 
+                      - text: Gry Dentysta
+                  - listitem [ref=f15e184]:
+                    - link " Lekarskie" [ref=f15e185] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/lekarskie
+                      - generic [ref=f15e186]: 
+                      - text: Lekarskie
+                  - listitem [ref=f15e187]:
+                    - link " Gry Symulatory Farmy" [ref=f15e188] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry_symulatory_farmy
+                      - generic [ref=f15e189]: 
+                      - text: Gry Symulatory Farmy
+                - link "Wszystkie gry Gry Symulatory" [ref=f15e191] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/symulatory
+            - listitem [ref=f15e192]:
+              - link [ref=f15e194] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/zrecznosciowe
+                - paragraph [ref=f15e195]: Zręcznościowe
+              - generic [ref=f15e197]:
+                - list [ref=f15e198]:
+                  - listitem [ref=f15e199]:
+                    - link " Gry z trofeami" [ref=f15e200] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-z-trofeami
+                      - generic [ref=f15e201]: 
+                      - text: Gry z trofeami
+                  - listitem [ref=f15e202]:
+                    - link " Gry przeglądarkowe" [ref=f15e203] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/browsergames
+                      - generic [ref=f15e204]: 
+                      - text: Gry przeglądarkowe
+                  - listitem [ref=f15e205]:
+                    - link " Gry Koncentracja" [ref=f15e206] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/koncentracja
+                      - generic [ref=f15e207]: 
+                      - text: Gry Koncentracja
+                  - listitem [ref=f15e208]:
+                    - link " Coolmath Games" [ref=f15e209] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/coolmath-games
+                      - generic [ref=f15e210]: 
+                      - text: Coolmath Games
+                  - listitem [ref=f15e211]:
+                    - link " Gry Edukacyjne" [ref=f15e212] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/edukacyjne
+                      - generic [ref=f15e213]: 
+                      - text: Gry Edukacyjne
+                  - listitem [ref=f15e214]:
+                    - link " Gry Szybkie pisanie" [ref=f15e215] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/szybkie-pisanie
+                      - generic [ref=f15e216]: 
+                      - text: Gry Szybkie pisanie
+                  - listitem [ref=f15e217]:
+                    - link " Gry z rankingiem" [ref=f15e218] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-z-rankingiem
+                      - generic [ref=f15e219]: 
+                      - text: Gry z rankingiem
+                  - listitem [ref=f15e220]:
+                    - link " Gry logiczne" [ref=f15e221] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-logiczne
+                      - generic [ref=f15e222]: 
+                      - text: Gry logiczne
+                - link "Wszystkie gry Gry Zręcznościowe" [ref=f15e224] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/zrecznosciowe
+            - listitem [ref=f15e225]:
+              - link [ref=f15e227] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/sport
+                - paragraph [ref=f15e228]: Sport
+              - generic [ref=f15e230]:
+                - list [ref=f15e231]:
+                  - listitem [ref=f15e232]:
+                    - link " Gry Air hockey" [ref=f15e233] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/air-hockey
+                      - generic [ref=f15e234]: 
+                      - text: Gry Air hockey
+                  - listitem [ref=f15e235]:
+                    - link " Gry Futbol Amerykański" [ref=f15e236] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/futbol-amerykanski
+                      - generic [ref=f15e237]: 
+                      - text: Gry Futbol Amerykański
+                  - listitem [ref=f15e238]:
+                    - link " Gry łucznictwo" [ref=f15e239] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/lucznictwo
+                      - generic [ref=f15e240]: 
+                      - text: Gry łucznictwo
+                  - listitem [ref=f15e241]:
+                    - link " Gry Lekkoatletyka" [ref=f15e242] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/lekka-atletyka
+                      - generic [ref=f15e243]: 
+                      - text: Gry Lekkoatletyka
+                  - listitem [ref=f15e244]:
+                    - link " Gry z Piłką" [ref=f15e245] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-w-pilke
+                      - generic [ref=f15e246]: 
+                      - text: Gry z Piłką
+                  - listitem [ref=f15e247]:
+                    - link " Gry Baseball" [ref=f15e248] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/baseball
+                      - generic [ref=f15e249]: 
+                      - text: Gry Baseball
+                  - listitem [ref=f15e250]:
+                    - link " Gry Koszykówka" [ref=f15e251] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/koszykowka
+                      - generic [ref=f15e252]: 
+                      - text: Gry Koszykówka
+                  - listitem [ref=f15e253]:
+                    - link " Gry bilardowe" [ref=f15e254] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/bilard
+                      - generic [ref=f15e255]: 
+                      - text: Gry bilardowe
+                - link "Wszystkie gry Gry Sport" [ref=f15e257] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/sport
+            - listitem [ref=f15e258]:
+              - link [ref=f15e260] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/gry_mmo
+                - paragraph [ref=f15e261]: MMO
+              - generic [ref=f15e263]:
+                - list [ref=f15e264]:
+                  - listitem [ref=f15e265]:
+                    - link " Gry Symulatory Farmy" [ref=f15e266] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry_symulatory_farmy
+                      - generic [ref=f15e267]: 
+                      - text: Gry Symulatory Farmy
+                  - listitem [ref=f15e268]:
+                    - link " Proste gry (multiplayer)" [ref=f15e269] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/proste-multiplayer
+                      - generic [ref=f15e270]: 
+                      - text: Proste gry (multiplayer)
+                  - listitem [ref=f15e271]:
+                    - link " Gry Farma (multiplayer)" [ref=f15e272] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/farma-multiplayer
+                      - generic [ref=f15e273]: 
+                      - text: Gry Farma (multiplayer)
+                  - listitem [ref=f15e274]:
+                    - link " Gry Symulacja Multiplayer" [ref=f15e275] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/symulacja-multiplayer
+                      - generic [ref=f15e276]: 
+                      - text: Gry Symulacja Multiplayer
+                  - listitem [ref=f15e277]:
+                    - link " Gry Strategie Multiplayer" [ref=f15e278] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/strategie-multiplayer
+                      - generic [ref=f15e279]: 
+                      - text: Gry Strategie Multiplayer
+                  - listitem [ref=f15e280]:
+                    - link " Gry wojenne (multiplayer)" [ref=f15e281] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/wojna-multiplayer
+                      - generic [ref=f15e282]: 
+                      - text: Gry wojenne (multiplayer)
+                  - listitem [ref=f15e283]:
+                    - link " Gry Farma" [ref=f15e284] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/prowadzenie-farmy
+                      - generic [ref=f15e285]: 
+                      - text: Gry Farma
+                  - listitem [ref=f15e286]:
+                    - link " Gry Społecznościowe" [ref=f15e287] [cursor=pointer]:
+                      - /url: https://www.gry.pl/gry/gry-na-przegladarke
+                      - generic [ref=f15e288]: 
+                      - text: Gry Społecznościowe
+                - link "Wszystkie gry Gry MMO" [ref=f15e290] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/gry_mmo
+            - listitem [ref=f15e291]:
+              - button [ref=f15e293]:
+                - paragraph [ref=f15e294]: Dla ciebie
+              - list [ref=f15e296]:
+                - listitem [ref=f15e297]:
+                  - generic [ref=f15e298]:
+                    - generic [ref=f15e300]:
+                      - heading "Dla ciebie" [level=3] [ref=f15e302]
+                      - list [ref=f15e303]:
+                        - listitem [ref=f15e304]:
+                          - link "Blocky Snakes io" [ref=f15e305] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/blocky-snakes-io
+                        - listitem [ref=f15e309]:
+                          - link "Blob Giant 3D" [ref=f15e310] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/blob-giant-3d
+                        - listitem [ref=f15e314]:
+                          - link "Stacky Run" [ref=f15e315] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/stacky-run
+                        - listitem [ref=f15e319]:
+                          - link "Arrow Challenge" [ref=f15e320] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/arrow-challenge
+                        - listitem [ref=f15e324]:
+                          - link "Goodgame Empire" [ref=f15e325] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/goodgame-empire-online
+                        - listitem [ref=f15e329]:
+                          - link "Let's Fish!" [ref=f15e330] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/na-ryby
+                        - listitem [ref=f15e334]:
+                          - link "Jackpot" [ref=f15e335] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/jackpot
+                        - listitem [ref=f15e339]:
+                          - link "Flip Duel" [ref=f15e340] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/flip-duel
+                        - listitem [ref=f15e344]:
+                          - link "Scala 40" [ref=f15e345] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/scala-40
+                    - generic [ref=f15e350]:
+                      - heading "Polecane Gry" [level=3] [ref=f15e352]
+                      - list [ref=f15e354]:
+                        - listitem [ref=f15e355]:
+                          - link "Elvenar" [ref=f15e356] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/elvenar
+                        - listitem [ref=f15e360]:
+                          - link "Wheelie Spooky" [ref=f15e361] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/wheelie-spooky
+                        - listitem [ref=f15e365]:
+                          - 'link "Secret Hall: Hidden Objects" [ref=f15e366] [cursor=pointer]':
+                            - /url: https://www.gry.pl/gra/secret-hall-hidden-objects
+                        - listitem [ref=f15e370]:
+                          - link "Farm Blast 2" [ref=f15e371] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/farm-blast-2
+                        - listitem [ref=f15e375]:
+                          - link "Hot Pot Chef" [ref=f15e376] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/hot-pot-chef
+                        - listitem [ref=f15e380]:
+                          - link "Merge and Harvest" [ref=f15e381] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/merge-and-harvest
+                        - listitem [ref=f15e385]:
+                          - link "Farm Merge Valley" [ref=f15e386] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/farm-merge-valley
+                        - listitem [ref=f15e390]:
+                          - link "Farmerama" [ref=f15e391] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/farmerama
+                        - listitem [ref=f15e395]:
+                          - link "Fun Race 3D" [ref=f15e396] [cursor=pointer]:
+                            - /url: https://www.gry.pl/gra/fun-race-3d
+                    - generic [ref=f15e401]:
+                      - heading "ULUBIONE GRY" [level=3] [ref=f15e403]
+                      - generic [ref=f15e404]:
+                        - paragraph [ref=f15e405]: Masz konto? Zaloguj się i zobacz swoje ulubione gry!Nie masz jeszcze konta? Zarejestruj się, aby skorzystać z tej funkcji.
+                        - link "ZATWIERDŹ" [ref=f15e406] [cursor=pointer]:
+                          - /url: /users/auth/gamesgamesconnect
+            - listitem [ref=f15e407]:
+              - link [ref=f15e408] [cursor=pointer]:
+                - /url: https://www.gry.pl/wszystkie-kategorie
+                - paragraph [ref=f15e409]: Wszystkie Kategorie
+      - generic [ref=f15e410]: 
+  - main [ref=f15e411]:
+    - generic [ref=f15e412]:
+      - heading "Polecane Gry" [level=2] [ref=f15e414]
+      - list [ref=f15e415]:
+        - listitem [ref=f15e416]:
+          - link "Elvenar Elvenar" [ref=f15e417] [cursor=pointer]:
+            - /url: https://www.gry.pl/gra/elvenar
+            - img "Elvenar" [ref=f15e419]
+            - generic [ref=f15e420]: Elvenar
+        - listitem [ref=f15e421]:
+          - link "Wheelie Spooky Wheelie Spooky" [ref=f15e422] [cursor=pointer]:
+            - /url: https://www.gry.pl/gra/wheelie-spooky
+            - img "Wheelie Spooky" [ref=f15e424]
+            - generic [ref=f15e425]: Wheelie Spooky
+        - listitem [ref=f15e426]:
+          - 'link "Secret Hall: Hidden Objects Secret Hall: Hidden Objects" [ref=f15e427] [cursor=pointer]':
+            - /url: https://www.gry.pl/gra/secret-hall-hidden-objects
+            - 'img "Secret Hall: Hidden Objects" [ref=f15e429]'
+            - generic [ref=f15e430]: "Secret Hall: Hidden Objects"
+        - listitem [ref=f15e431]:
+          - link "Farm Blast 2 Farm Blast 2" [ref=f15e432] [cursor=pointer]:
+            - /url: https://www.gry.pl/gra/farm-blast-2
+            - img "Farm Blast 2" [ref=f15e434]
+            - generic [ref=f15e435]: Farm Blast 2
+        - listitem [ref=f15e436]:
+          - link "Hot Pot Chef" [ref=f15e437] [cursor=pointer]:
+            - /url: https://www.gry.pl/gra/hot-pot-chef
+        - listitem [ref=f15e440]:
+          - link "Merge and Harvest" [ref=f15e441] [cursor=pointer]:
+            - /url: https://www.gry.pl/gra/merge-and-harvest
+        - listitem [ref=f15e444]:
+          - link "Farm Merge Valley" [ref=f15e445] [cursor=pointer]:
+            - /url: https://www.gry.pl/gra/farm-merge-valley
+        - listitem [ref=f15e448]:
+          - link "Farmerama" [ref=f15e449] [cursor=pointer]:
+            - /url: https://www.gry.pl/gra/farmerama
+        - listitem [ref=f15e452]:
+          - link "Fun Race 3D" [ref=f15e453] [cursor=pointer]:
+            - /url: https://www.gry.pl/gra/fun-race-3d
+    - generic [ref=f15e457]:
+      - generic [ref=f15e459]:
+        - heading [level=2] [ref=f15e461]:
+          - link "Nasze gry" [ref=f15e462] [cursor=pointer]:
+            - /url: https://www.gry.pl/gry/nasze-gry
+        - list [ref=f15e463]:
+          - listitem [ref=f15e464]:
+            - link "Fruit Match Fruit Match" [ref=f15e465] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/fruit-match
+              - img "Fruit Match" [ref=f15e468]
+              - generic [ref=f15e469]: Fruit Match
+          - listitem [ref=f15e470]:
+            - link "Dream Pet Link Your browser does not support the video tag. Dream Pet Link" [ref=f15e471] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/dream-pet-link
+              - generic [ref=f15e472]:
+                - img "Dream Pet Link" [ref=f15e474]
+                - generic [ref=f15e475]: Your browser does not support the video tag.
+              - generic [ref=f15e476]: Dream Pet Link
+          - listitem [ref=f15e477]:
+            - 'link "Ellie: Get Ready With Me Ellie: Get Ready With Me" [ref=f15e478] [cursor=pointer]':
+              - /url: https://www.gry.pl/gra/ellie-get-ready-with-me
+              - 'img "Ellie: Get Ready With Me" [ref=f15e481]'
+              - generic [ref=f15e482]: "Ellie: Get Ready With Me"
+          - listitem [ref=f15e483]:
+            - link "Park Fever Park Fever" [ref=f15e484] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/park-fever
+              - img "Park Fever" [ref=f15e487]
+              - generic [ref=f15e488]: Park Fever
+          - listitem [ref=f15e489]:
+            - link "Number Bubble Shooter Number Bubble Shooter" [ref=f15e490] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/number-bubble-shooter
+              - img "Number Bubble Shooter" [ref=f15e493]
+              - generic [ref=f15e494]: Number Bubble Shooter
+          - listitem [ref=f15e495]:
+            - link "Sweet Match Sweet Match" [ref=f15e496] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/sweet-match
+              - img "Sweet Match" [ref=f15e499]
+              - generic [ref=f15e500]: Sweet Match
+      - generic [ref=f15e502]:
+        - heading "Wybraliśmy dla Ciebie" [level=2] [ref=f15e504]
+        - generic [ref=f15e508]:
+          - generic:
+            - generic [ref=f15e509]:  
+            - generic [ref=f15e510]:  
+          - generic [ref=f15e511]:
+            - generic [ref=f15e512]:
+              - generic [ref=f15e517]:
+                - generic [ref=f15e518]: Train Station 2
+                - link "Zagraj teraz" [ref=f15e519] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/train-station-2
+              - link "Source of Train Station 2 Game Image Your browser does not support the video tag." [ref=f15e521] [cursor=pointer]:
+                - /url: https://www.gry.pl/gra/train-station-2
+                - img "Source of Train Station 2 Game Image" [ref=f15e523]
+                - generic [ref=f15e524]: Your browser does not support the video tag.
+            - generic [ref=f15e525]:
+              - generic [ref=f15e530]:
+                - generic [ref=f15e531]: Halloween
+                - link "Zagraj teraz" [ref=f15e532] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/halloween
+              - generic [ref=f15e533]:
+                - link "Halloween":
+                  - /url: https://www.gry.pl/gra/halloween
+                  - generic [ref=f15e534] [cursor=pointer]
+            - generic [ref=f15e535]:
+              - generic [ref=f15e540]:
+                - generic [ref=f15e541]: Spooky Block Blast
+                - link "Zagraj teraz" [ref=f15e542] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/spooky-block-blast
+              - link "Your browser does not support the video tag." [ref=f15e544] [cursor=pointer]:
+                - /url: https://www.gry.pl/gra/spooky-block-blast
+            - generic [ref=f15e547]:
+              - generic [ref=f15e552]:
+                - generic [ref=f15e553]: Bloom Tile Match
+                - link "Zagraj teraz" [ref=f15e554] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/bloom-tile-match
+              - generic [ref=f15e555]:
+                - link "Bloom Tile Match":
+                  - /url: https://www.gry.pl/gra/bloom-tile-match
+                  - generic [ref=f15e556] [cursor=pointer]
+      - generic [ref=f15e558]:
+        - heading "Najpopularniejsze Gry" [level=2] [ref=f15e560]
+        - list [ref=f15e561]:
+          - listitem [ref=f15e562]:
+            - link "2048 Bubble Shoot" [ref=f15e563] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/2048-bubble-shoot
+          - listitem [ref=f15e567]:
+            - link "Pop Flower" [ref=f15e568] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/pop-flower
+          - listitem [ref=f15e572]:
+            - link "Zoo Boom" [ref=f15e573] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/zoo-boom
+          - listitem [ref=f15e577]:
+            - link "Goodgame Empire" [ref=f15e578] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/goodgame-empire-online
+          - listitem [ref=f15e582]:
+            - link "Halloween Match" [ref=f15e583] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/halloween-match
+          - listitem [ref=f15e587]:
+            - link "Sortica" [ref=f15e588] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/sortica
+          - listitem [ref=f15e592]:
+            - link "Snack Stack" [ref=f15e593] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/snack-stack
+          - listitem [ref=f15e597]:
+            - 'link "Zoo 2: Animal Park" [ref=f15e598] [cursor=pointer]':
+              - /url: https://www.gry.pl/gra/zoo-2-animal-park
+          - listitem [ref=f15e602]:
+            - link "Star Stable" [ref=f15e603] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/star-stable
+      - generic [ref=f15e608]:
+        - heading [level=2] [ref=f15e610]:
+          - link "Spróbuj teraz!" [ref=f15e611] [cursor=pointer]:
+            - /url: https://www.gry.pl/gry/try-now-gd
+        - list [ref=f15e612]:
+          - listitem [ref=f15e613]:
+            - link "Geometry Vibes" [ref=f15e614] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/geometry-vibes
+          - listitem [ref=f15e618]:
+            - link "Bubble Shooter" [ref=f15e619] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/bubble_shooter
+          - listitem [ref=f15e623]:
+            - link "Flip Duel" [ref=f15e624] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/flip-duel
+          - listitem [ref=f15e628]:
+            - 'link "Ogień i Woda 1: Leśna Świątynia" [ref=f15e629] [cursor=pointer]':
+              - /url: https://www.gry.pl/gra/ogien-i-woda-lesna-swiatynia
+          - listitem [ref=f15e633]:
+            - link "Tester miłości 3" [ref=f15e634] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/tester-miosci-3
+          - listitem [ref=f15e638]:
+            - link "Pasjans FRVR" [ref=f15e639] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/pasjans-frvr
+          - listitem [ref=f15e643]:
+            - link "Mahjong Connect Classic" [ref=f15e644] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/mahjong-connect
+          - listitem [ref=f15e648]:
+            - link "Fruit Match" [ref=f15e649] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/fruit-match
+          - listitem [ref=f15e653]:
+            - link "Racing In City" [ref=f15e654] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/racing-in-city
+          - listitem [ref=f15e658]:
+            - link "Impostor" [ref=f15e659] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/impostor
+          - listitem [ref=f15e663]:
+            - link "Your browser does not support the video tag. Dream Pet Link" [ref=f15e664] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/dream-pet-link
+              - generic [ref=f15e665]: Your browser does not support the video tag.
+              - generic [ref=f15e668]: Dream Pet Link
+          - listitem [ref=f15e669]:
+            - link "Let's Fish!" [ref=f15e670] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/na-ryby
+          - listitem [ref=f15e674]:
+            - link "Combat Strike 2" [ref=f15e675] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/combat-strike-2
+          - listitem [ref=f15e679]:
+            - 'link "Moto X3M: Bike Racing" [ref=f15e680] [cursor=pointer]':
+              - /url: https://www.gry.pl/gra/moto-x3m
+          - listitem [ref=f15e684]:
+            - link "MahJongCon" [ref=f15e685] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/mahjongcon
+          - listitem [ref=f15e689]:
+            - link "Mistrz Bloków" [ref=f15e690] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/mistrz-blokow
+          - listitem [ref=f15e694]:
+            - link "Your browser does not support the video tag. My Parking Lot" [ref=f15e695] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/my-parking-lot
+              - generic [ref=f15e696]: Your browser does not support the video tag.
+              - generic [ref=f15e699]: My Parking Lot
+          - listitem [ref=f15e700]:
+            - link "Tsunami Brainrots Online" [ref=f15e701] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/tsunami-brainrots-online
+          - listitem [ref=f15e705]:
+            - link "Klasyczny Kris Mahjong" [ref=f15e706] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/klasyczny-kris-mahjong
+          - listitem [ref=f15e710]:
+            - link "Motyl Kyodai" [ref=f15e711] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/motyl-kyodai
+          - listitem [ref=f15e715]:
+            - link "Fun Race 3D" [ref=f15e716] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/fun-race-3d
+          - listitem [ref=f15e720]:
+            - 'link "Ogień i Woda 7: i przyjaciele" [ref=f15e721] [cursor=pointer]':
+              - /url: https://www.gry.pl/gra/ogien-woda-7-i-przyjaciele
+          - listitem [ref=f15e725]:
+            - link "Mobile Phone Case Design & DIY" [ref=f15e726] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/mobile-phone-case-design-diy
+          - listitem [ref=f15e730]:
+            - link "Baśnie z 1001 Nocy" [ref=f15e731] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/basnie-z-1001-nocy
+          - listitem [ref=f15e735]:
+            - link "Cake Sorting Deluxe" [ref=f15e736] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/cake-sorting-deluxe
+          - listitem [ref=f15e740]:
+            - link "Commando Force 2" [ref=f15e741] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/commando-force-2
+          - listitem [ref=f15e745]:
+            - 'link "Ogień i Woda 5: Żywioły" [ref=f15e746] [cursor=pointer]':
+              - /url: https://www.gry.pl/gra/ogien-i-woda-5-zywioy
+          - listitem [ref=f15e750]:
+            - link "Mahjong Link" [ref=f15e751] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/mahjongowe-polaczenia
+          - listitem [ref=f15e755]:
+            - link "Skydom" [ref=f15e756] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/skydom
+          - listitem [ref=f15e760]:
+            - link "Park Fever" [ref=f15e761] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/park-fever
+          - listitem [ref=f15e765]:
+            - link "Fruit Sort Logic" [ref=f15e766] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/fruit-sort-logic
+          - listitem [ref=f15e770]:
+            - link "Mergest Kingdom" [ref=f15e771] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/mergest-kingdom
+          - listitem [ref=f15e775]:
+            - link "Bańkowy strzelec - wersja ekstremalna" [ref=f15e776] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/bankowy-strzelec-wersja-ekstremalna
+          - listitem [ref=f15e780]:
+            - link "Farm Merge Valley" [ref=f15e781] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/farm-merge-valley
+          - listitem [ref=f15e785]:
+            - link "Number Bubble Shooter" [ref=f15e786] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/number-bubble-shooter
+          - listitem [ref=f15e790]:
+            - link "Dowiedz się więcej" [ref=f15e791] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/try-now-gd
+      - generic [ref=f15e803]:
+        - heading [level=2] [ref=f15e805]:
+          - link "Nowe Gry" [ref=f15e806] [cursor=pointer]:
+            - /url: https://www.gry.pl/gry/nowe
+        - list [ref=f15e807]:
+          - listitem [ref=f15e808]:
+            - link "Nowości Twilight Onet Connect" [ref=f15e809] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/twilight-onet-connect
+              - generic [ref=f15e810]: Nowości
+              - generic [ref=f15e813]: Twilight Onet Connect
+          - listitem [ref=f15e814]:
+            - link "Nowości Hot Pot Chef" [ref=f15e815] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/hot-pot-chef
+              - generic [ref=f15e816]: Nowości
+              - generic [ref=f15e819]: Hot Pot Chef
+          - listitem [ref=f15e820]:
+            - link "Nowości Adopt a Monster" [ref=f15e821] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/adopt-a-monster
+              - generic [ref=f15e822]: Nowości
+              - generic [ref=f15e825]: Adopt a Monster
+          - listitem [ref=f15e826]:
+            - link "Nowości Steal Animal Eggs Online" [ref=f15e827] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/steal-animal-eggs-online
+              - generic [ref=f15e828]: Nowości
+              - generic [ref=f15e831]: Steal Animal Eggs Online
+          - listitem [ref=f15e832]:
+            - 'link "Nowości Ghost Hunt: Spirit Scanner" [ref=f15e833] [cursor=pointer]':
+              - /url: https://www.gry.pl/gra/ghost-hunt-spirit-scanner
+              - generic [ref=f15e834]: Nowości
+              - generic [ref=f15e837]: "Ghost Hunt: Spirit Scanner"
+          - listitem [ref=f15e838]:
+            - link "Nowości Geometry Vibes 2 Online" [ref=f15e839] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/geometry-vibes-2-online
+              - generic [ref=f15e840]: Nowości
+              - generic [ref=f15e843]: Geometry Vibes 2 Online
+          - listitem [ref=f15e844]:
+            - link "Nowości Wheelie Spooky" [ref=f15e845] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/wheelie-spooky
+              - generic [ref=f15e846]: Nowości
+              - generic [ref=f15e849]: Wheelie Spooky
+          - listitem [ref=f15e850]:
+            - link "Nowości Kick The Buddy" [ref=f15e851] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/kick-the-buddy
+              - generic [ref=f15e852]: Nowości
+              - generic [ref=f15e855]: Kick The Buddy
+          - listitem [ref=f15e856]:
+            - link "Nowości Bloom Tile Match" [ref=f15e857] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/bloom-tile-match
+              - generic [ref=f15e858]: Nowości
+              - generic [ref=f15e861]: Bloom Tile Match
+          - listitem [ref=f15e862]:
+            - link "Nowości Pet Fashion Stylist" [ref=f15e863] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/pet-fashion-stylist
+              - generic [ref=f15e864]: Nowości
+              - generic [ref=f15e867]: Pet Fashion Stylist
+          - listitem [ref=f15e868]:
+            - link "Nowości Solitaire Story Tripeaks 7" [ref=f15e869] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/solitaire-story-tripeaks-7
+              - generic [ref=f15e870]: Nowości
+              - generic [ref=f15e873]: Solitaire Story Tripeaks 7
+          - listitem [ref=f15e874]:
+            - link "Nowości Moto Racing Club" [ref=f15e875] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/moto-racing-club
+              - generic [ref=f15e876]: Nowości
+              - generic [ref=f15e879]: Moto Racing Club
+          - listitem [ref=f15e880]:
+            - link "Nowości Hustle & Drift in ZIL" [ref=f15e881] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/hustle-drift-in-zil
+              - generic [ref=f15e882]: Nowości
+              - generic [ref=f15e885]: Hustle & Drift in ZIL
+          - listitem [ref=f15e886]:
+            - 'link "Nowości Jewel Coloring: Crystal Sorting" [ref=f15e887] [cursor=pointer]':
+              - /url: https://www.gry.pl/gra/jewel-coloring-crystal-sorting
+              - generic [ref=f15e888]: Nowości
+              - generic [ref=f15e891]: "Jewel Coloring: Crystal Sorting"
+          - listitem [ref=f15e892]:
+            - link "Nowości Puppy Paw Match" [ref=f15e893] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/puppy-paw-match
+              - generic [ref=f15e894]: Nowości
+              - generic [ref=f15e897]: Puppy Paw Match
+          - listitem [ref=f15e898]:
+            - link "Nowości K-Pop Halloween Dress Up" [ref=f15e899] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/k-pop-halloween-dress-up
+              - generic [ref=f15e900]: Nowości
+              - generic [ref=f15e903]: K-Pop Halloween Dress Up
+          - listitem [ref=f15e904]:
+            - link "Nowości Catch Them All" [ref=f15e905] [cursor=pointer]:
+              - /url: https://www.gry.pl/gra/catch-them-all
+              - generic [ref=f15e906]: Nowości
+              - generic [ref=f15e909]: Catch Them All
+          - listitem [ref=f15e910]:
+            - link "Dowiedz się więcej" [ref=f15e911] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/nowe
+      - generic [ref=f15e923]:
+        - heading [level=2] [ref=f15e925]:
+          - link "POPULARNE GRY" [ref=f15e926] [cursor=pointer]:
+            - /url: https://www.gry.pl/gry
+        - list [ref=f15e927]:
+          - listitem [ref=f15e928]:
+            - heading [level=3] [ref=f15e930]:
+              - link "Gry Ogień i Woda" [ref=f15e931] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/fireboy-and-watergirl
+            - list [ref=f15e932]:
+              - listitem [ref=f15e933]:
+                - 'link "Ogień i Woda 1: Leśna Świątynia" [ref=f15e934] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/ogien-i-woda-lesna-swiatynia
+              - listitem [ref=f15e938]:
+                - 'link "Ogień i Woda 7: i przyjaciele" [ref=f15e939] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/ogien-woda-7-i-przyjaciele
+              - listitem [ref=f15e943]:
+                - 'link "Ogień i Woda 5: Żywioły" [ref=f15e944] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/ogien-i-woda-5-zywioy
+              - listitem [ref=f15e948]:
+                - 'link "Ogień i Woda 2: Świątynia Światła" [ref=f15e949] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/ogien-i-woda-2-swiatynia-swiatla
+              - listitem [ref=f15e953]:
+                - 'link "Ogień i Woda 4: Kryształowa Świątynia" [ref=f15e954] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/ogien-i-woda-4-krysztalowa-swiatynia
+              - listitem [ref=f15e958]:
+                - link "Dowiedz się więcej" [ref=f15e959] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/fireboy-and-watergirl
+          - listitem [ref=f15e970]:
+            - heading [level=3] [ref=f15e972]:
+              - link "Gry Logiczne" [ref=f15e973] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/logiczne
+            - list [ref=f15e974]:
+              - listitem [ref=f15e975]:
+                - link "Bubble Shooter" [ref=f15e976] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/bubble_shooter
+              - listitem [ref=f15e980]:
+                - link "Pasjans FRVR" [ref=f15e981] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/pasjans-frvr
+              - listitem [ref=f15e985]:
+                - link "Mahjong Connect Classic" [ref=f15e986] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/mahjong-connect
+              - listitem [ref=f15e990]:
+                - link "Fruit Match" [ref=f15e991] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/fruit-match
+              - listitem [ref=f15e995]:
+                - link "Your browser does not support the video tag. Dream Pet Link" [ref=f15e996] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/dream-pet-link
+                  - generic [ref=f15e997]: Your browser does not support the video tag.
+                  - generic [ref=f15e1000]: Dream Pet Link
+              - listitem [ref=f15e1001]:
+                - link "Dowiedz się więcej" [ref=f15e1002] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/logiczne
+          - listitem [ref=f15e1013]:
+            - heading [level=3] [ref=f15e1015]:
+              - link "Gry dla dziewczyn" [ref=f15e1016] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/dla-dziewczynek
+            - list [ref=f15e1017]:
+              - listitem [ref=f15e1018]:
+                - link "Tester miłości 3" [ref=f15e1019] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/tester-miosci-3
+              - listitem [ref=f15e1023]:
+                - 'link "Ellie: Get Ready With Me" [ref=f15e1024] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/ellie-get-ready-with-me
+              - listitem [ref=f15e1028]:
+                - link "Organization Princess" [ref=f15e1029] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/organization-princess
+              - listitem [ref=f15e1033]:
+                - 'link "Goldie: Powiększanie ust" [ref=f15e1034] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/goldie-powiekszanie-ust
+              - listitem [ref=f15e1038]:
+                - link "Fashion Princess - Dress Up for Girls" [ref=f15e1039] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/fashion-princess-dress-up-for-girls
+              - listitem [ref=f15e1043]:
+                - link "Dowiedz się więcej" [ref=f15e1044] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/dla-dziewczynek
+          - listitem [ref=f15e1055]:
+            - heading [level=3] [ref=f15e1057]:
+              - link "Gry Akcji" [ref=f15e1058] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/akcja
+            - list [ref=f15e1059]:
+              - listitem [ref=f15e1060]:
+                - link "Racing In City" [ref=f15e1061] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/racing-in-city
+              - listitem [ref=f15e1065]:
+                - link "Combat Strike 2" [ref=f15e1066] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/combat-strike-2
+              - listitem [ref=f15e1070]:
+                - link "Master of Numbers" [ref=f15e1071] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/master-of-numbers
+              - listitem [ref=f15e1075]:
+                - link "Tsunami Brainrots Online" [ref=f15e1076] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/tsunami-brainrots-online
+              - listitem [ref=f15e1080]:
+                - link "Fun Race 3D" [ref=f15e1081] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/fun-race-3d
+              - listitem [ref=f15e1085]:
+                - link "Dowiedz się więcej" [ref=f15e1086] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/akcja
+          - listitem [ref=f15e1097]:
+            - heading [level=3] [ref=f15e1099]:
+              - link "Gry Symulatory" [ref=f15e1100] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/symulatory
+            - list [ref=f15e1101]:
+              - listitem [ref=f15e1102]:
+                - 'link "Ellie: Get Ready With Me" [ref=f15e1103] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/ellie-get-ready-with-me
+              - listitem [ref=f15e1107]:
+                - link "Mobile Phone Case Design & DIY" [ref=f15e1108] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/mobile-phone-case-design-diy
+              - listitem [ref=f15e1112]:
+                - link "Pou" [ref=f15e1113] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/pou
+              - listitem [ref=f15e1117]:
+                - link "Snow Rider 3D" [ref=f15e1118] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/snow-rider-3d
+              - listitem [ref=f15e1122]:
+                - link "Mergest Kingdom" [ref=f15e1123] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/mergest-kingdom
+              - listitem [ref=f15e1127]:
+                - link "Dowiedz się więcej" [ref=f15e1128] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/symulatory
+          - listitem [ref=f15e1139]:
+            - heading [level=3] [ref=f15e1141]:
+              - link "Gry Multiplayer" [ref=f15e1142] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/multiplayery
+            - list [ref=f15e1143]:
+              - listitem [ref=f15e1144]:
+                - 'link "Ogień i Woda 1: Leśna Świątynia" [ref=f15e1145] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/ogien-i-woda-lesna-swiatynia
+              - listitem [ref=f15e1149]:
+                - link "Impostor" [ref=f15e1150] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/impostor
+              - listitem [ref=f15e1154]:
+                - link "Let's Fish!" [ref=f15e1155] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/na-ryby
+              - listitem [ref=f15e1159]:
+                - link "Tsunami Brainrots Online" [ref=f15e1160] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/tsunami-brainrots-online
+              - listitem [ref=f15e1164]:
+                - link "Fun Race 3D" [ref=f15e1165] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/fun-race-3d
+              - listitem [ref=f15e1169]:
+                - link "Dowiedz się więcej" [ref=f15e1170] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/multiplayery
+          - listitem [ref=f15e1181]:
+            - heading [level=3] [ref=f15e1183]:
+              - link "Gry Zręcznościowe" [ref=f15e1184] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/zrecznosciowe
+            - list [ref=f15e1185]:
+              - listitem [ref=f15e1186]:
+                - link "Geometry Vibes" [ref=f15e1187] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/geometry-vibes
+              - listitem [ref=f15e1191]:
+                - link "Flip Duel" [ref=f15e1192] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/flip-duel
+              - listitem [ref=f15e1196]:
+                - link "Tester miłości 3" [ref=f15e1197] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/tester-miosci-3
+              - listitem [ref=f15e1201]:
+                - link "Master of Numbers" [ref=f15e1202] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/master-of-numbers
+              - listitem [ref=f15e1206]:
+                - link "Mistrz Bloków" [ref=f15e1207] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/mistrz-blokow
+              - listitem [ref=f15e1211]:
+                - link "Dowiedz się więcej" [ref=f15e1212] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/zrecznosciowe
+          - listitem [ref=f15e1223]:
+            - heading [level=3] [ref=f15e1225]:
+              - link "Gier Mahjong" [ref=f15e1226] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/mahjong
+            - list [ref=f15e1227]:
+              - listitem [ref=f15e1228]:
+                - link "Mahjong Connect Classic" [ref=f15e1229] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/mahjong-connect
+              - listitem [ref=f15e1233]:
+                - link "Your browser does not support the video tag. Dream Pet Link" [ref=f15e1234] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/dream-pet-link
+                  - generic [ref=f15e1235]: Your browser does not support the video tag.
+                  - generic [ref=f15e1238]: Dream Pet Link
+              - listitem [ref=f15e1239]:
+                - link "MahJongCon" [ref=f15e1240] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/mahjongcon
+              - listitem [ref=f15e1244]:
+                - link "Klasyczny Kris Mahjong" [ref=f15e1245] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/klasyczny-kris-mahjong
+              - listitem [ref=f15e1249]:
+                - link "Motyl Kyodai" [ref=f15e1250] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/motyl-kyodai
+              - listitem [ref=f15e1254]:
+                - link "Dowiedz się więcej" [ref=f15e1255] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/mahjong
+          - listitem [ref=f15e1266]:
+            - heading [level=3] [ref=f15e1268]:
+              - link "Gry Ukryte Obiekty" [ref=f15e1269] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/ukryte-obiekty
+            - list [ref=f15e1270]:
+              - listitem [ref=f15e1271]:
+                - link "Find Hidden Cats" [ref=f15e1272] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/find-hidden-cats
+              - listitem [ref=f15e1276]:
+                - link "Hidden Objects" [ref=f15e1277] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/hidden-objects
+              - listitem [ref=f15e1281]:
+                - link "Hidden Object Rooms Exploration" [ref=f15e1282] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/hidden-object-rooms-exploration
+              - listitem [ref=f15e1286]:
+                - 'link "Znajdź różnice: Słodkie dzieciaki" [ref=f15e1287] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/znajdz-roznice-sodkie-dzieciaki
+              - listitem [ref=f15e1291]:
+                - link "Hidden Objects Island" [ref=f15e1292] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/hidden-objects-island
+              - listitem [ref=f15e1296]:
+                - link "Dowiedz się więcej" [ref=f15e1297] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/ukryte-obiekty
+  - generic [ref=f15e1308]:
+    - heading "Darmowe gry online na Gry.pl" [level=1] [ref=f15e1309]
+    - generic [ref=f15e1310]:
+      - paragraph [ref=f15e1311]: Czołem, graczu! Witaj na stronie Gry.pl!
+      - paragraph [ref=f15e1312]:
+        - text: Znajdziesz tu tysiące
+        - strong [ref=f15e1313]: gier online
+        - text: – zarówno przeznaczonych dla jednego gracza, jak i do rozgrywek wieloosobowych. Możesz w nie grać także na urządzeniach mobilnych. Wypróbuj je na laptopie, smartfonie lub tablecie. Mamy coś dla graczy w każdym wieku, więc bez względu na to, ile masz lat, na pewno znajdziesz grę, przy której będziesz się świetnie bawić!
+      - heading "Bez pobierania i bez płatnych subskrypcji – aby zagrać, wystarczy jedno kliknięcie!" [level=3] [ref=f15e1314]
+      - paragraph [ref=f15e1315]:
+        - text: "Zanurz się w świecie ulubionych gier bez konieczności ich pobierania lub kupowania subskrypcji. Po prostu kliknij grę, aby w nią zagrać! Zacznij od tytułów stworzonych przez nas, takich jak:"
+        - link "Fireboy and Watergirl" [ref=f15e1316] [cursor=pointer]:
+          - /url: https://www.gry.pl/gry/fireboy-and-watergirl
+        - text: ","
+        - link "Troll Face Quest" [ref=f15e1317] [cursor=pointer]:
+          - /url: https://www.gry.pl/gry/gry-wyprawa-antytrollowa
+        - text: ","
+        - link "Uphill Rush" [ref=f15e1318] [cursor=pointer]:
+          - /url: https://www.gry.pl/gry/gry-uphill-rush
+        - text: i
+        - link "Bob the Robber" [ref=f15e1319] [cursor=pointer]:
+          - /url: https://www.gry.pl/gra/zlodziej-bob
+        - text: .
+      - paragraph [ref=f15e1320]:
+        - text: "W naszej bibliotece znajdziesz także popularne tytuły, takie jak: Scary Maze,"
+        - link "Ludo Legend" [ref=f15e1321] [cursor=pointer]:
+          - /url: https://www.gry.pl/gra/legenda-ludo
+        - text: ","
+        - link "Shell Shockers" [ref=f15e1322] [cursor=pointer]:
+          - /url: https://www.gry.pl/gra/shellshockio
+        - text: ", The Impossible Quiz i wiele innych!"
+      - heading "Zostań członkiem społeczności graczy!" [level=3] [ref=f15e1323]
+      - paragraph [ref=f15e1324]:
+        - text: Chcesz zyskać nowych znajomych w trakcie rozgrywki? Stwórz konto i graj w tytuły pokroju
+        - link "Family Barn" [ref=f15e1325] [cursor=pointer]:
+          - /url: https://www.gry.pl/gra/wiejskie-zycie
+        - text: lub Goodgame Empire. W obu czekają na ciebie tętniące życiem społeczności liczące tysiące graczy. Ponadto zaliczają się one do grona najlepszych gier MMO wszech czasów i zawierają mnóstwo funkcji społecznościowych, które musisz wypróbować.
+      - heading "Nasze najpopularniejsze kategorie!" [level=3] [ref=f15e1326]
+      - paragraph [ref=f15e1327]:
+        - text: Mamy do zaoferowania setki gatunków gier – dla każdego coś miłego. Wypróbuj nasze wspaniałe
+        - link "łamigłówki" [ref=f15e1328] [cursor=pointer]:
+          - /url: https://www.gry.pl/gry/logiczne
+        - text: ","
+        - link "pasjanse" [ref=f15e1329] [cursor=pointer]:
+          - /url: https://www.gry.pl/gry/solitaire
+        - text: oraz
+        - link "gry z serii .io" [ref=f15e1330] [cursor=pointer]:
+          - /url: https://www.gry.pl/gry/gry-io
+        - text: . Miłośnicy i miłośniczki mody w każdym wieku pokochają nasze
+        - link "ubieranki" [ref=f15e1331] [cursor=pointer]:
+          - /url: https://www.gry.pl/gry/ubieranki
+        - text: . A jeśli chcesz poczuć ducha rywalizacji, rzuć wyzwanie znajomemu w jednej z gier dla dwóch graczy lub przekonaj się, czy zdołasz jako pierwszy pokonać linię mety w naszych trzymających w napięciu
+        - link "ścigankach" [ref=f15e1332] [cursor=pointer]:
+          - /url: https://www.gry.pl/gry/wyscigi
+        - text: .
+      - heading "O nas" [level=3] [ref=f15e1333]
+      - paragraph [ref=f15e1334]: Każdego miesiąca nasze strony internetowe odwiedza ponad 35 milionów graczy z ponad 150 krajów. Od 2014 roku nasze gry zostały uruchomione ponad 19 miliardów razy!
+      - paragraph [ref=f15e1335]: Udało nam się przyciągnąć miliony graczy do serii takich jak Bubble Shooter, MahJongCon, Sara's Cooking Class i Happy Wheels. Dzięki naszej pomocy gry te stały się kultowymi tytułami internetowymi.
+      - paragraph [ref=f15e1336]:
+        - generic [ref=f15e1337]:
+          - text: "Możemy także pochwalić się dziesiątkami innych stron internetowych, w tym:"
+          - link "Agame" [ref=f15e1338] [cursor=pointer]:
+            - /url: https://www.agame.com/
+          - text: ","
+          - link "Gamesgames" [ref=f15e1339] [cursor=pointer]:
+            - /url: https://www.gamesgames.com/
+          - text: ","
+          - link "A10" [ref=f15e1340] [cursor=pointer]:
+            - /url: https://www.a10.com/
+          - text: oraz
+          - link "Mousebreaker" [ref=f15e1341] [cursor=pointer]:
+            - /url: https://www.mousebreaker.com/
+          - text: . Mamy też inne strony dostępne w wielu różnych językach.
+  - contentinfo [ref=f15e1342]:
+    - generic [ref=f15e1343]:
+      - generic [ref=f15e1347]:
+        - generic [ref=f15e1348]:
+          - generic [ref=f15e1349]: DANE FIRMY
+          - list:
+            - listitem [ref=f15e1352]:
+              - link "Warunki korzystania z Witryny" [ref=f15e1353] [cursor=pointer]:
+                - /url: https://www.gry.pl/warunki_korzystania_z_witryny
+            - listitem [ref=f15e1354]:
+              - link "Nasza polityka prywatnosci" [ref=f15e1355] [cursor=pointer]:
+                - /url: https://www.gry.pl/polityka_prywatnosci
+            - listitem [ref=f15e1356]:
+              - link "Cookies" [ref=f15e1357] [cursor=pointer]:
+                - /url: https://www.gry.pl/cookie-policy
+            - listitem [ref=f15e1358]:
+              - link "Zgoda na pliki cookies" [ref=f15e1359] [cursor=pointer]:
+                - /url: "#"
+        - generic [ref=f15e1360]:
+          - generic [ref=f15e1361]: WSPARCIE
+          - list:
+            - listitem [ref=f15e1364]:
+              - link "Pomoc" [ref=f15e1365] [cursor=pointer]:
+                - /url: https://support.spilgames.com/hc/pl?site_id=16
+        - generic [ref=f15e1366]:
+          - generic [ref=f15e1367]: JĘZYKACH
+          - list:
+            - listitem [ref=f15e1370]:
+              - link "English" [ref=f15e1371] [cursor=pointer]:
+                - /url: https://www.gamesgames.com/
+            - listitem [ref=f15e1372]:
+              - link "British English" [ref=f15e1373] [cursor=pointer]:
+                - /url: https://www.games.co.uk/
+            - listitem [ref=f15e1374]:
+              - link "Deutsch" [ref=f15e1375] [cursor=pointer]:
+                - /url: https://www.jetztspielen.de/
+            - listitem [ref=f15e1376]:
+              - link "Русский" [ref=f15e1377] [cursor=pointer]:
+                - /url: https://www.ourgames.ru/
+            - listitem [ref=f15e1378]:
+              - link "Bahasa Indonesia" [ref=f15e1379] [cursor=pointer]:
+                - /url: https://www.permainan.co.id/
+            - listitem [ref=f15e1380]:
+              - link "Italiano" [ref=f15e1381] [cursor=pointer]:
+                - /url: https://www.gioco.it/
+            - listitem [ref=f15e1382]:
+              - link "Français" [ref=f15e1383] [cursor=pointer]:
+                - /url: https://www.jeux.fr/
+            - listitem [ref=f15e1384]:
+              - link "Español" [ref=f15e1385] [cursor=pointer]:
+                - /url: https://www.juegos.com/
+            - listitem [ref=f15e1386]:
+              - link "Português" [ref=f15e1387] [cursor=pointer]:
+                - /url: https://www.ojogos.com.br/
+            - listitem [ref=f15e1388]:
+              - link "Türkçe" [ref=f15e1389] [cursor=pointer]:
+                - /url: https://www.oyunskor.com/
+            - listitem [ref=f15e1390]:
+              - link "Svenska" [ref=f15e1391] [cursor=pointer]:
+                - /url: https://www.spela.se/
+            - listitem [ref=f15e1392]:
+              - link "Nederlands" [ref=f15e1393] [cursor=pointer]:
+                - /url: https://www.spelletjes.nl/
+      - button "Scroll to top" [ref=f15e1394] [cursor=pointer]:
+        - generic [ref=f15e1395]: 
+    - paragraph [ref=f15e1396]: Copyright © 2026 SPIL GAMES All rights reserved.

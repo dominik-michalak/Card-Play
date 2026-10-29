@@ -43,8 +43,7 @@ describe('isHiddenCard', () => {
 });
 
 describe('error codes', () => {
-  it('are UPPER_SNAKE_CASE and include the undefined rules code', () => {
-    expect(ERROR_CODES).toContain('GAME_RULES_NOT_DEFINED');
+  it('are UPPER_SNAKE_CASE', () => {
     for (const code of ERROR_CODES) {
       expect(code).toMatch(/^[A-Z]+(_[A-Z]+)*$/);
     }

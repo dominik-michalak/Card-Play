@@ -173,16 +173,30 @@ inżynierskim.
 - Wygrywa gracz, który legalnie pozbędzie się wszystkich kart. W grze 3–4 osobowej
   po pierwszej wygranej runda kończy się; nie ustalamy klasyfikacji pozostałych miejsc.
 
-## 4. Texas Clinch
+## 4. Texas Clinch — Short-Handed Turbo
 
-`Texas Clinch` nie ma wiarygodnego, powszechnie opisanego zbioru reguł. W obu
-dokumentach projektu jest osobną grą względem Pokera, więc nie należy go potajemnie
-zastępować Texas Hold'em.
+Decyzja (zatwierdzona 2026-10-29): `texas_clinch` jest osobną grą obok Pokera, ale
+działa na tym samym silniku No-Limit Texas Hold'em (sekcja 5) i tym samym stole. To
+szybszy wariant dla mniejszego stołu; różni się wyłącznie konfiguracją:
 
-Decyzja dla MVP (potwierdzona): `texas_clinch` jest widoczny w lobby, a jego moduł
-istnieje, ale rozpoczęcie rozgrywki zwraca błąd `GAME_RULES_NOT_DEFINED`. Przed implementacją należy stworzyć
-osobny, zatwierdzony regulamin: cel gry, rozkład kart, fazy ruchu, dozwolone akcje,
-porównanie wyniku, remis oraz stan końcowy. To nie blokuje Wojny, Makao ani Pokera.
+| | Poker | Texas Clinch |
+| --- | ---: | ---: |
+| Liczba graczy | 2–6 | 2–4 |
+| Stack startowy | 1000 | 500 |
+| Blindy | 10/20, podwajane co 10 rozdań | 10/20, podwajane co 5 rozdań |
+
+- Wszystko inne jest jak w Pokerze (sekcja 5): burn card przed flopem, turnem i
+  riverem, akcje, pule boczne, showdown, podział puli, heads-up, walkower w trakcie
+  rozdania.
+- Zasady systemowe jak w sekcji 1: mecz kończy się, gdy tylko jeden gracz ma żetony;
+  30 s na ruch; rozłączenie pauzuje grę na maksymalnie 60 s.
+- Gra jest nierankingowa: tylko pokoje prywatne (bez matchmakingu i bota), brak zmiany
+  Elo. Wyniki trafiają do historii i statystyk jak w innych grach.
+- Osiągnięcia `poker_all_in_win` i `poker_eliminator` dotyczą wyłącznie Pokera.
+  `first_win` i `fair_play_10` liczą się w Texas Clinch jak w każdej grze.
+- Ogólna specyfikacja Hold'em, na podstawie której zatwierdzono wariant, dopuszcza
+  2–9 graczy i nie ma burn cards; dla Texas Clinch obowiązuje tabela powyżej
+  (2–4 graczy, burn cards jak w Pokerze).
 
 ## 5. Poker — No-Limit Texas Hold'em
 

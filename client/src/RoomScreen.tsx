@@ -98,7 +98,7 @@ export function RoomScreen({ api, socket, user, room, onLeft }: Props) {
         <WarTable state={state.game as ClientWarState} meId={user.id} onFlip={flip} />
       ) : inGame && state.game?.gameKey === 'macao' ? (
         <MacaoTable state={state.game as ClientMacaoState} meId={user.id} onAction={send} />
-      ) : inGame && state.game?.gameKey === 'poker' ? (
+      ) : inGame && (state.game?.gameKey === 'poker' || state.game?.gameKey === 'texas_clinch') ? (
         <PokerTable state={state.game as ClientPokerState} meId={user.id} onAction={send} />
       ) : (
         <div>

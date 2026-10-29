@@ -6,6 +6,22 @@ export const POKER_BASE_SMALL_BLIND = 10;
 // the blinds double after this many hands
 export const POKER_HANDS_PER_LEVEL = 10;
 
+// the games played with the Hold'em engine; the number of players is in GAME_PLAYER_LIMITS
+export const POKER_GAME_KEYS = ['poker', 'texas_clinch'] as const;
+export type PokerGameKey = (typeof POKER_GAME_KEYS)[number];
+
+export type PokerVariant = { startStack: number; baseSmallBlind: number; handsPerLevel: number };
+
+// Texas Clinch is the short-handed turbo variant: a shorter stack and blinds that rise twice as fast
+export const POKER_VARIANTS: Record<PokerGameKey, PokerVariant> = {
+  poker: {
+    startStack: POKER_START_STACK,
+    baseSmallBlind: POKER_BASE_SMALL_BLIND,
+    handsPerLevel: POKER_HANDS_PER_LEVEL,
+  },
+  texas_clinch: { startStack: 500, baseSmallBlind: 10, handsPerLevel: 5 },
+};
+
 export type PokerStreet = 'preflop' | 'flop' | 'turn' | 'river';
 
 export type PokerActionType = 'fold' | 'check' | 'call' | 'bet' | 'raise' | 'all_in';
@@ -50,7 +66,7 @@ export type PokerHandSummary = {
 };
 
 export type ClientPokerState = ClientGameState & {
-  gameKey: 'poker';
+  gameKey: PokerGameKey;
   handNumber: number;
   smallBlind: number;
   bigBlind: number;

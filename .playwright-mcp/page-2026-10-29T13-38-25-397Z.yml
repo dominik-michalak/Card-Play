@@ -1,0 +1,543 @@
+- generic [active] [ref=f20e1]:
+  - generic [ref=f20e2]:
+    - banner [ref=f20e3]:
+      - link [ref=f20e6] [cursor=pointer]:
+        - /url: https://www.gry.pl/
+        - img "Zagraj w darmowe gry online" [ref=f20e8]
+      - generic [ref=f20e9]:
+        - generic [ref=f20e10]:
+          - link "" [ref=f20e12] [cursor=pointer]:
+            - /url: /users/auth/gamesgamesconnect
+          - navigation [ref=f20e15]:
+            - list [ref=f20e16]:
+              - listitem [ref=f20e17]:
+                - link [ref=f20e19] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/nowe
+                  - paragraph [ref=f20e20]: Nowe
+              - listitem [ref=f20e21]:
+                - link [ref=f20e23] [cursor=pointer]:
+                  - /url: /pcgames
+                  - paragraph [ref=f20e24]: Gry PC
+              - listitem [ref=f20e25]:
+                - link [ref=f20e27] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/logiczne
+                  - paragraph [ref=f20e28]: Logiczne
+                - text:       
+              - listitem [ref=f20e29]:
+                - link [ref=f20e31] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/akcja
+                  - paragraph [ref=f20e32]: Akcji
+                - text:        
+              - listitem [ref=f20e33]:
+                - link [ref=f20e35] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/multiplayery
+                  - paragraph [ref=f20e36]: Multiplayer
+                - text:        
+              - listitem [ref=f20e37]:
+                - link [ref=f20e39] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/dla-dziewczynek
+                  - paragraph [ref=f20e40]: Dziewczyn
+                - text:        
+              - listitem [ref=f20e41]:
+                - link [ref=f20e43] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/symulatory
+                  - paragraph [ref=f20e44]: Symulatory
+                - text:        
+              - listitem [ref=f20e45]:
+                - link [ref=f20e47] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/zrecznosciowe
+                  - paragraph [ref=f20e48]: Zręcznościowe
+                - text:        
+              - listitem [ref=f20e49]:
+                - link [ref=f20e51] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/sport
+                  - paragraph [ref=f20e52]: Sport
+                - text:        
+              - listitem [ref=f20e53]:
+                - link [ref=f20e55] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/gry_mmo
+                  - paragraph [ref=f20e56]: MMO
+                - text:        
+              - listitem [ref=f20e57]:
+                - button [ref=f20e59]:
+                  - paragraph [ref=f20e60]: Dla ciebie
+        - text: 
+        - generic [ref=f20e62]:
+          - text: 
+          - generic:
+            - search:
+              - textbox "Wyświetl więcej wyników" [ref=f20e63]:
+                - /placeholder: Przeszukaj gry...
+          - generic [ref=f20e64]: 
+    - article [ref=f20e66]:
+      - list [ref=f20e67]:
+        - listitem [ref=f20e68]:
+          - link "" [ref=f20e69] [cursor=pointer]:
+            - /url: https://www.gry.pl/
+        - listitem [ref=f20e71]:
+          - link "Popularne Gry" [ref=f20e72] [cursor=pointer]:
+            - /url: https://www.gry.pl/gry
+        - listitem [ref=f20e73]:
+          - link "Gry Planszowe i Karciane" [ref=f20e74] [cursor=pointer]:
+            - /url: https://www.gry.pl/gry/planszowe-i-karciane
+        - listitem [ref=f20e75]:
+          - paragraph [ref=f20e76]: Gry Karciane
+    - main [ref=f20e77]:
+      - generic [ref=f20e79]:
+        - heading "Gry Karciane" [level=1] [ref=f20e81]
+        - generic [ref=f20e82]:
+          - heading "POPULARNE GRY" [level=2] [ref=f20e84]
+          - generic [ref=f20e85]:
+            - list [ref=f20e86]:
+              - listitem [ref=f20e87]:
+                - link "Pasjans FRVR Pasjans FRVR" [ref=f20e88] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/pasjans-frvr
+                  - img "Pasjans FRVR" [ref=f20e91]
+                  - generic [ref=f20e92]: Pasjans FRVR
+              - listitem [ref=f20e93]:
+                - link "Solitaire Collection Solitaire Collection" [ref=f20e94] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/solitaire-collection
+                  - img "Solitaire Collection" [ref=f20e97]
+                  - generic [ref=f20e98]: Solitaire Collection
+              - listitem [ref=f20e99]:
+                - link "Klasyczny pasjans z pająkiem Klasyczny pasjans z pająkiem" [ref=f20e100] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/klasyczny-pasjans-z-pajakiem
+                  - img "Klasyczny pasjans z pająkiem" [ref=f20e103]
+                  - generic [ref=f20e104]: Klasyczny pasjans z pająkiem
+              - listitem [ref=f20e105]:
+                - link "Scala 40 Scala 40" [ref=f20e106] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/scala-40
+                  - img "Scala 40" [ref=f20e109]
+                  - generic [ref=f20e110]: Scala 40
+              - listitem [ref=f20e111]:
+                - link "Gra w karty Klondike Gra w karty Klondike" [ref=f20e112] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/gra-w-karty-klondike
+                  - img "Gra w karty Klondike" [ref=f20e115]
+                  - generic [ref=f20e116]: Gra w karty Klondike
+              - listitem [ref=f20e117]:
+                - link "Solitaire-Classic Solitaire-Classic" [ref=f20e118] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/pasjans-klasyczny
+                  - img "Solitaire-Classic" [ref=f20e121]
+                  - generic [ref=f20e122]: Solitaire-Classic
+              - listitem [ref=f20e123]:
+                - 'link "Pasjans pająk: Wersja oryginalna Pasjans pająk: Wersja oryginalna" [ref=f20e124] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/pasjans-pajak-wersja-oryginalna
+                  - 'img "Pasjans pająk: Wersja oryginalna" [ref=f20e127]'
+                  - generic [ref=f20e128]: "Pasjans pająk: Wersja oryginalna"
+              - listitem [ref=f20e129]:
+                - link "Mahjong Titans Classic Mahjong Titans Classic" [ref=f20e130] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/mahjong-titans-classic
+                  - img "Mahjong Titans Classic" [ref=f20e133]
+                  - generic [ref=f20e134]: Mahjong Titans Classic
+              - listitem [ref=f20e135]:
+                - link "Solitaire Home Story Solitaire Home Story" [ref=f20e136] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/solitaire-home-story
+                  - img "Solitaire Home Story" [ref=f20e139]
+                  - generic [ref=f20e140]: Solitaire Home Story
+              - listitem [ref=f20e141]:
+                - link "Solitaire Farm Season 3 Solitaire Farm Season 3" [ref=f20e142] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/solitaire-farm-season-3
+                  - img "Solitaire Farm Season 3" [ref=f20e145]
+                  - generic [ref=f20e146]: Solitaire Farm Season 3
+              - listitem [ref=f20e147]:
+                - link "Domino Deluxe Domino Deluxe" [ref=f20e148] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/domino-deluxe
+                  - img "Domino Deluxe" [ref=f20e151]
+                  - generic [ref=f20e152]: Domino Deluxe
+              - listitem [ref=f20e153]:
+                - link "Onet Connect Classic Onet Connect Classic" [ref=f20e154] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/onet-connect-classic
+                  - img "Onet Connect Classic" [ref=f20e157]
+                  - generic [ref=f20e158]: Onet Connect Classic
+              - listitem [ref=f20e159]:
+                - link "Mahjongowy Pasjans Mahjongowy Pasjans" [ref=f20e160] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/-mahjong-solitaire-
+                  - img "Mahjongowy Pasjans" [ref=f20e163]
+                  - generic [ref=f20e164]: Mahjongowy Pasjans
+              - listitem [ref=f20e165]:
+                - link "Solitaire Story Tripeaks 2 Solitaire Story Tripeaks 2" [ref=f20e166] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/solitaire-story-tripeaks-2
+                  - img "Solitaire Story Tripeaks 2" [ref=f20e169]
+                  - generic [ref=f20e170]: Solitaire Story Tripeaks 2
+              - listitem [ref=f20e171]:
+                - link "Solitaire Story Tripeaks 4 Solitaire Story Tripeaks 4" [ref=f20e172] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/solitaire-story-tripeaks-4
+                  - img "Solitaire Story Tripeaks 4" [ref=f20e175]
+                  - generic [ref=f20e176]: Solitaire Story Tripeaks 4
+              - listitem [ref=f20e177]:
+                - 'link "Hearts: Classic Hearts: Classic" [ref=f20e178] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/hearts-classic
+                  - 'img "Hearts: Classic" [ref=f20e181]'
+                  - generic [ref=f20e182]: "Hearts: Classic"
+              - listitem [ref=f20e183]:
+                - link "Las Vegas Poker Las Vegas Poker" [ref=f20e184] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/las-vegas-poker
+                  - img "Las Vegas Poker" [ref=f20e187]
+                  - generic [ref=f20e188]: Las Vegas Poker
+              - listitem [ref=f20e189]:
+                - link "Ono Card Game Ono Card Game" [ref=f20e190] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/ono-card-game
+                  - img "Ono Card Game" [ref=f20e193]
+                  - generic [ref=f20e194]: Ono Card Game
+              - listitem [ref=f20e195]:
+                - link "Gra w karty – Pasjans pająk Gra w karty – Pasjans pająk" [ref=f20e196] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/gra-w-karty-pasjans-pajak
+                  - img "Gra w karty – Pasjans pająk" [ref=f20e199]
+                  - generic [ref=f20e200]: Gra w karty – Pasjans pająk
+              - listitem [ref=f20e201]:
+                - 'link "Jigsaw Cards: Daily Puzzles Jigsaw Cards: Daily Puzzles" [ref=f20e202] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/jigsaw-cards-daily-puzzles
+                  - 'img "Jigsaw Cards: Daily Puzzles" [ref=f20e205]'
+                  - generic [ref=f20e206]: "Jigsaw Cards: Daily Puzzles"
+              - listitem [ref=f20e207]:
+                - link "Fantastyczny pasjans Klondike Fantastyczny pasjans Klondike" [ref=f20e208] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/fantastyczny-pasjans-klondike
+                  - img "Fantastyczny pasjans Klondike" [ref=f20e211]
+                  - generic [ref=f20e212]: Fantastyczny pasjans Klondike
+              - listitem [ref=f20e213]:
+                - 'link "Pasjans: Trzy szczyty Pasjans: Trzy szczyty" [ref=f20e214] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/pasjans-trzy-szczyty
+                  - 'img "Pasjans: Trzy szczyty" [ref=f20e217]'
+                  - generic [ref=f20e218]: "Pasjans: Trzy szczyty"
+              - listitem [ref=f20e219]:
+                - link "Pasjans pająk 2 Pasjans pająk 2" [ref=f20e220] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/spider-solitaire-2-
+                  - img "Pasjans pająk 2" [ref=f20e223]
+                  - generic [ref=f20e224]: Pasjans pająk 2
+              - listitem [ref=f20e225]:
+                - link "Dynastia z Szanghaju Dynastia z Szanghaju" [ref=f20e226] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/dynastia-z-szanghaju
+                  - img "Dynastia z Szanghaju" [ref=f20e229]
+                  - generic [ref=f20e230]: Dynastia z Szanghaju
+              - listitem [ref=f20e231]:
+                - link "Mahjong Shanghai Dynasty Mahjong Shanghai Dynasty" [ref=f20e232] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/mahjong-shanghai-dynasty
+                  - img "Mahjong Shanghai Dynasty" [ref=f20e235]
+                  - generic [ref=f20e236]: Mahjong Shanghai Dynasty
+              - listitem [ref=f20e237]:
+                - link "Algerian Patience Algerian Patience" [ref=f20e238] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/algerian-patience
+                  - img "Algerian Patience" [ref=f20e241]
+                  - generic [ref=f20e242]: Algerian Patience
+              - listitem [ref=f20e243]:
+                - link "Uno z przyjaciółmi Uno z przyjaciółmi" [ref=f20e244] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/uno-z-przyjaciomi
+                  - img "Uno z przyjaciółmi" [ref=f20e247]
+                  - generic [ref=f20e248]: Uno z przyjaciółmi
+              - listitem [ref=f20e249]:
+                - 'link "Pasujący wzór: Wersja klasyczna Pasujący wzór: Wersja klasyczna" [ref=f20e250] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/pasujacy-wzor-wersja-klasyczna
+                  - 'img "Pasujący wzór: Wersja klasyczna" [ref=f20e253]'
+                  - generic [ref=f20e254]: "Pasujący wzór: Wersja klasyczna"
+              - listitem [ref=f20e255]:
+                - link "Solitaire Mahjong Classic Solitaire Mahjong Classic" [ref=f20e256] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/solitaire-mahjong-classic
+                  - img "Solitaire Mahjong Classic" [ref=f20e259]
+                  - generic [ref=f20e260]: Solitaire Mahjong Classic
+              - listitem [ref=f20e261]:
+                - link "Bridge Bridge" [ref=f20e262] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/bridge
+                  - img "Bridge" [ref=f20e265]
+                  - generic [ref=f20e266]: Bridge
+              - listitem [ref=f20e267]:
+                - link "Solitaire Social" [ref=f20e268] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/solitaire-social
+              - listitem [ref=f20e272]:
+                - link "Crescent Solitaire" [ref=f20e273] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/crescent-solitaire
+              - listitem [ref=f20e277]:
+                - link "Solitaire Story TriPeaks 5" [ref=f20e278] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/solitaire-story-tripeaks-5
+              - listitem [ref=f20e282]:
+                - link "Lucky Vegas Blackjack" [ref=f20e283] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/lucky-vegas-blackjack
+              - listitem [ref=f20e287]:
+                - link "Gin Rummy" [ref=f20e288] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/gin-rummy
+              - listitem [ref=f20e292]:
+                - 'link "Mahjong Deluxe: Classic" [ref=f20e293] [cursor=pointer]':
+                  - /url: https://www.gry.pl/gra/mahjong-deluxe-classic
+              - listitem [ref=f20e297]:
+                - link "Freecell Solitaire" [ref=f20e298] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/freecell-solitaire
+              - listitem [ref=f20e302]:
+                - link "Poker Texas Hold'em" [ref=f20e303] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/poker-texas-holdem
+              - listitem [ref=f20e307]:
+                - link "Spider Solitaire HD" [ref=f20e308] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/spider-solitaire-hd
+              - listitem [ref=f20e312]:
+                - link "Solitaire Story TriPeaks 6" [ref=f20e313] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/solitaire-story-tripeaks-6
+              - listitem [ref=f20e317]:
+                - link "Spider Solitaire" [ref=f20e318] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/spider-solitaire
+              - listitem [ref=f20e322]:
+                - link "Classic Solitaire Deluxe" [ref=f20e323] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gra/classic-solitaire-deluxe
+            - navigation [ref=f20e327]:
+              - generic [ref=f20e328]:
+                - link "1" [ref=f20e329] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/karciane
+                - link "2" [ref=f20e330] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/karciane?page=2
+                - link "3" [ref=f20e331] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/karciane?page=3
+                - link "4" [ref=f20e332] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/karciane?page=4
+                - link "5" [ref=f20e333] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/karciane?page=5
+                - link "" [ref=f20e334] [cursor=pointer]:
+                  - /url: https://www.gry.pl/gry/karciane?page=2
+              - paragraph [ref=f20e336]: Wyświetla gries 1 - 42 z 169 łącznie
+        - generic [ref=f20e337]:
+          - heading "Gry Karciane" [level=2] [ref=f20e339]
+          - heading "O Naszym Gry Karciane" [level=3] [ref=f20e340]
+          - generic [ref=f20e341]:
+            - paragraph [ref=f20e342]:
+              - text: Rzuć okiem na naszą niesamowitą kolekcję
+              - strong [ref=f20e343]: gry karciane
+              - text: . Znajdziesz w niej mnóstwo fantastycznych tytułów takich jak Ono czy Governor of Poker 3, a także klasyki pokroju Klondike czy TriPeaks. Poczuj się jak w Las Vegas czy Monte Carlo, grając w pokera o wysokie stawki. A gdy już zgarniesz wirtualną fortunę, zrelaksuj się podczas kilku partyjek Classic Solitaire albo przejrzyj naszą wielki zbiór
+              - link "gier FreeCell" [ref=f20e344] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/gry-pasjanse-karciane
+              - text: . Jak szybko potrafisz dopasowywać numery i kolory?
+            - generic [ref=f20e345]:
+              - paragraph
+              - heading "Jakie są najlepsze Gry Karciane?" [level=3] [ref=f20e346]
+              - paragraph
+              - paragraph
+              - list [ref=f20e348]:
+                - listitem [ref=f20e349]:
+                  - link "Pasjans FRVR" [ref=f20e350] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/pasjans-frvr
+                - listitem [ref=f20e351]:
+                  - link "Solitaire Collection" [ref=f20e352] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/solitaire-collection
+                - listitem [ref=f20e353]:
+                  - link "Klasyczny pasjans z pająkiem" [ref=f20e354] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/klasyczny-pasjans-z-pajakiem
+                - listitem [ref=f20e355]:
+                  - link "Scala 40" [ref=f20e356] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/scala-40
+                - listitem [ref=f20e357]:
+                  - link "Gra w karty Klondike" [ref=f20e358] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/gra-w-karty-klondike
+                - listitem [ref=f20e359]:
+                  - link "Solitaire-Classic" [ref=f20e360] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/pasjans-klasyczny
+                - listitem [ref=f20e361]:
+                  - 'link "Pasjans pająk: Wersja oryginalna" [ref=f20e362] [cursor=pointer]':
+                    - /url: https://www.gry.pl/gra/pasjans-pajak-wersja-oryginalna
+                - listitem [ref=f20e363]:
+                  - link "Mahjong Titans Classic" [ref=f20e364] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/mahjong-titans-classic
+                - listitem [ref=f20e365]:
+                  - link "Solitaire Home Story" [ref=f20e366] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/solitaire-home-story
+                - listitem [ref=f20e367]:
+                  - link "Solitaire Farm Season 3" [ref=f20e368] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/solitaire-farm-season-3
+              - paragraph
+            - generic [ref=f20e369]:
+              - paragraph
+              - heading "Jakie Gry Karciane na komórkę są najlepsze?" [level=3] [ref=f20e370]
+              - paragraph
+              - paragraph
+              - list [ref=f20e372]:
+                - listitem [ref=f20e373]:
+                  - link "Pasjans FRVR" [ref=f20e374] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/pasjans-frvr
+                - listitem [ref=f20e375]:
+                  - link "Solitaire Collection" [ref=f20e376] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/solitaire-collection
+                - listitem [ref=f20e377]:
+                  - link "Scala 40" [ref=f20e378] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/scala-40
+                - listitem [ref=f20e379]:
+                  - link "Gra w karty Klondike" [ref=f20e380] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/gra-w-karty-klondike
+                - listitem [ref=f20e381]:
+                  - link "Onet Connect Classic" [ref=f20e382] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/onet-connect-classic
+              - paragraph
+            - generic [ref=f20e383]:
+              - paragraph
+              - heading "Jakie są najnowsze Gry Karciane?" [level=3] [ref=f20e384]
+              - paragraph
+              - paragraph
+              - list [ref=f20e386]:
+                - listitem [ref=f20e387]:
+                  - link "Scopa Online" [ref=f20e388] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/scopa-online
+                - listitem [ref=f20e389]:
+                  - link "Solitaire Story Tripeaks 7" [ref=f20e390] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/solitaire-story-tripeaks-7
+                - listitem [ref=f20e391]:
+                  - link "Solitaire Witch" [ref=f20e392] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/solitaire-witch
+                - listitem [ref=f20e393]:
+                  - link "Poker Texas Hold'em" [ref=f20e394] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/poker-texas-holdem
+                - listitem [ref=f20e395]:
+                  - link "Poker Omaha" [ref=f20e396] [cursor=pointer]:
+                    - /url: https://www.gry.pl/gra/poker-omaha
+              - paragraph
+            - paragraph [ref=f20e397]:
+              - text: Kolekcja zawiera też mnóstwo innych doskonałych
+              - link "pasjansów" [ref=f20e398] [cursor=pointer]:
+                - /url: https://www.gry.pl/gry/pasjanse-karciane
+              - text: . Zagraj w Spider lub Pyramid po raz pierwszy – albo tysięczny. Tytuły te są świetnymi propozycjami zarówno dla nowicjuszy, jak i doświadczonych karciarzy.
+      - generic [ref=f20e400]:
+        - heading "Pokrewne kategorie" [level=2] [ref=f20e402]
+        - list [ref=f20e403]:
+          - listitem [ref=f20e404]:
+            - link [ref=f20e405] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/karciane
+              - img "Gry Karciane" [ref=f20e407]
+              - paragraph [ref=f20e409]: Gry Karciane
+          - listitem [ref=f20e410]:
+            - link [ref=f20e411] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/pasjanse-karciane
+              - img "Gry Pasjans Karty" [ref=f20e413]
+              - paragraph [ref=f20e415]: Gry Pasjans Karty
+          - listitem [ref=f20e416]:
+            - link [ref=f20e417] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/warcaby
+              - img "Gry Warcaby" [ref=f20e419]
+              - paragraph [ref=f20e421]: Gry Warcaby
+          - listitem [ref=f20e422]:
+            - link [ref=f20e423] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/kolko-i-krzyzyk
+              - img "Gry Kółko i krzyżyk" [ref=f20e425]
+              - paragraph [ref=f20e427]: Gry Kółko i krzyżyk
+          - listitem [ref=f20e428]:
+            - link [ref=f20e429] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/ludo
+              - img "Gry Ludo" [ref=f20e431]
+              - paragraph [ref=f20e433]: Gry Ludo
+          - listitem [ref=f20e434]:
+            - link [ref=f20e435] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/sudoku
+              - img "Gry Sudoku" [ref=f20e437]
+              - paragraph [ref=f20e439]: Gry Sudoku
+          - listitem [ref=f20e440]:
+            - link [ref=f20e441] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/szachy
+              - img "Gry Szachy" [ref=f20e443]
+              - paragraph [ref=f20e445]: Gry Szachy
+          - listitem [ref=f20e446]:
+            - link [ref=f20e447] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/solitaire
+              - img "Gry Solitaire" [ref=f20e449]
+              - paragraph [ref=f20e451]: Gry Solitaire
+          - listitem [ref=f20e452]:
+            - link [ref=f20e453] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/domino
+              - img "Gry domino" [ref=f20e455]
+              - paragraph [ref=f20e457]: Gry domino
+          - listitem [ref=f20e458]:
+            - link [ref=f20e459] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/gry-pasjanse-karciane
+              - img "Gry pasjanse karciane" [ref=f20e461]
+              - paragraph [ref=f20e463]: Gry pasjanse karciane
+          - listitem [ref=f20e464]:
+            - link [ref=f20e465] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/gry-rodzinne
+              - img "Gry rodzinne" [ref=f20e467]
+              - paragraph [ref=f20e469]: Gry rodzinne
+          - listitem [ref=f20e470]:
+            - link [ref=f20e471] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/kosci
+              - img "Gry w Kości" [ref=f20e473]
+              - paragraph [ref=f20e475]: Gry w Kości
+          - listitem [ref=f20e476]:
+            - link [ref=f20e477] [cursor=pointer]:
+              - /url: https://www.gry.pl/gry/flippery
+              - img "Gry Flippery" [ref=f20e479]
+              - paragraph [ref=f20e481]: Gry Flippery
+        - link "Więcej kategorii" [ref=f20e483] [cursor=pointer]:
+          - /url: https://www.gry.pl/wszystkie-kategorie#planszowe-i-karciane
+    - contentinfo [ref=f20e484]:
+      - generic [ref=f20e485]:
+        - generic [ref=f20e489]:
+          - generic [ref=f20e490]:
+            - generic [ref=f20e491]: DANE FIRMY
+            - list [ref=f20e493]:
+              - listitem [ref=f20e494]:
+                - link "Warunki korzystania z Witryny" [ref=f20e495] [cursor=pointer]:
+                  - /url: https://www.gry.pl/warunki_korzystania_z_witryny
+              - listitem [ref=f20e496]:
+                - link "Nasza polityka prywatnosci" [ref=f20e497] [cursor=pointer]:
+                  - /url: https://www.gry.pl/polityka_prywatnosci
+              - listitem [ref=f20e498]:
+                - link "Cookies" [ref=f20e499] [cursor=pointer]:
+                  - /url: https://www.gry.pl/cookie-policy
+              - listitem [ref=f20e500]:
+                - link "Zgoda na pliki cookies" [ref=f20e501] [cursor=pointer]:
+                  - /url: "#"
+          - generic [ref=f20e502]:
+            - generic [ref=f20e503]: WSPARCIE
+            - list [ref=f20e505]:
+              - listitem [ref=f20e506]:
+                - link "Pomoc" [ref=f20e507] [cursor=pointer]:
+                  - /url: https://support.spilgames.com/hc/pl?site_id=16
+          - generic [ref=f20e508]:
+            - generic [ref=f20e509]: JĘZYKACH
+            - list [ref=f20e511]:
+              - listitem [ref=f20e512]:
+                - link "English" [ref=f20e513] [cursor=pointer]:
+                  - /url: https://www.gamesgames.com/games/card-games
+              - listitem [ref=f20e514]:
+                - link "British English" [ref=f20e515] [cursor=pointer]:
+                  - /url: https://www.games.co.uk/games/card-games
+              - listitem [ref=f20e516]:
+                - link "Deutsch" [ref=f20e517] [cursor=pointer]:
+                  - /url: https://www.jetztspielen.de/spiele/kartenspiele
+              - listitem [ref=f20e518]:
+                - link "Русский" [ref=f20e519] [cursor=pointer]:
+                  - /url: https://www.ourgames.ru/igry/kartochnyie-ighry
+              - listitem [ref=f20e520]:
+                - link "Bahasa Indonesia" [ref=f20e521] [cursor=pointer]:
+                  - /url: https://www.permainan.co.id/game/game-kartu
+              - listitem [ref=f20e522]:
+                - link "Italiano" [ref=f20e523] [cursor=pointer]:
+                  - /url: https://www.gioco.it/giochi/carte
+              - listitem [ref=f20e524]:
+                - link "Français" [ref=f20e525] [cursor=pointer]:
+                  - /url: https://www.jeux.fr/jeux/jeux-de-cartes
+              - listitem [ref=f20e526]:
+                - link "Español" [ref=f20e527] [cursor=pointer]:
+                  - /url: https://www.juegos.com/juegos/juegos-de-cartas
+              - listitem [ref=f20e528]:
+                - link "Português" [ref=f20e529] [cursor=pointer]:
+                  - /url: https://www.ojogos.com.br/jogos/jogos-de-cartas
+              - listitem [ref=f20e530]:
+                - link "Türkçe" [ref=f20e531] [cursor=pointer]:
+                  - /url: https://www.oyunskor.com/oyunlar/kagit-oyunlari
+              - listitem [ref=f20e532]:
+                - link "Svenska" [ref=f20e533] [cursor=pointer]:
+                  - /url: https://www.spela.se/spel/kort
+              - listitem [ref=f20e534]:
+                - link "Nederlands" [ref=f20e535] [cursor=pointer]:
+                  - /url: https://www.spelletjes.nl/spellen/kaartspellen
+        - button "Scroll to top" [ref=f20e537] [cursor=pointer]:
+          - generic [ref=f20e538]: 
+      - paragraph [ref=f20e539]: Copyright © 2026 SPIL GAMES All rights reserved.
+  - generic:
+    - generic "We Care About Your Privacy" [ref=f20e540]:
+      - dialog "We Care About Your Privacy" [ref=f20e541]:
+        - generic [ref=f20e542]:
+          - generic [ref=f20e543]:
+            - generic:
+              - heading "We Care About Your Privacy" [level=2] [ref=f20e544]
+              - paragraph [ref=f20e545]: We and our 912 partner(s) store and access personal data, like browsing data or unique identifiers, on your device. Selecting I Accept enables tracking technologies to support the purposes shown under we and our partners process data to provide. If trackers are disabled, some content and ads you see may not be as relevant to you. You can resurface this menu to change your choices or withdraw consent at any time by clicking the Manage Preferences link on the bottom of the webpage [or the floating icon on the bottom-left of the webpage, if applicable]. Your choices will have effect within our Website. For more details, refer to our Privacy Policy.
+              - generic [ref=f20e546]:
+                - heading "We and our partners process data to provide:" [level=3] [ref=f20e547]
+                - paragraph [ref=f20e549]:
+                  - text: Use precise geolocation data. Identify devices based on information actively requested. Store and/or access information on a device. Personalised advertising and content, advertising and content measurement, audience research and services development.
+                  - link "List of Partners (vendors)" [ref=f20e550] [cursor=pointer]:
+                    - /url: "#"
+          - generic [ref=f20e552]:
+            - button "Show Purposes, Opens the preference center dialog" [ref=f20e553] [cursor=pointer]: Show Purposes
+            - button "I Accept" [ref=f20e555] [cursor=pointer]
+    - text: Manage Preferences

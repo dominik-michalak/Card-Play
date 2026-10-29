@@ -9,7 +9,6 @@ export const ERROR_CODES = [
   'NOT_YOUR_TURN',
   'INVALID_ACTION',
   'GAME_OVER',
-  'GAME_RULES_NOT_DEFINED',
   'ACCOUNT_EXISTS',
   'NOT_FOUND',
   'INTERNAL_ERROR',
@@ -21,10 +20,7 @@ export type ErrorPayload = { code: ErrorCode; message: string };
 // thrown by game modules; the socket layer turns it into an error event
 export class GameRuleError extends Error {
   constructor(
-    readonly code: Extract<
-      ErrorCode,
-      'NOT_YOUR_TURN' | 'INVALID_ACTION' | 'GAME_OVER' | 'GAME_RULES_NOT_DEFINED'
-    >,
+    readonly code: Extract<ErrorCode, 'NOT_YOUR_TURN' | 'INVALID_ACTION' | 'GAME_OVER'>,
     message: string,
   ) {
     super(message);

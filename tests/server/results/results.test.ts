@@ -30,7 +30,7 @@ type Gamer = { id: string; username: string };
 
 async function seedGame(options: {
   mode: Mode;
-  gameType?: 'war' | 'poker';
+  gameType?: 'war' | 'poker' | 'texas_clinch';
   humans?: number;
   bots?: number;
 }) {
@@ -69,7 +69,7 @@ const draw = (reason: TerminationReason, ids: string[]): GameResult => ({
   placements: ids.map((playerId) => ({ playerId, rank: 1 })),
 });
 
-const ratingOf = async (userId: string, gameType: 'war' | 'poker' = 'war') =>
+const ratingOf = async (userId: string, gameType: 'war' | 'poker' | 'texas_clinch' = 'war') =>
   (
     await app.db
       .select()
@@ -406,6 +406,31 @@ describe('finishGame in unranked games', () => {
     expect((await recordOf(recordId)).winnerId).toBe(gamers[0]!.id);
     for (const gamer of gamers) {
       expect(await ratingOf(gamer.id, 'poker')).toMatchObject({ elo: 1000, gamesPlayed: 1 });
+    }
+  });
+
+  it('records a Texas Clinch match like a Poker one: ranks stored, Elo untouched', async () => {
+    const { roomId, gamers, state } = await seedGame({
+      mode: 'private',
+      gameType: 'texas_clinch',
+      humans: 4,
+    });
+    const recordId = await results.startGame(roomId, state);
+
+    await results.finishGame(
+      recordId,
+      finished(
+        'completed',
+        gamers.map((g) => g.id),
+      ),
+      state,
+    );
+
+    const rows = await playerRowsOf(recordId);
+    expect(gamers.map((g) => rows.find((r) => r.userId === g.id)?.finalRank)).toEqual([1, 2, 3, 4]);
+    expect(rows.every((r) => r.eloChange === null)).toBe(true);
+    for (const gamer of gamers) {
+      expect(await ratingOf(gamer.id, 'texas_clinch')).toMatchObject({ elo: 1000, gamesPlayed: 1 });
     }
   });
 

@@ -1,11 +1,78 @@
 body {
   font-family: system-ui, sans-serif;
   margin: 0;
+  background: radial-gradient(ellipse at 50% 0%, #11201a 0%, #0a0f0c 60%);
+  background-color: #0a0f0c;
+  background-attachment: fixed;
+  color: #e6dfca;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+a {
+  color: #cfd8c4;
 }
 .app {
   max-width: 40rem;
   margin: 0 auto;
   padding: 1rem;
+}
+/* the card table needs more room than the forms and lists */
+.app:has(.felt) {
+  max-width: 62rem;
+}
+
+button,
+.btn {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(236, 226, 200, 0.35);
+  border-radius: 0.4rem;
+  background: #16231d;
+  color: #ece2c8;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+button:hover:not(:disabled) {
+  background: #1f3329;
+  border-color: rgba(236, 226, 200, 0.6);
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn--primary {
+  background: #ece2c8;
+  border-color: #ece2c8;
+  color: #0d0c0b;
+  font-weight: 600;
+}
+.btn--primary:hover:not(:disabled) {
+  background: #f6eed9;
+}
+.btn--danger {
+  border-color: rgba(208, 48, 58, 0.7);
+  color: #ff8a90;
+}
+.btn--ghost {
+  background: none;
+}
+input,
+select,
+textarea {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid rgba(236, 226, 200, 0.3);
+  border-radius: 0.35rem;
+  background: #0d1612;
+  color: #ece2c8;
+  font: inherit;
 }
 label {
   display: block;
@@ -25,17 +92,17 @@ table {
 }
 th,
 td {
-  border: 1px solid #888;
+  border: 1px solid rgba(236, 226, 200, 0.25);
   padding: 0.25rem 0.75rem;
   text-align: left;
 }
 [role='alert'] {
-  color: #b00020;
+  color: #ff7a82;
 }
 
 /* keyboard users always see where they are */
 :focus-visible {
-  outline: 3px solid #1a56db;
+  outline: 3px solid #ece2c8;
   outline-offset: 2px;
 }
 

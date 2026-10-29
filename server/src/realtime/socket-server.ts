@@ -22,7 +22,6 @@ import { verifyAccessTokenWithExpiry } from '../modules/auth/tokens';
 import type { ResultsService } from '../modules/results/results.service';
 import type { RoomChange, RoomsService } from '../modules/rooms/rooms.service';
 import { validate } from '../validate';
-import { GAME_REGISTRY } from './game-registry';
 import { botPlayer } from '../bots/bots';
 import type { MatchRules } from '../matchmaking/pairing';
 import type { FriendsService } from '../modules/friends/friends.service';
@@ -426,13 +425,6 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
         const room = await roomService.getRoom(roomId, userId);
         if (room.status !== 'waiting') {
           throw new HttpError(409, 'INVALID_ACTION', 'the game has already started');
-        }
-        if (!GAME_REGISTRY[room.gameType]?.rulesDefined) {
-          throw new HttpError(
-            409,
-            'GAME_RULES_NOT_DEFINED',
-            'the rules of this game are not defined',
-          );
         }
         lobby.setReady(roomId, userId, ready);
         await syncCountdown(roomId);

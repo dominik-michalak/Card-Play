@@ -23,16 +23,16 @@ const statusOf = async (roomId: string) =>
   (await server.db.select().from(gameRooms).where(eq(gameRooms.id, roomId)))[0]?.status;
 
 // two seated players with sockets attached to the room
-async function table(gameType: 'war' | 'poker' = 'war') {
+async function table(gameType: 'war' | 'poker' | 'texas_clinch' = 'war') {
   const host = await seedUser(server.db, 'host');
   const guest = await seedUser(server.db, 'guest');
   const room = await server.roomService.createRoom(host.id, { gameType });
-  if (gameType === 'war') await server.roomService.joinByCode(guest.id, room.inviteCode!);
+  if (gameType !== 'poker') await server.roomService.joinByCode(guest.id, room.inviteCode!);
   const hostSocket = await server.connectAs(host.id);
   hostSocket.emit('room:join', { roomId: room.id });
   await hostSocket.next('room:players');
   let guestSocket: TestClient | undefined;
-  if (gameType === 'war') {
+  if (gameType !== 'poker') {
     guestSocket = await server.connectAs(guest.id);
     guestSocket.emit('room:join', { roomId: room.id });
     await guestSocket.next('room:players');
@@ -160,19 +160,19 @@ describe('ready and the start countdown', () => {
     expect((await socket.next<ErrorPayload>('error')).code).toBe('INVALID_ACTION');
   });
 
-  it('answers GAME_RULES_NOT_DEFINED for Texas Clinch and never starts a countdown', async () => {
-    const host = await seedUser(server.db, 'host');
-    const guest = await seedUser(server.db, 'guest');
-    const room = await server.roomService.createRoom(host.id, { gameType: 'texas_clinch' });
-    await server.roomService.joinByCode(guest.id, room.inviteCode!);
-    const socket = await server.connectAs(host.id);
-    socket.emit('room:join', { roomId: room.id });
-    await socket.next('room:players');
+  it('starts a Texas Clinch game after the countdown, like any other table', async () => {
+    const { hostSocket, guestSocket, roomId } = await table('texas_clinch');
 
-    socket.emit('room:ready', { roomId: room.id, ready: true });
+    hostSocket.emit('room:ready', { roomId, ready: true });
+    guestSocket.emit('room:ready', { roomId, ready: true });
 
-    expect((await socket.next<ErrorPayload>('error')).code).toBe('GAME_RULES_NOT_DEFINED');
-    await socket.quiet('room:countdown', 250);
+    await hostSocket.next<CountdownEvent>('room:countdown', (e) => e.startsAt !== null);
+    const update = await hostSocket.next<{
+      state: { gameKey: string; seats: { stack: number; bet: number }[] };
+    }>('game:state_update');
+    expect(update.state.gameKey).toBe('texas_clinch');
+    expect(update.state.seats.map((s) => s.stack + s.bet)).toEqual([500, 500]);
+    expect(await statusOf(roomId)).toBe('in_progress');
   });
 
   it('starts the game after the countdown once the table is full and ready', async () => {

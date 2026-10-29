@@ -1,8 +1,7 @@
 import {
+  GAME_PLAYER_LIMITS,
   GameRuleError,
-  POKER_BASE_SMALL_BLIND,
-  POKER_HANDS_PER_LEVEL,
-  POKER_START_STACK,
+  POKER_VARIANTS,
   type ClientPokerState,
   type Deck,
   type GameAction,
@@ -11,6 +10,7 @@ import {
   type GamePlayer,
   type GameResult,
   type GameState,
+  type PokerGameKey,
   type PokerHandSummary,
   type PokerLegal,
   type PokerPot,
@@ -25,9 +25,10 @@ import { handName, handWinners } from './hand-eval';
 
 type ForfeitReason = 'timeout_forfeit' | 'disconnect_forfeit';
 
-// Server state of a No-Limit Texas Hold'em match. Seat = index in `players`.
+// Server state of a No-Limit Texas Hold'em match, played as Poker or as Texas Clinch.
+// Seat = index in `players`.
 export type PokerState = GameState & {
-  gameKey: 'poker';
+  gameKey: PokerGameKey;
   stacks: number[];
   // left the table (busted, or forfeited and the hand is over)
   out: boolean[];
@@ -73,8 +74,13 @@ export type PokerState = GameState & {
 
 const invalid = (message: string) => new GameRuleError('INVALID_ACTION', message);
 
-const blindsFor = (handNumber: number) => {
-  const small = POKER_BASE_SMALL_BLIND * 2 ** Math.floor((handNumber - 1) / POKER_HANDS_PER_LEVEL);
+// the blinds double with every level; a level lasts `handsPerLevel` hands
+const levelOf = (gameKey: PokerGameKey, handNumber: number) =>
+  Math.floor((handNumber - 1) / POKER_VARIANTS[gameKey].handsPerLevel);
+
+const blindsFor = (state: Pick<PokerState, 'gameKey' | 'handNumber'>) => {
+  const small =
+    POKER_VARIANTS[state.gameKey].baseSmallBlind * 2 ** levelOf(state.gameKey, state.handNumber);
   return { small, big: small * 2 };
 };
 
@@ -168,13 +174,10 @@ function buildPots(
 // ---- hand lifecycle -----------------------------------------------------------------------
 
 function startHand(state: PokerState, events: GameEvent[]): void {
-  const previousLevel = Math.floor((state.handNumber - 1) / POKER_HANDS_PER_LEVEL);
+  const previousLevel = levelOf(state.gameKey, state.handNumber);
   state.handNumber++;
-  const { small, big } = blindsFor(state.handNumber);
-  if (
-    state.handNumber > 1 &&
-    Math.floor((state.handNumber - 1) / POKER_HANDS_PER_LEVEL) > previousLevel
-  ) {
+  const { small, big } = blindsFor(state);
+  if (state.handNumber > 1 && levelOf(state.gameKey, state.handNumber) > previousLevel) {
     events.push({ type: 'blinds_raised', data: { smallBlind: small, bigBlind: big } });
   }
 
@@ -277,7 +280,7 @@ function nextStreet(state: PokerState, events: GameEvent[]): void {
 
   state.bets = state.players.map(() => 0);
   state.currentBet = 0;
-  state.lastRaise = blindsFor(state.handNumber).big;
+  state.lastRaise = blindsFor(state).big;
   const canAct = (s: number) => state.inHand[s]! && !state.allIn[s]!;
   // with one player (or none) able to bet, nobody has a decision: the board runs out
   const deciding = seatsWhere(state, canAct).length >= 2;
@@ -447,7 +450,7 @@ function legalFor(state: PokerState, seat: number): PokerLegal {
   const bet = state.bets[seat]!;
   const toCall = state.currentBet - bet;
   const total = bet + stack;
-  const { big } = blindsFor(state.handNumber);
+  const { big } = blindsFor(state);
   const opening = state.currentBet === 0;
   const minRaiseTo = state.currentBet + state.lastRaise;
   return {
@@ -581,21 +584,29 @@ export function eliminatePlayer(
   return { newState: finalize(draft), events };
 }
 
-function createInitialState(players: GamePlayer[], random: RandomSource): PokerState {
-  if (players.length < 2 || players.length > 6) throw new Error('Poker needs 2 to 6 players');
+function createInitialState(
+  gameKey: PokerGameKey,
+  players: GamePlayer[],
+  random: RandomSource,
+): PokerState {
+  const { min, max } = GAME_PLAYER_LIMITS[gameKey];
+  if (players.length < min || players.length > max) {
+    throw new Error(`${gameKey} needs ${min} to ${max} players`);
+  }
+  const { startStack } = POKER_VARIANTS[gameKey];
   const count = players.length;
   const state: PokerState = {
-    gameKey: 'poker',
+    gameKey,
     players,
     currentPlayerId: null,
-    stacks: players.map(() => POKER_START_STACK),
+    stacks: players.map(() => startStack),
     out: players.map(() => false),
     leaving: players.map(() => false),
     forfeited: players.map(() => false),
     forfeitReason: players.map(() => null),
     button: 0,
     handNumber: 0,
-    handStartStacks: players.map(() => POKER_START_STACK),
+    handStartStacks: players.map(() => startStack),
     deck: [],
     holes: players.map(() => []),
     board: [],
@@ -626,6 +637,7 @@ function createInitialState(players: GamePlayer[], random: RandomSource): PokerS
 export function createPokerStateFrom(
   players: GamePlayer[],
   setup: {
+    gameKey?: PokerGameKey;
     stacks?: number[];
     button?: number;
     handNumber?: number;
@@ -635,10 +647,13 @@ export function createPokerStateFrom(
     rngState?: number;
   },
 ): PokerState {
-  const state = createInitialState(players, () => 0);
+  const gameKey = setup.gameKey ?? 'poker';
+  const state = createInitialState(gameKey, players, () => 0);
   const handNumber = setup.handNumber ?? 1;
   // start over with the chosen stacks and cards, then post the blinds the same way as a real hand
-  state.stacks = setup.stacks ? [...setup.stacks] : players.map(() => POKER_START_STACK);
+  state.stacks = setup.stacks
+    ? [...setup.stacks]
+    : players.map(() => POKER_VARIANTS[gameKey].startStack);
   state.handNumber = handNumber - 1;
   // startHand moves the button on after the first hand, so start one seat before
   const wanted = setup.button ?? 0;
@@ -655,7 +670,7 @@ export function createPokerStateFrom(
 
 function sanitize(state: PokerState, recipientId: string): ClientPokerState {
   const me = state.players.findIndex((p) => p.id === recipientId);
-  const { small, big } = blindsFor(state.handNumber);
+  const { small, big } = blindsFor(state);
   const pots: PokerPot[] = buildPots(state, true).map((pot) => ({
     amount: pot.amount,
     eligibleIds: pot.eligible.map((seat) => state.players[seat]!.id),
@@ -676,7 +691,7 @@ function sanitize(state: PokerState, recipientId: string): ClientPokerState {
     })),
   };
   return {
-    gameKey: 'poker',
+    gameKey: state.gameKey,
     players: state.players,
     currentPlayerId: state.result || state.actor < 0 ? null : state.players[state.actor]!.id,
     turnDeadlineAt: null,
@@ -715,6 +730,12 @@ function getResult(state: PokerState): GameResult {
 }
 
 function facts(state: PokerState): GameFacts {
+  // the poker achievements are about Poker; Texas Clinch only reports forfeits
+  if (state.gameKey !== 'poker') {
+    return Object.fromEntries(
+      state.players.map((player, seat) => [player.id, { forfeited: state.forfeited[seat]! }]),
+    );
+  }
   const winner =
     state.result?.terminationReason === 'completed'
       ? state.result.placements.find((p) => p.rank === 1)?.playerId
@@ -731,12 +752,17 @@ function facts(state: PokerState): GameFacts {
   );
 }
 
-export const pokerModule: ServerGameModule<PokerState, ClientPokerState> = {
-  key: 'poker',
-  createInitialState,
-  applyAction,
-  isTerminal,
-  getResult,
-  sanitize,
-  facts,
-};
+function createPokerModule(gameKey: PokerGameKey): ServerGameModule<PokerState, ClientPokerState> {
+  return {
+    key: gameKey,
+    createInitialState: (players, random) => createInitialState(gameKey, players, random),
+    applyAction,
+    isTerminal,
+    getResult,
+    sanitize,
+    facts,
+  };
+}
+
+export const pokerModule = createPokerModule('poker');
+export const texasClinchModule = createPokerModule('texas_clinch');

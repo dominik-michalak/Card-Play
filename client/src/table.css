@@ -1,0 +1,587 @@
+/* Card table and deck. Palette: dark green cloth, dark leather rail, bone ink, crimson accents. */
+
+:root {
+  --felt-hi: #1f5640;
+  --felt-mid: #174632;
+  --felt-lo: #0f3224;
+  --felt-edge: #0a2218;
+  --rail-hi: #2a231c;
+  --rail-lo: #110e0b;
+  --stock: #0d0c0b;
+  --bone: #ece2c8;
+  --red: #d0303a;
+  --pewter: #8a8576;
+  --display: 'Oswald', 'Arial Narrow', sans-serif;
+  --noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .92  0 0 0 0 .88  0 0 0 0 .78  0 0 0 .11 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ---------- cards ---------- */
+
+.pcard,
+.deck {
+  --cw: 5rem;
+}
+.pcard--xs,
+.deck--xs {
+  --cw: 2.6rem;
+}
+.pcard--sm,
+.deck--sm {
+  --cw: 3.7rem;
+}
+.pcard--md,
+.deck--md {
+  --cw: 5rem;
+}
+.pcard--lg,
+.deck--lg {
+  --cw: 6.2rem;
+}
+
+.pcard {
+  --rot: 0deg;
+  position: relative;
+  flex: none;
+  width: var(--cw);
+  aspect-ratio: 5 / 7;
+  perspective: 700px;
+  transform: rotate(var(--rot));
+  font-family: var(--display);
+}
+.pcard--empty {
+  border: 1px dashed rgba(236, 226, 200, 0.25);
+  border-radius: calc(var(--cw) * 0.07);
+}
+.pcard__inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.42s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.pcard.is-down .pcard__inner {
+  transform: rotateY(180deg);
+}
+.pcard__face,
+.pcard__back {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: calc(var(--cw) * 0.07);
+  backface-visibility: hidden;
+  background-color: var(--stock);
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(130, 120, 100, 0.2), transparent 42%),
+    radial-gradient(circle at 88% 84%, rgba(90, 85, 70, 0.18), transparent 46%), var(--noise);
+  box-shadow:
+    inset 0 0 0 1px rgba(236, 226, 200, 0.1),
+    0 calc(var(--cw) * 0.05) calc(var(--cw) * 0.14) rgba(0, 0, 0, 0.5);
+}
+.pcard__back {
+  transform: rotateY(180deg);
+}
+.pcard__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-family: var(--display);
+}
+
+/* a card slides in from `from` when it lands on the table */
+.pcard--deal {
+  animation: deal 0.34s cubic-bezier(0.2, 0.8, 0.25, 1) var(--delay, 0ms) both;
+}
+@keyframes deal {
+  from {
+    opacity: 0;
+    transform: translate(var(--from-x), var(--from-y)) rotate(calc(var(--rot) - 14deg)) scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) rotate(var(--rot)) scale(1);
+  }
+}
+
+/* ---------- draw pile and shuffle ---------- */
+
+.deck {
+  position: relative;
+  flex: none;
+  width: var(--cw);
+  height: calc(var(--cw) * 1.4);
+}
+.deck__layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(calc(var(--i) * -0.5px), calc(var(--i) * -1.2px));
+}
+.deck__count {
+  position: absolute;
+  right: -0.6rem;
+  bottom: -0.6rem;
+  min-width: 1.5rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--stock);
+  border: 1px solid rgba(236, 226, 200, 0.4);
+  color: var(--bone);
+  font: 500 0.85rem/1.3 var(--display);
+  text-align: center;
+}
+
+/* two halves split, then the cards drop back into one stack one by one */
+.deck.is-shuffling .deck__layer:nth-child(odd) {
+  animation: riffle-l 0.7s ease-in-out calc(var(--i) * 30ms) 2 both;
+}
+.deck.is-shuffling .deck__layer:nth-child(even) {
+  animation: riffle-r 0.7s ease-in-out calc(var(--i) * 30ms) 2 both;
+}
+@keyframes riffle-l {
+  0%,
+  100% {
+    transform: translate(calc(var(--i) * -0.5px), calc(var(--i) * -1.2px)) rotate(0);
+  }
+  30%,
+  50% {
+    transform: translate(-2.4rem, calc(var(--i) * -1.2px)) rotate(-6deg);
+  }
+  75% {
+    transform: translate(-0.5rem, calc(var(--i) * -1.2px - 5px)) rotate(-2deg);
+  }
+}
+@keyframes riffle-r {
+  0%,
+  100% {
+    transform: translate(calc(var(--i) * -0.5px), calc(var(--i) * -1.2px)) rotate(0);
+  }
+  30%,
+  50% {
+    transform: translate(2.4rem, calc(var(--i) * -1.2px)) rotate(6deg);
+  }
+  75% {
+    transform: translate(0.5rem, calc(var(--i) * -1.2px - 5px)) rotate(2deg);
+  }
+}
+
+/* ---------- opponent hand ---------- */
+
+.backfan {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: calc(var(--cw, 3.7rem) * 1.4);
+}
+.backfan--sm {
+  --cw: 3.7rem;
+}
+.backfan--xs {
+  --cw: 2.6rem;
+}
+.backfan .pcard + .pcard {
+  margin-left: calc(var(--cw) * -0.6);
+}
+.backfan__more {
+  align-self: center;
+  margin-left: 0.4rem;
+  font: 500 0.85rem var(--display);
+  color: var(--pewter);
+}
+
+/* ---------- your hand ---------- */
+
+.hand {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  padding: 1.6rem 1.4rem 0.4rem;
+  overflow-x: auto;
+}
+.hand__card {
+  --lift: 0rem;
+  flex: none;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  background: none;
+  cursor: default;
+  transform-origin: 50% 120%;
+  transform: translateY(var(--lift)) rotate(calc((var(--i) - (var(--n) - 1) / 2) * 2.2deg));
+  transition:
+    transform 0.16s ease-out,
+    filter 0.16s;
+}
+.hand__card + .hand__card {
+  margin-left: -2.8rem;
+}
+
+.hand__card:disabled {
+  opacity: 1;
+  filter: brightness(0.72) saturate(0.75);
+}
+.hand__card.is-playable {
+  --lift: -0.45rem;
+  cursor: pointer;
+}
+.hand__card.is-playable:hover,
+.hand__card.is-playable:focus-visible {
+  --lift: -1.1rem;
+  z-index: 2;
+}
+
+/* ---------- peeking at your own card ---------- */
+
+.hole {
+  display: flex;
+  gap: 0.6rem;
+}
+.peek {
+  padding: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.2s ease-out;
+}
+.peek:nth-child(odd) {
+  transform: rotate(-3deg);
+}
+.peek:nth-child(even) {
+  transform: rotate(3deg);
+}
+.peek:focus-visible .pcard.is-down .pcard__inner {
+  transform: rotateY(0deg);
+}
+@media (hover: hover) {
+  .peek:hover .pcard.is-down .pcard__inner {
+    transform: rotateY(0deg) translateY(-0.25rem);
+  }
+}
+
+/* ---------- chips ---------- */
+
+.seat__money {
+  display: inline-flex;
+  gap: 0.8rem;
+}
+.chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font: 500 0.95rem var(--display);
+  letter-spacing: 0.02em;
+}
+.chips__disc {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--stock) 36%, transparent 40%),
+    repeating-conic-gradient(var(--bone) 0 18deg, #a8222b 18deg 60deg);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- table ---------- */
+
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
+  max-width: 56rem;
+  margin: 0.5rem auto;
+}
+.hud__title {
+  margin: 0;
+  font: 500 1.7rem/1.1 var(--display);
+  letter-spacing: 0.02em;
+}
+.hud__detail {
+  margin: 0.15rem 0 0;
+  color: var(--pewter);
+}
+.hud__clock {
+  margin: 0;
+  font: 500 1.05rem var(--display);
+}
+.hud__clock.is-urgent {
+  color: #ff6b73;
+}
+
+.felt {
+  max-width: 56rem;
+  margin: 0.5rem auto;
+  padding: 1.1rem;
+  border-radius: 9rem;
+  background: linear-gradient(180deg, var(--rail-hi), var(--rail-lo));
+  box-shadow:
+    0 22px 44px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(236, 226, 200, 0.14),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 0 0 1px #000;
+}
+.felt__surface {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 30rem;
+  padding: 1.8rem 2.6rem 1.6rem;
+  border-radius: 8rem;
+  background-color: var(--felt-mid);
+  background-image:
+    var(--noise),
+    radial-gradient(
+      ellipse at 50% 38%,
+      var(--felt-hi) 0%,
+      var(--felt-mid) 38%,
+      var(--felt-lo) 72%,
+      var(--felt-edge) 100%
+    );
+  box-shadow:
+    inset 0 0 70px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 2px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 3px rgba(236, 226, 200, 0.08);
+}
+/* stitching along the edge of the cloth */
+.felt__surface::before {
+  content: '';
+  position: absolute;
+  inset: 0.7rem;
+  border: 1px dashed rgba(236, 226, 200, 0.2);
+  border-radius: 7.4rem;
+  pointer-events: none;
+}
+.felt__surface > * {
+  position: relative;
+  z-index: 1;
+}
+.felt__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1rem 2rem;
+}
+.felt__center {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem 2rem;
+  padding: 0.6rem 0;
+}
+
+/* ---------- seats ---------- */
+
+.seat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 100%;
+  transition: opacity 0.2s;
+}
+.seat__cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 100%;
+}
+.seat__plate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.2rem 0.8rem;
+  border: 1px solid rgba(236, 226, 200, 0.2);
+  border-radius: 999px;
+  background: rgba(6, 14, 10, 0.72);
+  font: 500 0.95rem var(--display);
+  letter-spacing: 0.03em;
+}
+.seat.is-active .seat__plate {
+  border-color: rgba(236, 226, 200, 0.75);
+  box-shadow:
+    0 0 0 3px rgba(236, 226, 200, 0.12),
+    0 0 18px rgba(236, 226, 200, 0.16);
+}
+.seat.is-dimmed {
+  opacity: 0.5;
+}
+.tag {
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: rgba(236, 226, 200, 0.12);
+  font: 400 0.75rem/1.5 var(--display);
+  color: var(--bone);
+}
+.tag--table {
+  padding: 0.1rem 0.7rem;
+  background: rgba(6, 14, 10, 0.72);
+  border: 1px solid rgba(236, 226, 200, 0.2);
+  font-size: 0.85rem;
+}
+
+/* ---------- per-game layout ---------- */
+
+.macao__center {
+  gap: 1.6rem 2.4rem;
+}
+.macao__discard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.macao__count {
+  font: 400 0.8rem var(--display);
+  color: var(--pewter);
+}
+.macao__tags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.poker__center {
+  flex-direction: row;
+}
+.poker__board {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 8.7rem;
+}
+.poker__empty {
+  font: 400 0.9rem var(--display);
+  color: rgba(236, 226, 200, 0.45);
+}
+.poker__pot {
+  flex-basis: 100%;
+  margin: 0;
+  text-align: center;
+}
+.poker__sides {
+  margin-left: 0.8rem;
+  font: 400 0.8rem var(--display);
+  color: var(--pewter);
+}
+
+.war__center {
+  gap: 0.8rem 4rem;
+}
+.war__lane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.war__pile {
+  position: relative;
+  width: 5rem;
+  min-height: 11rem;
+}
+.war__card {
+  position: absolute;
+  left: 0;
+  top: calc(var(--stack, 0) * 1.1rem);
+}
+.war__card.is-winner {
+  filter: drop-shadow(0 0 0.55rem rgba(236, 226, 200, 0.45));
+}
+.war__caption {
+  font: 400 0.85rem var(--display);
+  color: var(--pewter);
+}
+.war__result {
+  display: flex;
+  flex-basis: 100%;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+/* ---------- below the table ---------- */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: 56rem;
+  margin: 0.9rem auto;
+}
+.lasthand {
+  max-width: 56rem;
+  margin: 1rem auto;
+}
+.lasthand__row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0.4rem 0;
+}
+.lasthand__cards {
+  display: flex;
+  gap: 0.2rem;
+}
+
+/* ---------- narrow screens ---------- */
+
+@media (max-width: 40rem) {
+  .felt {
+    padding: 0.5rem;
+    border-radius: 2rem;
+  }
+  .felt__surface {
+    min-height: 0;
+    padding: 1.1rem 0.6rem;
+    border-radius: 1.6rem;
+  }
+  .felt__surface::before {
+    border-radius: 1.2rem;
+    inset: 0.35rem;
+  }
+  .pcard--lg,
+  .deck--lg {
+    --cw: 4.6rem;
+  }
+  .pcard--md,
+  .deck--md {
+    --cw: 4rem;
+  }
+  .hand__card + .hand__card {
+    margin-left: -2.2rem;
+  }
+  .war__pile {
+    width: 4rem;
+    min-height: 9.5rem;
+  }
+  .war__center {
+    gap: 0.8rem 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pcard--deal,
+  .deck.is-shuffling .deck__layer {
+    animation: none;
+  }
+  .pcard__inner,
+  .hand__card,
+  .peek {
+    transition: none;
+  }
+}

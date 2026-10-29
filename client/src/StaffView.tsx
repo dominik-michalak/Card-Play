@@ -231,9 +231,9 @@ function StaffUsers({ api, me }: { api: Api; me: SessionUser }) {
     setMessage(null);
     try {
       await action();
-      setMessage(done);
       await open(reopen);
       await reload();
+      setMessage(done);
     } catch (e) {
       setMessage(errorText(e, 'Nie udało się wykonać akcji'));
     }
