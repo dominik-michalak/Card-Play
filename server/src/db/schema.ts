@@ -49,7 +49,7 @@ export const users = pgTable(
   ],
 );
 
-// one Elo rating per user and game; gamesPlayed drives the K factor
+// one Elo rating per user and game; gamesPlayed counts completed games against humans, in any mode
 export const userRatings = pgTable(
   'user_ratings',
   {
