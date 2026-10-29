@@ -1,6 +1,7 @@
 import type { AddressInfo } from 'node:net';
 import { createApp } from '../../server/src/app';
 import type { Config } from '../../server/src/config';
+import { createRoomsService } from '../../server/src/modules/rooms/rooms.service';
 import { openTestDb } from './db';
 
 export const ORIGIN = 'http://localhost:5173';
@@ -24,7 +25,7 @@ export function testConfig(overrides: Partial<Config> = {}): Config {
 export async function startTestApp(overrides: Partial<Config> = {}) {
   const config = testConfig(overrides);
   const { db, pool } = openTestDb();
-  const server = createApp(config, db).listen(0);
+  const server = createApp(config, db, { roomService: createRoomsService(db) }).listen(0);
   await new Promise((resolve) => server.once('listening', resolve));
   const url = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
   return {
