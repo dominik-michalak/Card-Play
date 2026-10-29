@@ -7,6 +7,8 @@ import type {
   Paged,
   ProfileView,
   Room,
+  TicketDetail,
+  TicketSummary,
   UserRole,
 } from '@cardplay/shared';
 
@@ -172,6 +174,14 @@ export function createApi(options: ApiOptions = {}) {
     declineFriend: (userId: string) =>
       request<void>(`/api/v1/users/me/friends/${userId}/decline`, 'POST'),
     removeFriend: (userId: string) => request<void>(`/api/v1/users/me/friends/${userId}`, 'DELETE'),
+
+    createTicket: (input: { subject: string; body: string }) =>
+      request<TicketDetail>('/api/v1/tickets', 'POST', input),
+    tickets: (page: { limit?: number; offset?: number } = {}) =>
+      request<Paged<TicketSummary>>(`/api/v1/tickets?${new URLSearchParams(pageQuery(page))}`),
+    ticket: (id: string) => request<TicketDetail>(`/api/v1/tickets/${id}`),
+    replyToTicket: (id: string, body: string) =>
+      request<TicketDetail>(`/api/v1/tickets/${id}/replies`, 'POST', { body }),
 
     async currentRoom(): Promise<Room | null> {
       try {

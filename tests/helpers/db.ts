@@ -12,7 +12,7 @@ export function openTestDb() {
 export async function resetDb(db: ReturnType<typeof openTestDb>['db']): Promise<void> {
   await db.execute(
     sql`truncate table game_record_players, game_records, room_players, game_rooms,
-        friendships, refresh_tokens, user_ratings, users restart identity cascade`,
+        friendships, ticket_replies, tickets, user_achievements, refresh_tokens, user_ratings, users restart identity cascade`,
   );
 }
 

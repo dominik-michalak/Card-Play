@@ -1,7 +1,7 @@
-import type { GameKey, GameMode, TerminationReason } from '@cardplay/shared';
+import type { AchievementId, GameKey, GameMode, TerminationReason } from '@cardplay/shared';
 import { and, asc, count, desc, eq, gt, inArray, isNull, ne, or, sql } from 'drizzle-orm';
 import type { Db } from '../../db/client';
-import { gameRecordPlayers, userRatings, users } from '../../db/schema';
+import { gameRecordPlayers, userAchievements, userRatings, users } from '../../db/schema';
 import { HttpError } from '../../http-error';
 import { findUserById, type UserRow } from '../users/users.queries';
 
@@ -24,6 +24,7 @@ export type Profile = {
   createdAt: Date;
   games: (GameStats & { gameType: GameKey; elo: number | null })[];
   totals: GameStats;
+  achievements: { id: AchievementId; unlockedAt: Date }[];
 };
 
 export type HistoryItem = {
@@ -119,7 +120,19 @@ export function createProfileService(db: Db) {
       draws: sum('draws'),
       winRate: winRate(sum('wins'), sum('played')),
     };
-    return { id: user.id, username: user.username, createdAt: user.createdAt, games, totals };
+    const unlocked = await db
+      .select({ id: userAchievements.achievementId, unlockedAt: userAchievements.unlockedAt })
+      .from(userAchievements)
+      .where(eq(userAchievements.userId, user.id))
+      .orderBy(asc(userAchievements.unlockedAt), asc(userAchievements.achievementId));
+    return {
+      id: user.id,
+      username: user.username,
+      createdAt: user.createdAt,
+      games,
+      totals,
+      achievements: unlocked,
+    };
   }
 
   async function getHistory(

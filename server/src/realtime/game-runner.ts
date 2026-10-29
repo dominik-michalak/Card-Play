@@ -9,6 +9,7 @@ import {
   type GameState,
   type RandomSource,
   type RatingChange,
+  type UnlockedAchievement,
 } from '@cardplay/shared';
 import { HttpError } from '../http-error';
 import { secureRandom } from '../games/random';
@@ -21,6 +22,7 @@ export type GameSink = {
   state(roomId: string, userId: string, state: ClientGameState): void;
   event(roomId: string, event: GameEvent): void;
   finished(roomId: string, result: GameResult, ratings: RatingChange[]): void;
+  achievement(userId: string, achievement: UnlockedAchievement): void;
 };
 
 export type GameRunnerOptions = {
@@ -146,8 +148,16 @@ export function createGameRunner(options: GameRunnerOptions) {
     game.botTimers.forEach((timer) => clearTimeout(timer));
     game.botTimers.clear();
     games.delete(game.roomId);
-    const outcome = await results.finishGame(game.recordId, result, finalState);
+    // a cancelled game tells nothing about the players
+    const facts =
+      result.terminationReason === 'cancelled'
+        ? undefined
+        : game.definition.module.facts?.(finalState);
+    const outcome = await results.finishGame(game.recordId, result, finalState, facts);
     sink.finished(game.roomId, result, outcome.ratings);
+    for (const { userId, achievementId, unlockedAt } of outcome.achievements) {
+      sink.achievement(userId, { id: achievementId, unlockedAt: unlockedAt.toISOString() });
+    }
   }
 
   // applies a module step; a terminal state ends the game

@@ -21,6 +21,7 @@
     "joi": "^18.3.0",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.1",
+    "pokersolver": "^2.1.4",
     "socket.io": "^4.8.4"
   },
   "devDependencies": {

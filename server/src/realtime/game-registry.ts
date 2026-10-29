@@ -2,6 +2,11 @@ import type { GameAction, GameEvent, GameKey, GameState, ServerGameModule } from
 import { HttpError } from '../http-error';
 import { chooseMacaoAction, chooseWarAction } from '../bots/bots';
 import { eliminatePlayer, macaoModule, type MacaoState } from '../games/macao/macao';
+import {
+  eliminatePlayer as eliminatePokerPlayer,
+  pokerModule,
+  type PokerState,
+} from '../games/poker/poker';
 import { texasClinchModule } from '../games/texas-clinch/texas-clinch';
 import { forfeitWar, resolveFlipTimeout, warModule, type WarState } from '../games/war/war';
 
@@ -53,6 +58,21 @@ const macao: RunnerGame = {
   botAction: (state, botId) => chooseMacaoAction(state as MacaoState, botId),
 };
 
+const poker: RunnerGame = {
+  module: pokerModule as unknown as ServerGameModule,
+  rulesDefined: true,
+  // a player who forfeited is folded already and must not hold the table
+  activePlayerIds: (state) => {
+    const { out, leaving } = state as PokerState;
+    return state.players.filter((_, seat) => !out[seat] && !leaving[seat]).map((p) => p.id);
+  },
+  resolveTimeout: (state) =>
+    eliminatePokerPlayer(state as PokerState, state.currentPlayerId!, 'timeout_forfeit'),
+  forfeit: (state, playerId, reason) => eliminatePokerPlayer(state as PokerState, playerId, reason),
+  startsNewWindow: (events) => events.some((event) => event.type === 'turn_started'),
+  botAction: () => null,
+};
+
 // visible in the lobby, but starting it is refused until the rules are approved
 const texasClinch: RunnerGame = {
   module: texasClinchModule,
@@ -71,5 +91,6 @@ function notDefined(): never {
 export const GAME_REGISTRY: Partial<Record<GameKey, RunnerGame>> = {
   war,
   macao,
+  poker,
   texas_clinch: texasClinch,
 };

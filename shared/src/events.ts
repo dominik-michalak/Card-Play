@@ -1,5 +1,6 @@
 import type { ErrorPayload } from './errors';
 import type { ClientGameState, GameAction, GameEvent, GameResult, RatingChange } from './game';
+import type { UnlockedAchievement } from './achievements';
 import type { GameKey } from './game';
 import type { MatchmakingMode, RoomPlayer } from './rooms';
 
@@ -39,6 +40,8 @@ export type ServerToClientEvents = {
     gameType: GameKey;
     inviteCode: string;
   }) => void;
+  // a new achievement; stored, so it also shows in the profile
+  'achievement:unlocked': (payload: UnlockedAchievement) => void;
   // `reason` explains why the player is no longer queued when they did not ask for it
   'matchmaking:status': (payload: {
     queued: boolean;

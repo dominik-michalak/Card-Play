@@ -1,7 +1,7 @@
 import type { HistoryEntry, ProfileView as ProfileData } from '@cardplay/shared';
 import { useEffect, useState, type FormEvent } from 'react';
 import { ApiError, type Api, type SessionUser } from './api';
-import { GAME_LABELS, RESULT_LABELS, formatDate, signed } from './labels';
+import { ACHIEVEMENT_LABELS, GAME_LABELS, RESULT_LABELS, formatDate, signed } from './labels';
 import { matchModeLabel } from './matchmaking-state';
 
 const PAGE = 20;
@@ -116,6 +116,20 @@ export function ProfileView({ api, user, userRef, onOpenProfile }: Props) {
                 ))}
               </tbody>
             </table>
+          )}
+
+          <h3>Osiągnięcia</h3>
+          {profile.achievements.length === 0 ? (
+            <p>Brak osiągnięć.</p>
+          ) : (
+            <ul>
+              {profile.achievements.map((a) => (
+                <li key={a.id}>
+                  <strong>{ACHIEVEMENT_LABELS[a.id].name}</strong>:{' '}
+                  {ACHIEVEMENT_LABELS[a.id].description} ({formatDate(a.unlockedAt)})
+                </li>
+              ))}
+            </ul>
           )}
 
           <h3>Historia gier</h3>

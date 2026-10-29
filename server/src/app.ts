@@ -10,6 +10,8 @@ import { createAuthRouter } from './modules/auth/auth.routes';
 import { createAuthService } from './modules/auth/auth.service';
 import { createFriendsRouter } from './modules/friends/friends.routes';
 import type { FriendsService } from './modules/friends/friends.service';
+import { createStaffTicketsRouter, createTicketsRouter } from './modules/tickets/tickets.routes';
+import { createTicketsService } from './modules/tickets/tickets.service';
 import { createProfileRouter } from './modules/profile/profile.routes';
 import { createProfileService } from './modules/profile/profile.service';
 import { createRoomsRouter } from './modules/rooms/rooms.routes';
@@ -36,6 +38,9 @@ export function createApp(config: Config, db: Db, services: AppServices): expres
   app.use('/api/v1/auth', createAuthRouter(createAuthService(db, config), config));
   app.use('/api/v1/lobbies', createRoomsRouter(services.roomService, config));
   app.use('/api/v1/users/me/friends', createFriendsRouter(services.friendsService, config));
+  const ticketsService = createTicketsService(db);
+  app.use('/api/v1/tickets', createTicketsRouter(ticketsService, config));
+  app.use('/api/v1/staff/tickets', createStaffTicketsRouter(ticketsService, db, config));
   app.use('/api/v1', createProfileRouter(createProfileService(db), config));
 
   app.use(notFoundHandler);

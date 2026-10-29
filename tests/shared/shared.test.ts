@@ -130,6 +130,7 @@ describe('contracts', () => {
       | 'matchmaking:found'
       | 'matchmaking:status'
       | 'friend:invited'
+      | 'achievement:unlocked'
       | 'error'
     >();
   });

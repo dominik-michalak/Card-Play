@@ -142,6 +142,33 @@ describe('profile, ranking and friends', () => {
   });
 });
 
+describe('tickets', () => {
+  it('creates a ticket, reads it back, replies and lists it', async () => {
+    const api = newApi();
+    await api.register(alice);
+
+    const created = await api.createTicket({ subject: 'Help', body: 'Something broke' });
+    expect(created).toMatchObject({ subject: 'Help', status: 'open', replies: [] });
+
+    const updated = await api.replyToTicket(created.id, 'More detail');
+    expect(updated.replies).toMatchObject([{ body: 'More detail', isStaff: false }]);
+    expect((await api.ticket(created.id)).replies).toHaveLength(1);
+    expect(await api.tickets({ limit: 5 })).toMatchObject({ total: 1 });
+  });
+
+  it('exposes the server error for a ticket that is not yours', async () => {
+    const [first, second] = [newApi(), newApi()];
+    await first.register(alice);
+    await second.register({ username: 'bob', email: 'bob@example.com', password: 'correct horse' });
+    const created = await first.createTicket({ subject: 'Mine', body: 'private' });
+
+    await expect(second.ticket(created.id)).rejects.toMatchObject({
+      status: 404,
+      code: 'NOT_FOUND',
+    });
+  });
+});
+
 describe('rooms', () => {
   it('creates, finds, joins and leaves a room', async () => {
     const host = newApi();

@@ -31,6 +31,7 @@ const players = (count: number): GamePlayer[] =>
 const FILLER = '9c 8c 6c 5c 10c 9d 8d 6d 5d 10d';
 
 type Setup = {
+  overrides?: Partial<MacaoState>;
   hands: string[];
   discard?: string; // last card is the top
   draw?: string; // first card is the top of the pile
@@ -59,6 +60,7 @@ function make(setup: Setup): MacaoState {
     turn: setup.turn,
     rngState: setup.rngState,
     eliminated: setup.eliminated,
+    ...setup.overrides,
   });
 }
 
@@ -836,4 +838,61 @@ describe('whole games', () => {
       }
     },
   );
+});
+
+describe('facts', () => {
+  const won = (hands: [string, string], overrides: Partial<MacaoState> = {}) =>
+    act(make({ hands, overrides }), 0, play(hands[0].split(' ')[0]!)).newState as MacaoState;
+
+  it('rewards a clean win: no missing declaration was ever punished', () => {
+    const state = won(['9h', '7s 8d']);
+    expect(macaoModule.facts!(state)).toEqual({
+      a: { forfeited: false, macaoCleanFinish: true, macaoComeback: false },
+      b: { forfeited: false, macaoCleanFinish: false, macaoComeback: false },
+    });
+  });
+
+  it('takes the clean finish away from a winner who was reported earlier', () => {
+    const state = won(['9h', '7s 8d'], { reports: [1, 0] });
+    expect(macaoModule.getResult(state).placements[0]).toEqual({ playerId: 'a', rank: 1 });
+    expect(macaoModule.facts!(state).a?.macaoCleanFinish).toBe(false);
+  });
+
+  it('counts a report in the state of the reported player', () => {
+    let state = act(make({ hands: ['9h 5c', '7s 8d', '6s 6d'] }), 0, play('9h'))
+      .newState as MacaoState;
+    state = act(state, 2, REPORT).newState as MacaoState;
+    expect(state.reports).toEqual([1, 0, 0]);
+  });
+
+  it('rewards a comeback win only after holding 15 cards', () => {
+    expect(macaoModule.facts!(won(['9h', '7s 8d'], { maxHand: [15, 5] })).a?.macaoComeback).toBe(
+      true,
+    );
+    expect(macaoModule.facts!(won(['9h', '7s 8d'], { maxHand: [14, 5] })).a?.macaoComeback).toBe(
+      false,
+    );
+  });
+
+  it('tracks the biggest hand through penalties and reports', () => {
+    const afterPenalty = act(make({ hands: ['2h 5c', '7s 6d', '6h 6d'] }), 0, play('2h'))
+      .newState as MacaoState;
+    expect(afterPenalty.maxHand[1]).toBeGreaterThanOrEqual(4);
+    let state = act(make({ hands: ['9h 5c', '7s 8d', '6s 6d'] }), 0, play('9h'))
+      .newState as MacaoState;
+    state = act(state, 2, REPORT).newState as MacaoState;
+    expect(state.maxHand[0]).toBe(6);
+  });
+
+  it('marks a player who forfeited and gives nobody a win-based fact for a forfeit win', () => {
+    const state = eliminatePlayer(
+      make({ hands: ['9h 5c', '7s 8d'] }),
+      'a',
+      'timeout_forfeit',
+    ).newState;
+    expect(macaoModule.facts!(state)).toEqual({
+      a: { forfeited: true, macaoCleanFinish: false, macaoComeback: false },
+      b: { forfeited: false, macaoCleanFinish: false, macaoComeback: false },
+    });
+  });
 });

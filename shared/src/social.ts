@@ -1,3 +1,4 @@
+import type { UnlockedAchievement } from './achievements';
 import type { GameKey } from './game';
 import type { GameMode } from './rooms';
 import type { TerminationReason } from './game';
@@ -21,6 +22,7 @@ export type ProfileView = {
   createdAt: string;
   games: ProfileGame[];
   totals: GameStats;
+  achievements: UnlockedAchievement[];
 };
 
 export type HistoryEntry = {

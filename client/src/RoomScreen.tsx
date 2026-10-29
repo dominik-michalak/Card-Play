@@ -1,6 +1,7 @@
 import type {
   ClientMacaoState,
   FriendEntry,
+  ClientPokerState,
   ClientWarState,
   GameAction,
   GameResult,
@@ -12,6 +13,7 @@ import { useCountdown, useRoomSession } from './hooks';
 import { matchModeLabel } from './matchmaking-state';
 import type { RealtimeSocket } from './realtime';
 import { MacaoTable } from './MacaoTable';
+import { PokerTable } from './PokerTable';
 import { WarTable } from './WarTable';
 
 const REASONS: Record<string, string> = {
@@ -94,6 +96,8 @@ export function RoomScreen({ api, socket, user, room, onLeft }: Props) {
         <WarTable state={state.game as ClientWarState} meId={user.id} onFlip={flip} />
       ) : inGame && state.game?.gameKey === 'macao' ? (
         <MacaoTable state={state.game as ClientMacaoState} meId={user.id} onAction={send} />
+      ) : inGame && state.game?.gameKey === 'poker' ? (
+        <PokerTable state={state.game as ClientPokerState} meId={user.id} onAction={send} />
       ) : (
         <div>
           <table>

@@ -20,6 +20,8 @@ export function testConfig(overrides: Partial<Config> = {}): Config {
     accessTokenTtlSeconds: 900,
     refreshTokenTtlSeconds: 7 * 24 * 60 * 60,
     authRateLimitMax: 1000,
+    ticketCreateLimitPerHour: 1000,
+    ticketReplyLimitPerHour: 1000,
     ...overrides,
   };
 }

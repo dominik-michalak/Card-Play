@@ -11,6 +11,7 @@ import {
   type Deck,
   type GameAction,
   type GameEvent,
+  type GameFacts,
   type GamePlayer,
   type GameResult,
   type GameState,
@@ -45,6 +46,10 @@ export type MacaoState = GameState & {
   // seat that reached one card without declaring, until the next accepted move
   reportable: number | null;
   turn: number;
+  // most cards each seat held at once, and how often each was punished for a missing Macao
+  maxHand: number[];
+  reports: number[];
+  forfeited: boolean[];
   // generator state for reshuffling; never sent to clients
   rngState: number;
   result: GameResult | null;
@@ -62,6 +67,9 @@ function copyState(state: MacaoState): MacaoState {
     drawPile: [...state.drawPile],
     discard: [...state.discard],
     skips: [...state.skips],
+    maxHand: [...state.maxHand],
+    reports: [...state.reports],
+    forfeited: [...state.forfeited],
     eliminated: [...state.eliminated],
     penalty: state.penalty && { ...state.penalty },
   };
@@ -139,6 +147,7 @@ function drawCards(state: MacaoState, seat: number, count: number, events: GameE
     const card = state.drawPile.shift();
     if (!card) break;
     state.hands[seat]!.push(card);
+    state.maxHand[seat] = Math.max(state.maxHand[seat]!, state.hands[seat]!.length);
     drawn++;
   }
   if (drawn > 0) {
@@ -326,6 +335,9 @@ function createMacaoState(
     eliminated: players.map(() => false),
     reportable: null,
     turn: 0,
+    maxHand: parts.hands.map((hand) => hand.length),
+    reports: players.map(() => 0),
+    forfeited: players.map(() => false),
     result: null,
   });
 }
@@ -387,6 +399,7 @@ function applyAction(
     const reported = draft.reportable;
     if (reported === null || reported === seat) throw invalid('there is nobody to report');
     draft.reportable = null;
+    draft.reports[reported]!++;
     drawCards(draft, reported, MACAO_REPORT_PENALTY, events);
     events.push({
       type: 'macao_reported',
@@ -454,6 +467,7 @@ export function eliminatePlayer(
   draft.drawPile.push(...draft.hands[seat]!);
   draft.hands[seat] = [];
   draft.eliminated[seat] = true;
+  draft.forfeited[seat] = true;
   draft.skips[seat] = 0;
   if (draft.reportable === seat) draft.reportable = null;
 
@@ -508,6 +522,27 @@ function sanitize(state: MacaoState, recipientId: string): ClientMacaoState {
   };
 }
 
+function facts(state: MacaoState): GameFacts {
+  // wins by emptying the hand count; a win by forfeit or the turn limit does not
+  const winner =
+    state.result?.terminationReason === 'completed'
+      ? state.result.placements.find((p) => p.rank === 1)?.playerId
+      : undefined;
+  return Object.fromEntries(
+    state.players.map((player, seat) => {
+      const won = player.id === winner;
+      return [
+        player.id,
+        {
+          forfeited: state.forfeited[seat]!,
+          macaoCleanFinish: won && state.reports[seat] === 0,
+          macaoComeback: won && state.maxHand[seat]! >= 15,
+        },
+      ];
+    }),
+  );
+}
+
 export const macaoModule: ServerGameModule<MacaoState, ClientMacaoState> = {
   key: 'macao',
   createInitialState,
@@ -515,4 +550,5 @@ export const macaoModule: ServerGameModule<MacaoState, ClientMacaoState> = {
   isTerminal,
   getResult,
   sanitize,
+  facts,
 };

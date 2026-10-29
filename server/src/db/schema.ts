@@ -1,8 +1,12 @@
 import {
+  ACHIEVEMENT_IDS,
   FRIENDSHIP_STATUSES,
   GAME_KEYS,
   GAME_MODES,
   ROOM_STATUSES,
+  TICKET_BODY_MAX,
+  TICKET_STATUSES,
+  TICKET_SUBJECT_MAX,
   TERMINATION_REASONS,
   USER_ROLES,
 } from '@cardplay/shared';
@@ -28,6 +32,8 @@ export const gameTypeEnum = pgEnum('game_type', GAME_KEYS);
 export const gameModeEnum = pgEnum('game_mode', GAME_MODES);
 export const roomStatusEnum = pgEnum('room_status', ROOM_STATUSES);
 export const terminationReasonEnum = pgEnum('termination_reason', TERMINATION_REASONS);
+export const ticketStatusEnum = pgEnum('ticket_status', TICKET_STATUSES);
+export const achievementIdEnum = pgEnum('achievement_id', ACHIEVEMENT_IDS);
 export const friendshipStatusEnum = pgEnum('friendship_status', FRIENDSHIP_STATUSES);
 
 const createdAt = () => timestamp('created_at', { withTimezone: true }).notNull().defaultNow();
@@ -162,6 +168,8 @@ export const gameRecordPlayers = pgTable(
     finalRank: integer('final_rank'),
     eloBefore: integer('elo_before'),
     eloChange: integer('elo_change'),
+    // lost the game by a timeout or a disconnect
+    forfeited: boolean('forfeited').notNull().default(false),
   },
   (t) => [
     index('game_record_players_user_idx').on(t.userId),
@@ -193,5 +201,69 @@ export const friendships = pgTable(
     ),
     index('friendships_addressee_idx').on(t.addresseeId),
     check('friendships_not_self', sql`${t.requesterId} <> ${t.addresseeId}`),
+  ],
+);
+
+// unlocked by the backend after a game is saved; the primary key makes unlocking idempotent
+export const userAchievements = pgTable(
+  'user_achievements',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    achievementId: achievementIdEnum('achievement_id').notNull(),
+    unlockedAt: timestamp('unlocked_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.achievementId] })],
+);
+
+// support requests: no categories or priorities, only a status
+export const tickets = pgTable(
+  'tickets',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    authorId: uuid('author_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    subject: text('subject').notNull(),
+    body: text('body').notNull(),
+    status: ticketStatusEnum('status').notNull().default('open'),
+    // the last member of the staff who answered or changed the status
+    handledBy: uuid('handled_by').references(() => users.id, { onDelete: 'set null' }),
+    createdAt: createdAt(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index('tickets_author_idx').on(t.authorId, t.updatedAt.desc()),
+    index('tickets_status_idx').on(t.status, t.updatedAt.desc()),
+    check(
+      'tickets_text_length',
+      sql`char_length(${t.subject}) between 1 and ${sql.raw(String(TICKET_SUBJECT_MAX))}
+        and char_length(${t.body}) between 1 and ${sql.raw(String(TICKET_BODY_MAX))}`,
+    ),
+  ],
+);
+
+export const ticketReplies = pgTable(
+  'ticket_replies',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    ticketId: uuid('ticket_id')
+      .notNull()
+      .references(() => tickets.id, { onDelete: 'cascade' }),
+    authorId: uuid('author_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    // answered through the staff API
+    isStaff: boolean('is_staff').notNull().default(false),
+    body: text('body').notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    index('ticket_replies_ticket_idx').on(t.ticketId, t.createdAt),
+    check(
+      'ticket_replies_text_length',
+      sql`char_length(${t.body}) between 1 and ${sql.raw(String(TICKET_BODY_MAX))}`,
+    ),
   ],
 );

@@ -160,12 +160,6 @@ describe('ready and the start countdown', () => {
     expect((await socket.next<ErrorPayload>('error')).code).toBe('INVALID_ACTION');
   });
 
-  it('refuses a game whose rules are not defined yet', async () => {
-    const { hostSocket, roomId } = await table('poker');
-    hostSocket.emit('room:ready', { roomId, ready: true });
-    expect((await hostSocket.next<ErrorPayload>('error')).code).toBe('GAME_RULES_NOT_DEFINED');
-  });
-
   it('answers GAME_RULES_NOT_DEFINED for Texas Clinch and never starts a countdown', async () => {
     const host = await seedUser(server.db, 'host');
     const guest = await seedUser(server.db, 'guest');

@@ -22,6 +22,20 @@
       "when": 1793276610418,
       "tag": "0002_abandoned_cerise",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793279017266,
+      "tag": "0003_slimy_fat_cobra",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793279226559,
+      "tag": "0004_burly_jetstream",
+      "breakpoints": true
     }
   ]
 }

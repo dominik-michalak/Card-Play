@@ -1,3 +1,5 @@
+import type { GameFacts } from './achievements';
+
 export const GAME_KEYS = ['war', 'macao', 'texas_clinch', 'poker'] as const;
 export type GameKey = (typeof GAME_KEYS)[number];
 
@@ -74,6 +76,8 @@ export type ServerGameModule<
   isTerminal(state: S): boolean;
   getResult(state: S): GameResult;
   sanitize(state: S, recipientId: string): C;
+  // facts about the players at the end of a finished game, for achievements
+  facts?(state: S): GameFacts;
 };
 
 // Elo movement of one player after a rated game

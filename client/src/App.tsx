@@ -1,11 +1,13 @@
-import type { Room, ServerToClientEvents } from '@cardplay/shared';
+import type { Room, ServerToClientEvents, UnlockedAchievement } from '@cardplay/shared';
 import { useEffect, useMemo, useState } from 'react';
 import { ApiError, createApi, type Api, type SessionUser } from './api';
 import { AuthForm } from './AuthForm';
 import { FriendsView } from './FriendsView';
 import { LeaderboardView } from './LeaderboardView';
+import { ACHIEVEMENT_LABELS } from './labels';
 import { Lobby } from './Lobby';
 import { ProfileView } from './ProfileView';
+import { TicketsView } from './TicketsView';
 import { connectRealtime, type RealtimeSocket } from './realtime';
 import { RoomScreen } from './RoomScreen';
 
@@ -53,7 +55,11 @@ export function App() {
 }
 
 type View =
-  { name: 'lobby' } | { name: 'profile'; ref: string } | { name: 'ranking' } | { name: 'friends' };
+  | { name: 'lobby' }
+  | { name: 'profile'; ref: string }
+  | { name: 'ranking' }
+  | { name: 'friends' }
+  | { name: 'tickets' };
 type Invitation = Parameters<ServerToClientEvents['friend:invited']>[0];
 
 function Home({ api, user }: { api: Api; user: SessionUser }) {
@@ -62,12 +68,14 @@ function Home({ api, user }: { api: Api; user: SessionUser }) {
   const [room, setRoom] = useState<Room | null | undefined>(undefined);
   const [view, setView] = useState<View>({ name: 'lobby' });
   const [invitation, setInvitation] = useState<Invitation | null>(null);
+  const [unlocked, setUnlocked] = useState<UnlockedAchievement | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const connection = connectRealtime(api, { autoConnect: false });
     setSocket(connection);
     connection.on('friend:invited', setInvitation);
+    connection.on('achievement:unlocked', setUnlocked);
     // Connecting on the next tick skips the throwaway mount of React StrictMode. A connection
     // that is opened and closed at once can still reach the server after the real one, and the
     // server would then treat the dead one as the newest and drop the live one.
@@ -101,9 +109,16 @@ function Home({ api, user }: { api: Api; user: SessionUser }) {
   }
 
   if (!socket || room === undefined) return <p>Ładowanie…</p>;
+  const banner = unlocked && (
+    <p role="status">
+      Nowe osiągnięcie: <strong>{ACHIEVEMENT_LABELS[unlocked.id].name}</strong>{' '}
+      <button onClick={() => setUnlocked(null)}>OK</button>
+    </p>
+  );
   if (room) {
     return (
       <>
+        {banner}
         {error && <p role="alert">{error}</p>}
         <RoomScreen
           key={room.id}
@@ -122,8 +137,10 @@ function Home({ api, user }: { api: Api; user: SessionUser }) {
         <button onClick={() => setView({ name: 'lobby' })}>Lobby</button>{' '}
         <button onClick={() => setView({ name: 'profile', ref: 'me' })}>Mój profil</button>{' '}
         <button onClick={() => setView({ name: 'ranking' })}>Ranking</button>{' '}
-        <button onClick={() => setView({ name: 'friends' })}>Znajomi</button>
+        <button onClick={() => setView({ name: 'friends' })}>Znajomi</button>{' '}
+        <button onClick={() => setView({ name: 'tickets' })}>Zgłoszenia</button>
       </nav>
+      {banner}
       {error && <p role="alert">{error}</p>}
       {invitation && (
         <p role="alert">
@@ -144,6 +161,7 @@ function Home({ api, user }: { api: Api; user: SessionUser }) {
       {view.name === 'ranking' && (
         <LeaderboardView api={api} onOpenProfile={(ref) => setView({ name: 'profile', ref })} />
       )}
+      {view.name === 'tickets' && <TicketsView api={api} />}
       {view.name === 'friends' && (
         <FriendsView api={api} onOpenProfile={(ref) => setView({ name: 'profile', ref })} />
       )}

@@ -10,6 +10,9 @@ export type Config = {
   refreshTokenTtlSeconds: number;
   // max register/login attempts per IP in 15 minutes
   authRateLimitMax: number;
+  // tickets and replies a user may send per hour
+  ticketCreateLimitPerHour: number;
+  ticketReplyLimitPerHour: number;
 };
 
 const MIN_SECRET_LENGTH = 64;
@@ -54,5 +57,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     accessTokenTtlSeconds: 15 * 60,
     refreshTokenTtlSeconds: 7 * 24 * 60 * 60,
     authRateLimitMax: 10,
+    ticketCreateLimitPerHour: 5,
+    ticketReplyLimitPerHour: 20,
   };
 }

@@ -484,3 +484,57 @@ describe('forfeitWar', () => {
     expect(state.result).toBeNull();
   });
 });
+
+describe('facts', () => {
+  const flipBoth = (state: WarState) => playRound(state).newState;
+  // initial tie, then `ties` more ties inside the war, then a decision for alice
+  function chainState(extraTies: number): WarState {
+    const mine: Deck = [card('K', 0)];
+    const theirs: Deck = [card('K', 1)];
+    const ranks: Rank[] = ['5', '7', '9'];
+    for (let i = 0; i < extraTies; i++) {
+      mine.push(...filler(3, '2'), card(ranks[i]!, 0));
+      theirs.push(...filler(3, '3'), card(ranks[i]!, 1));
+    }
+    mine.push(...filler(3, '2'), card('A', 0));
+    theirs.push(...filler(3, '3'), card('9', 1));
+    return startWith([...mine, ...filler(10, '4')], [...theirs, ...filler(10, '4')]);
+  }
+
+  it('marks the winner of a pool won after three face-up comparisons inside a war', () => {
+    const state = flipBoth(chainState(2)); // initial tie + two ties in the war + the deciding one
+    expect(state.lastRound?.comparisons).toHaveLength(4);
+    expect(warModule.facts!(state)).toEqual({
+      alice: { forfeited: false, warChain3: true },
+      bob: { forfeited: false, warChain3: false },
+    });
+  });
+
+  it('needs three comparisons inside the war, not two', () => {
+    const state = flipBoth(chainState(1));
+    expect(state.lastRound?.comparisons).toHaveLength(3);
+    expect(warModule.facts!(state).alice?.warChain3).toBe(false);
+  });
+
+  it('remembers a chain from an earlier round', () => {
+    let state = flipBoth(chainState(2));
+    state = flipBoth(state);
+    expect(warModule.facts!(state).alice?.warChain3).toBe(true);
+  });
+
+  it('marks the player who lost to a forfeit', () => {
+    const state = startWith(filler(26), filler(26));
+    expect(warModule.facts!(forfeitWar(state, 'alice', 'timeout_forfeit'))).toEqual({
+      alice: { forfeited: true, warChain3: false },
+      bob: { forfeited: false, warChain3: false },
+    });
+    expect(warModule.facts!(forfeitWar(state, 'bob', 'disconnect_forfeit')).bob?.forfeited).toBe(
+      true,
+    );
+  });
+
+  it('does not call a double timeout a forfeit', () => {
+    const state = startWith(filler(26), filler(26));
+    expect(warModule.facts!(resolveFlipTimeout(state)).alice?.forfeited).toBe(false);
+  });
+});

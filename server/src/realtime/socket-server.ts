@@ -131,6 +131,9 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
       event: (roomId, event) => {
         io.to(roomChannel(roomId)).emit('game:event', { roomId, event });
       },
+      achievement: (userId, achievement) => {
+        io.to(userChannel(userId)).emit('achievement:unlocked', achievement);
+      },
       finished: (roomId, result, ratings) => {
         io.to(roomChannel(roomId)).emit('game:finished', { roomId, result, ratings });
         for (const userId of [...(attached.get(roomId) ?? [])]) {

@@ -7,6 +7,7 @@ import {
   type ClientWarState,
   type Deck,
   type GameAction,
+  type GameFacts,
   type GameEvent,
   type GamePlayer,
   type GameResult,
@@ -27,6 +28,8 @@ export type WarState = GameState & {
   // completed rounds (a war belongs to the round that started it)
   round: number;
   lastRound: WarRoundSummary | null;
+  // seats that won a pool after at least three face-up comparisons inside a war
+  chainWinners: [boolean, boolean];
   result: GameResult | null;
 };
 
@@ -77,6 +80,7 @@ export function createWarStateFromStacks(players: GamePlayer[], stacks: [Deck, D
     flipped: [false, false],
     round: 0,
     lastRound: null,
+    chainWinners: [false, false],
     result: null,
   };
 }
@@ -147,6 +151,10 @@ function resolveRound(state: WarState): { newState: WarState; summary: WarRoundS
     poolSize: pool.length,
   };
 
+  // the first comparison is the tie that started the war, so four in all means three inside it
+  const chainWinners: [boolean, boolean] = [...state.chainWinners];
+  if (comparisons.length >= 4) chainWinners[winnerSeat] = true;
+
   let result: GameResult | null = null;
   if (stacks[0].length === 0 || stacks[1].length === 0) {
     result = makeResult(state.players, stacks[0].length === 0 ? 1 : 0, 'all_cards');
@@ -154,7 +162,10 @@ function resolveRound(state: WarState): { newState: WarState; summary: WarRoundS
     result = resultBySize(state.players, [stacks[0].length, stacks[1].length], 'round_limit');
   }
 
-  return { newState: { ...state, stacks, round, lastRound: summary, result }, summary };
+  return {
+    newState: { ...state, stacks, round, lastRound: summary, chainWinners, result },
+    summary,
+  };
 }
 
 function applyAction(
@@ -233,6 +244,23 @@ function sanitize(state: WarState, _recipientId: string): ClientWarState {
   };
 }
 
+// the player who lost to a timeout or a disconnect; a double timeout is a draw, not a forfeit
+function facts(state: WarState): GameFacts {
+  const forfeit =
+    state.result?.terminationReason === 'timeout_forfeit' ||
+    state.result?.terminationReason === 'disconnect_forfeit';
+  return Object.fromEntries(
+    state.players.map((player, seat) => [
+      player.id,
+      {
+        forfeited:
+          forfeit && state.result!.placements.find((p) => p.playerId === player.id)?.rank === 2,
+        warChain3: state.chainWinners[seat],
+      },
+    ]),
+  );
+}
+
 export const warModule: ServerGameModule<WarState, ClientWarState> = {
   key: 'war',
   createInitialState,
@@ -240,4 +268,5 @@ export const warModule: ServerGameModule<WarState, ClientWarState> = {
   isTerminal,
   getResult,
   sanitize,
+  facts,
 };

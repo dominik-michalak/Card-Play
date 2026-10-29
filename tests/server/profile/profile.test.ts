@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { userRatings } from '../../../server/src/db/schema';
+import { userAchievements, userRatings } from '../../../server/src/db/schema';
 import { api, startTestApp } from '../../helpers/app';
 import { resetDb } from '../../helpers/db';
 import { seedGameRecord } from '../../helpers/games';
@@ -136,6 +136,33 @@ describe('GET /users/:ref/profile', () => {
         expect.objectContaining({ gameType: 'macao', elo: 880 }),
       ]),
     );
+  });
+});
+
+describe('achievements in the profile', () => {
+  it('lists the unlocked achievements, oldest first', async () => {
+    const [alice, bob] = [await newUser('alice'), await newUser('bob')];
+    await app.db.insert(userAchievements).values([
+      { userId: alice.id, achievementId: 'streak_5', unlockedAt: new Date('2026-03-01T10:00:00Z') },
+      {
+        userId: alice.id,
+        achievementId: 'first_win',
+        unlockedAt: new Date('2026-01-01T10:00:00Z'),
+      },
+      { userId: bob.id, achievementId: 'first_win' },
+    ]);
+
+    const { body } = await get(`/users/${alice.id}/profile`, bob.token);
+
+    expect(body?.achievements).toEqual([
+      { id: 'first_win', unlockedAt: '2026-01-01T10:00:00.000Z' },
+      { id: 'streak_5', unlockedAt: '2026-03-01T10:00:00.000Z' },
+    ]);
+  });
+
+  it('is an empty list for a player with none', async () => {
+    const alice = await newUser('alice');
+    expect((await get('/users/me/profile', alice.token)).body?.achievements).toEqual([]);
   });
 });
 

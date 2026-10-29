@@ -1,17 +1,20 @@
 import type {
+  AchievementId,
+  GameFacts,
   GameKey,
   GameResult,
   GameState,
   RatingChange,
   TerminationReason,
 } from '@cardplay/shared';
-import { and, eq, inArray, isNull } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, ne, sql } from 'drizzle-orm';
 import type { Db } from '../../db/client';
 import {
   gameRecordPlayers,
   gameRecords,
   gameRooms,
   roomPlayers,
+  userAchievements,
   userRatings,
 } from '../../db/schema';
 import { HttpError } from '../../http-error';
@@ -23,7 +26,12 @@ export type GameOutcome = {
   winnerId: string | null;
   // empty unless the game was rated
   ratings: RatingChange[];
+  // achievements this game unlocked, each reported once
+  achievements: { userId: string; achievementId: AchievementId; unlockedAt: Date }[];
 };
+
+const FAIR_PLAY_GAMES = 10;
+const STREAK_LENGTH = 5;
 
 // a result that decides nobody's strength, so it never moves Elo
 const UNRATED_REASONS: TerminationReason[] = ['draw', 'double_timeout', 'cancelled'];
@@ -76,6 +84,7 @@ export function createResultsService(db: Db) {
     recordId: string,
     result: GameResult,
     finalState: GameState,
+    facts: GameFacts = {},
   ): Promise<GameOutcome> {
     return db.transaction(async (tx) => {
       // the lock makes a duplicate finish wait, then see `finishedAt` and fail
@@ -98,10 +107,11 @@ export function createResultsService(db: Db) {
       const rankOf = new Map(result.placements.map((p) => [p.playerId, p.rank]));
       for (const row of rows) {
         const rank = row.userId ? rankOf.get(row.userId) : undefined;
-        if (rank !== undefined) {
+        const forfeited = row.userId ? facts[row.userId]?.forfeited === true : false;
+        if (rank !== undefined || forfeited) {
           await tx
             .update(gameRecordPlayers)
-            .set({ finalRank: rank })
+            .set({ ...(rank !== undefined && { finalRank: rank }), forfeited })
             .where(eq(gameRecordPlayers.id, row.id));
         }
       }
@@ -149,7 +159,10 @@ export function createResultsService(db: Db) {
         .where(eq(gameRecords.id, recordId));
       await tx.update(gameRooms).set({ status: 'finished' }).where(eq(gameRooms.id, record.roomId));
 
-      return { recordId, winnerId, ratings };
+      const achievements = counted
+        ? await unlockAchievements(tx, record.gameType, record.mode, humanIds, winnerId, facts)
+        : [];
+      return { recordId, winnerId, ratings, achievements };
     });
   }
 
@@ -182,6 +195,80 @@ export function createResultsService(db: Db) {
 }
 
 type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
+
+// finished games against humans that this player did not lose by a forfeit
+async function countCleanGames(tx: Tx, userId: string): Promise<number> {
+  const result = await tx.execute<{ total: number }>(sql`
+    select count(*)::int as total
+    from game_record_players me
+    join game_records r on r.id = me.record_id
+    where me.user_id = ${userId}
+      and me.forfeited = false
+      and r.finished_at is not null
+      and r.termination_reason <> 'cancelled'
+      and not exists (
+        select 1 from game_record_players other
+        where other.record_id = r.id and other.user_id is null
+      )`);
+  return result.rows[0]?.total ?? 0;
+}
+
+// the last ranked games of the player in this game were all won (a draw breaks the run)
+async function hasWinStreak(tx: Tx, userId: string, gameType: GameKey): Promise<boolean> {
+  const recent = await tx
+    .select({ winnerId: gameRecords.winnerId })
+    .from(gameRecordPlayers)
+    .innerJoin(gameRecords, eq(gameRecords.id, gameRecordPlayers.recordId))
+    .where(
+      and(
+        eq(gameRecordPlayers.userId, userId),
+        eq(gameRecords.gameType, gameType),
+        eq(gameRecords.mode, 'competitive'),
+        ne(gameRecords.terminationReason, 'cancelled'),
+      ),
+    )
+    .orderBy(desc(gameRecords.finishedAt), desc(gameRecords.id))
+    .limit(STREAK_LENGTH);
+  return recent.length === STREAK_LENGTH && recent.every((game) => game.winnerId === userId);
+}
+
+// Decided by the backend after the game is saved. The facts come from the game module on the
+// server, never from a client. Inserting an existing achievement does nothing, so a repeat or a
+// race unlocks it once, and only the insert that won reports it.
+async function unlockAchievements(
+  tx: Tx,
+  gameType: GameKey,
+  mode: string,
+  humanIds: string[],
+  winnerId: string | null,
+  facts: GameFacts,
+): Promise<GameOutcome['achievements']> {
+  const unlocked: GameOutcome['achievements'] = [];
+  for (const userId of humanIds) {
+    const own = facts[userId] ?? {};
+    const earned: AchievementId[] = [];
+    if (winnerId === userId) earned.push('first_win');
+    if (own.warChain3) earned.push('war_chain_3');
+    if (own.macaoCleanFinish) earned.push('macao_clean_finish');
+    if (own.macaoComeback) earned.push('macao_comeback');
+    if (own.pokerAllInWin) earned.push('poker_all_in_win');
+    if (own.pokerEliminator) earned.push('poker_eliminator');
+    if (!own.forfeited && (await countCleanGames(tx, userId)) >= FAIR_PLAY_GAMES) {
+      earned.push('fair_play_10');
+    }
+    if (mode === 'competitive' && (await hasWinStreak(tx, userId, gameType))) {
+      earned.push('streak_5');
+    }
+    if (earned.length === 0) continue;
+    const inserted = await tx
+      .insert(userAchievements)
+      .values(earned.map((achievementId) => ({ userId, achievementId })))
+      .onConflictDoNothing()
+      .returning();
+    unlocked.push(...inserted);
+  }
+  return unlocked;
+}
 
 // Adds one played game to every human and, when `winnerId` is set, moves Elo from the other
 // player of the 1v1 to the winner. Returns the Elo movements only.
