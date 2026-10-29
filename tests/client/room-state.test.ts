@@ -1,6 +1,6 @@
 import type { ClientGameState, Room, RoomPlayer } from '@cardplay/shared';
 import { describe, expect, it } from 'vitest';
-import { cardLabel } from '../../client/src/cards';
+import { cardLabel, cardSpoken } from '../../client/src/cards';
 import { initialRoomState, roomReducer } from '../../client/src/room-state';
 
 const room: Room = {
@@ -60,11 +60,50 @@ describe('roomReducer', () => {
     expect(roomReducer(state, { type: 'state', roomId: 'other', state: gameState })).toBe(state);
   });
 
+  it('collects chat lines of its room in order and keeps the latest 100', () => {
+    let state = initialRoomState(room);
+    for (let i = 0; i < 105; i++) {
+      state = roomReducer(state, {
+        type: 'chat',
+        line: {
+          roomId: 'room-1',
+          userId: 'u1',
+          username: 'host',
+          message: `line ${i}`,
+          sentAt: 't',
+        },
+      });
+    }
+    expect(state.chat).toHaveLength(100);
+    expect(state.chat[0]?.message).toBe('line 5');
+    expect(state.chat.at(-1)?.message).toBe('line 104');
+  });
+
+  it('ignores chat lines of another room', () => {
+    const state = initialRoomState(room);
+    const other = roomReducer(state, {
+      type: 'chat',
+      line: { roomId: 'other', userId: 'u2', username: 'x', message: 'hi', sentAt: 't' },
+    });
+    expect(other).toBe(state);
+  });
+
   it('shows an error until it is dismissed', () => {
     let state = roomReducer(initialRoomState(room), { type: 'error', message: 'room is full' });
     expect(state.error).toBe('room is full');
     state = roomReducer(state, { type: 'dismiss_error' });
     expect(state.error).toBeNull();
+  });
+});
+
+describe('cardSpoken', () => {
+  it('names a card in words, for a screen reader', () => {
+    expect(cardSpoken({ rank: '9', suit: 'hearts' })).toBe('9 kier');
+    expect(cardSpoken({ rank: 'A', suit: 'spades' })).toBe('as pik');
+    expect(cardSpoken({ rank: 'K', suit: 'diamonds' })).toBe('król karo');
+    expect(cardSpoken({ rank: 'Q', suit: 'clubs' })).toBe('dama trefl');
+    expect(cardSpoken({ rank: 'J', suit: 'hearts' })).toBe('walet kier');
+    expect(cardSpoken({ rank: '10', suit: 'clubs' })).toBe('10 trefl');
   });
 });
 

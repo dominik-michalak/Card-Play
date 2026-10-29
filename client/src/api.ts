@@ -3,11 +3,15 @@ import type {
   FriendListView,
   GameKey,
   HistoryEntry,
+  AuditEntry,
   LeaderboardEntry,
+  ManagedUser,
+  ManagedUserDetail,
   Paged,
   ProfileView,
   Room,
   TicketDetail,
+  TicketStatus,
   TicketSummary,
   UserRole,
 } from '@cardplay/shared';
@@ -71,6 +75,8 @@ export function createApi(options: ApiOptions = {}) {
     const data: unknown = text ? JSON.parse(text) : undefined;
     if (!res.ok) {
       const error = (data as { error?: { code: ErrorCode; message: string } } | undefined)?.error;
+      // a ban ends the session at once, whatever the player was doing
+      if (res.status === 403 && error?.message === 'account is banned') dropSession();
       throw new ApiError(
         res.status,
         error?.code ?? 'INTERNAL_ERROR',
@@ -182,6 +188,36 @@ export function createApi(options: ApiOptions = {}) {
     ticket: (id: string) => request<TicketDetail>(`/api/v1/tickets/${id}`),
     replyToTicket: (id: string, body: string) =>
       request<TicketDetail>(`/api/v1/tickets/${id}/replies`, 'POST', { body }),
+
+    // staff only; the server checks the role in the database on every call
+    staffTickets: (query: { status?: TicketStatus; limit?: number; offset?: number } = {}) =>
+      request<Paged<TicketSummary>>(
+        `/api/v1/staff/tickets?${new URLSearchParams({ ...pageQuery(query), ...(query.status && { status: query.status }) })}`,
+      ),
+    staffTicket: (id: string) => request<TicketDetail>(`/api/v1/staff/tickets/${id}`),
+    staffReply: (id: string, body: string) =>
+      request<TicketDetail>(`/api/v1/staff/tickets/${id}/replies`, 'POST', { body }),
+    staffSetStatus: (id: string, status: TicketStatus) =>
+      request<TicketDetail>(`/api/v1/staff/tickets/${id}/status`, 'PATCH', { status }),
+
+    manageUsers: (
+      query: { search?: string; banned?: boolean; limit?: number; offset?: number } = {},
+    ) =>
+      request<Paged<ManagedUser>>(
+        `/api/v1/moderation/users?${new URLSearchParams({
+          ...pageQuery(query),
+          ...(query.search && { search: query.search }),
+          ...(query.banned && { status: 'banned' }),
+        })}`,
+      ),
+    managedUser: (id: string) => request<ManagedUserDetail>(`/api/v1/moderation/users/${id}`),
+    banUser: (id: string, ban: { durationHours?: number; permanent?: true; reason: string }) =>
+      request<ManagedUser>(`/api/v1/moderation/users/${id}/ban`, 'POST', ban),
+    unbanUser: (id: string) => request<void>(`/api/v1/moderation/users/${id}/ban`, 'DELETE'),
+    setUserRole: (id: string, role: UserRole) =>
+      request<ManagedUser>(`/api/v1/admin/users/${id}/role`, 'PATCH', { role }),
+    auditLog: (page: { limit?: number; offset?: number } = {}) =>
+      request<Paged<AuditEntry>>(`/api/v1/admin/audit?${new URLSearchParams(pageQuery(page))}`),
 
     async currentRoom(): Promise<Room | null> {
       try {

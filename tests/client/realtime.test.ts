@@ -1,5 +1,7 @@
 import type { ClientGameState } from '@cardplay/shared';
+import { eq } from 'drizzle-orm';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { users } from '../../server/src/db/schema';
 import { createApi } from '../../client/src/api';
 import { connectRealtime, type RealtimeSocket } from '../../client/src/realtime';
 import { signAccessToken } from '../../server/src/modules/auth/tokens';
@@ -106,6 +108,22 @@ describe('client realtime flow', () => {
     const started = once<{ state: ClientGameState }>(first.socket, 'game:state_update');
     for (const p of [first, second]) p.socket.emit('room:join', { roomId });
     expect((await started).state.gameKey).toBe('war');
+  });
+
+  it('signs the app out when the server cuts the connection because of a ban', async () => {
+    const { api, user, socket } = await player('soon_banned');
+    await waitUntil(() => socket.connected);
+    let signedOut = 0;
+    api.onSessionLost(() => signedOut++);
+
+    await server.db.update(users).set({ isBanned: true }).where(eq(users.id, user.id));
+    server.banEvents.banned(user.id);
+
+    await waitUntil(() => !socket.connected);
+    await waitUntil(() => signedOut === 1);
+    // and it does not keep trying to come back
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(socket.connected).toBe(false);
   });
 
   it('waits for connect() when autoConnect is off', async () => {

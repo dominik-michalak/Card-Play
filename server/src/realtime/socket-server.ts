@@ -12,6 +12,11 @@ import type { Server as HttpServer } from 'node:http';
 import Joi from 'joi';
 import { Server, type Socket } from 'socket.io';
 import type { Config } from '../config';
+import type { Db } from '../db/client';
+import type { BanEvents } from '../modules/moderation/ban-events';
+import { isBanned } from '../modules/moderation/bans';
+import { findUserById } from '../modules/users/users.queries';
+import { CHAT_HISTORY_SIZE, createChatLimiter, sanitizeChatMessage } from './chat';
 import { HttpError } from '../http-error';
 import { verifyAccessTokenWithExpiry } from '../modules/auth/tokens';
 import type { ResultsService } from '../modules/results/results.service';
@@ -27,6 +32,8 @@ import type { Presence } from './presence';
 import { createLobbyState } from './lobby-state';
 import {
   actionSchema,
+  chatSchema,
+  type ChatPayload,
   friendInviteSchema,
   type FriendInvitePayload,
   matchmakingJoinSchema,
@@ -58,9 +65,15 @@ export type SocketServerDeps = {
   matchRules?: MatchRules;
   presence: Presence;
   friendsService: FriendsService;
+  db: Db;
+  banEvents: BanEvents;
 };
 
 const MAX_PAYLOAD_BYTES = 10_000;
+// at most 5 chat lines in 10 seconds per player
+const CHAT_RATE_LIMIT = 5;
+const CHAT_RATE_WINDOW_MS = 10_000;
+type ChatHistoryEntry = Parameters<ServerToClientEvents['room:chat']>[0];
 // setTimeout cannot wait longer than a signed 32-bit number of milliseconds
 const MAX_TIMER_MS = 2 ** 31 - 1;
 // a client sending more than this many events in the window gets RATE_LIMITED
@@ -135,6 +148,7 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
         io.to(userChannel(userId)).emit('achievement:unlocked', achievement);
       },
       finished: (roomId, result, ratings) => {
+        chatHistory.delete(roomId);
         io.to(roomChannel(roomId)).emit('game:finished', { roomId, result, ratings });
         for (const userId of [...(attached.get(roomId) ?? [])]) {
           const socket = sockets.get(userId);
@@ -252,6 +266,7 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
     const { roomId, kind, userId } = change;
     if (kind === 'closed') {
       lobby.clearRoom(roomId);
+      chatHistory.delete(roomId);
     } else if (kind === 'left') {
       lobby.setReady(roomId, userId, false);
       await syncCountdown(roomId);
@@ -270,6 +285,13 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
 
   // ---- connection handling ---------------------------------------------------------------
 
+  // a banned user, or one whose account is gone, cannot connect even with a valid token
+  async function ensureActive(userId: string): Promise<void> {
+    const account = await findUserById(deps.db, userId);
+    if (!account) throw new HttpError(401, 'UNAUTHORIZED', 'account no longer exists');
+    if (isBanned(account)) throw new HttpError(403, 'FORBIDDEN', 'account is banned');
+  }
+
   io.use((socket, next) => {
     const auth = socket.handshake.auth as { token?: unknown };
     const payload =
@@ -280,10 +302,32 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
       next(new Error('UNAUTHORIZED'));
       return;
     }
-    socket.data.userId = payload.userId;
-    socket.data.expiresAt = payload.expiresAt;
-    next();
+    ensureActive(payload.userId).then(
+      () => {
+        socket.data.userId = payload.userId;
+        socket.data.expiresAt = payload.expiresAt;
+        next();
+      },
+      (error: unknown) =>
+        next(
+          new Error(
+            error instanceof HttpError && error.status === 403 ? 'FORBIDDEN' : 'UNAUTHORIZED',
+          ),
+        ),
+    );
   });
+
+  // A ban ends the live connection at once; the check before every event below covers the rest.
+  deps.banEvents.onBanned((userId) => {
+    const live = sockets.get(userId);
+    if (!live) return;
+    live.emit('error', { code: 'FORBIDDEN', message: 'account is banned' });
+    live.disconnect(true);
+  });
+
+  // history of each room, kept while the room exists
+  const chatHistory = new Map<string, ChatHistoryEntry[]>();
+  const chatLimiter = createChatLimiter(CHAT_RATE_LIMIT, CHAT_RATE_WINDOW_MS);
 
   io.on('connection', (socket) => {
     const { userId } = socket.data;
@@ -310,6 +354,8 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
     expiry.unref();
 
     const recent: number[] = [];
+    // the events of one socket are handled one after another, in the order they were sent
+    let queue: Promise<unknown> = Promise.resolve();
     function guarded<T>(schema: Joi.Schema, handler: (payload: T) => Promise<void>) {
       return (raw: unknown): void => {
         const now = Date.now();
@@ -318,7 +364,8 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
         const task =
           recent.length > RATE_MAX_EVENTS
             ? Promise.reject(new HttpError(429, 'RATE_LIMITED', 'too many events'))
-            : Promise.resolve().then(() => handler(validate<T>(schema, raw)));
+            : queue.then(() => ensureActive(userId)).then(() => handler(validate<T>(schema, raw)));
+        queue = task.catch(() => undefined);
         task.catch((error: unknown) => socket.emit('error', toErrorPayload(error)));
       };
     }
@@ -352,6 +399,7 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
         if (endsAt !== null) {
           socket.emit('room:countdown', { roomId, startsAt: new Date(endsAt).toISOString() });
         }
+        for (const line of chatHistory.get(roomId) ?? []) socket.emit('room:chat', line);
       }),
     );
 
@@ -406,6 +454,35 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
       'matchmaking:join',
       guarded<MatchmakingJoinPayload>(matchmakingJoinSchema, async ({ gameType, mode }) => {
         await matchmaker.join(userId, gameType, mode);
+      }),
+    );
+
+    socket.on(
+      'room:chat',
+      guarded<ChatPayload>(chatSchema, async ({ roomId, message }) => {
+        if (socket.data.roomId !== roomId) {
+          throw new HttpError(404, 'ROOM_NOT_FOUND', 'room not found');
+        }
+        const text = sanitizeChatMessage(message);
+        if (text === '') {
+          throw new HttpError(400, 'INVALID_PAYLOAD', 'the message is empty');
+        }
+        if (!chatLimiter.allow(userId)) {
+          throw new HttpError(429, 'RATE_LIMITED', 'you are writing too fast');
+        }
+        const room = await roomService.getRoom(roomId, userId); // still a member
+        const line: ChatHistoryEntry = {
+          roomId,
+          userId,
+          username: room.players.find((p) => p.userId === userId)?.username ?? '',
+          message: text,
+          sentAt: new Date().toISOString(),
+        };
+        chatHistory.set(
+          roomId,
+          [...(chatHistory.get(roomId) ?? []), line].slice(-CHAT_HISTORY_SIZE),
+        );
+        io.to(roomChannel(roomId)).emit('room:chat', line);
       }),
     );
 

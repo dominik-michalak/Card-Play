@@ -1,0 +1,14 @@
+# nothing from the machine goes into an image except the sources it is built from
+.git
+.env
+.env.*
+!.env.example
+node_modules
+**/node_modules
+**/dist
+docs
+tests
+.vscode
+.playwright-mcp
+docker
+*.log

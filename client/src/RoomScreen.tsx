@@ -13,6 +13,7 @@ import { useCountdown, useRoomSession } from './hooks';
 import { matchModeLabel } from './matchmaking-state';
 import type { RealtimeSocket } from './realtime';
 import { MacaoTable } from './MacaoTable';
+import { ChatBox } from './ChatBox';
 import { PokerTable } from './PokerTable';
 import { WarTable } from './WarTable';
 
@@ -55,6 +56,7 @@ export function RoomScreen({ api, socket, user, room, onLeft }: Props) {
 
   const send = (action: GameAction) => socket.emit('game:action', { roomId: room.id, action });
   const flip = () => send({ type: 'flip' });
+  const chat = (message: string) => socket.emit('room:chat', { roomId: room.id, message });
   const nameOf = (id: string) => state.game?.players.find((p) => p.id === id)?.username ?? id;
 
   return (
@@ -158,6 +160,7 @@ export function RoomScreen({ api, socket, user, room, onLeft }: Props) {
           <button onClick={() => void leave()}>Wyjdź z pokoju</button>
         </div>
       )}
+      {!state.finished && <ChatBox lines={state.chat} onSend={chat} />}
     </div>
   );
 }

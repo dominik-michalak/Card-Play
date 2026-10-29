@@ -36,6 +36,13 @@
       "when": 1793279226559,
       "tag": "0004_burly_jetstream",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793279866112,
+      "tag": "0005_nifty_piledriver",
+      "breakpoints": true
     }
   ]
 }

@@ -8,6 +8,9 @@ export type Config = {
   bcryptCost: number;
   accessTokenTtlSeconds: number;
   refreshTokenTtlSeconds: number;
+  // how many reverse proxies sit in front of the server (0 = none); decides which address is
+  // the client's when X-Forwarded-For is present
+  trustProxy: number;
   // max register/login attempts per IP in 15 minutes
   authRateLimitMax: number;
   // tickets and replies a user may send per hour
@@ -40,6 +43,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     throw new Error(`invalid PORT: ${rawPort}`);
   }
 
+  const rawTrustProxy = env.TRUST_PROXY ?? '0';
+  const trustProxy = Number(rawTrustProxy);
+  if (!/^\d+$/.test(rawTrustProxy) || trustProxy > 10) {
+    throw new Error(`invalid TRUST_PROXY: ${rawTrustProxy}`);
+  }
+
   const jwtSecret = requireSecret(env, 'JWT_SECRET');
   const jwtRefreshSecret = requireSecret(env, 'JWT_REFRESH_SECRET');
   if (jwtSecret === jwtRefreshSecret) {
@@ -53,6 +62,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     databaseUrl: requireEnv(env, 'DATABASE_URL'),
     jwtSecret,
     jwtRefreshSecret,
+    trustProxy,
     bcryptCost: 12,
     accessTokenTtlSeconds: 15 * 60,
     refreshTokenTtlSeconds: 7 * 24 * 60 * 60,

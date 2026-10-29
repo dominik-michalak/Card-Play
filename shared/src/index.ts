@@ -4,6 +4,7 @@ export * from './errors';
 export * from './events';
 export * from './game';
 export * from './macao';
+export * from './moderation';
 export * from './poker';
 export * from './rooms';
 export * from './social';

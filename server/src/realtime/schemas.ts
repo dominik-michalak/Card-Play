@@ -32,6 +32,12 @@ export const friendInviteSchema = Joi.object({ userId: Joi.string().uuid().requi
 
 export type FriendInvitePayload = { userId: string; roomId: string };
 export type MatchmakingJoinPayload = { gameType: GameKey; mode: MatchmakingMode };
+export const chatSchema = Joi.object({
+  roomId,
+  message: Joi.string().max(1000).allow('').required(),
+});
+
+export type ChatPayload = { roomId: string; message: string };
 export type RoomRef = { roomId: string };
 export type SeatPayload = { roomId: string; seatIndex: number };
 export type ReadyPayload = { roomId: string; ready: boolean };

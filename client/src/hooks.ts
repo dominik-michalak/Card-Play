@@ -28,9 +28,11 @@ export function useRoomSession(socket: RealtimeSocket, room: Room) {
     const onCountdown = (p: Payload<'room:countdown'>) => dispatch({ type: 'countdown', ...p });
     const onState = (p: Payload<'game:state_update'>) => dispatch({ type: 'state', ...p });
     const onFinished = (p: Payload<'game:finished'>) => dispatch({ type: 'finished', ...p });
+    const onChat = (line: Payload<'room:chat'>) => dispatch({ type: 'chat', line });
     const onError = (e: Payload<'error'>) => dispatch({ type: 'error', message: e.message });
 
     socket.on('connect', join);
+    socket.on('room:chat', onChat);
     socket.on('room:players', onPlayers);
     socket.on('room:countdown', onCountdown);
     socket.on('game:state_update', onState);
@@ -39,6 +41,7 @@ export function useRoomSession(socket: RealtimeSocket, room: Room) {
     if (socket.connected) join();
     return () => {
       socket.off('connect', join);
+      socket.off('room:chat', onChat);
       socket.off('room:players', onPlayers);
       socket.off('room:countdown', onCountdown);
       socket.off('game:state_update', onState);

@@ -3,6 +3,7 @@ import { createApp } from '../../server/src/app';
 import type { Config } from '../../server/src/config';
 import { createFriendsService } from '../../server/src/modules/friends/friends.service';
 import { createRoomsService } from '../../server/src/modules/rooms/rooms.service';
+import { createBanEvents } from '../../server/src/modules/moderation/ban-events';
 import { createPresence } from '../../server/src/realtime/presence';
 import { openTestDb } from './db';
 
@@ -20,6 +21,7 @@ export function testConfig(overrides: Partial<Config> = {}): Config {
     accessTokenTtlSeconds: 900,
     refreshTokenTtlSeconds: 7 * 24 * 60 * 60,
     authRateLimitMax: 1000,
+    trustProxy: 0,
     ticketCreateLimitPerHour: 1000,
     ticketReplyLimitPerHour: 1000,
     ...overrides,
@@ -30,7 +32,9 @@ export async function startTestApp(overrides: Partial<Config> = {}) {
   const config = testConfig(overrides);
   const { db, pool } = openTestDb();
   const presence = createPresence();
+  const banEvents = createBanEvents();
   const server = createApp(config, db, {
+    banEvents,
     roomService: createRoomsService(db),
     friendsService: createFriendsService(db, presence),
   }).listen(0);
@@ -41,6 +45,7 @@ export async function startTestApp(overrides: Partial<Config> = {}) {
     db,
     config,
     presence,
+    banEvents,
     close: async () => {
       await new Promise((resolve) => server.close(resolve));
       await pool.end();
@@ -53,6 +58,7 @@ type RequestOptions = {
   body?: unknown;
   rawBody?: string;
   cookie?: string;
+  headers?: Record<string, string>;
   token?: string;
   origin?: string | null;
 };
@@ -63,7 +69,7 @@ type Body = Record<string, any>;
 
 export async function api(baseUrl: string, path: string, options: RequestOptions = {}) {
   const { method = 'POST', body, rawBody, cookie, token, origin = ORIGIN } = options;
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = { ...options.headers };
   if (body !== undefined || rawBody !== undefined) headers['content-type'] = 'application/json';
   if (cookie) headers.cookie = cookie;
   if (token) headers.authorization = `Bearer ${token}`;

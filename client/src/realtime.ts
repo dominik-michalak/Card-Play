@@ -34,7 +34,11 @@ export function connectRealtime(
     replacedByAnotherConnection = false;
   });
   socket.on('error', (error) => {
-    if (error.code === 'FORBIDDEN') replacedByAnotherConnection = true;
+    if (error.code !== 'FORBIDDEN') return;
+    // a ban ends the session; any other refusal means a newer connection took the place
+    if (error.message === 'account is banned') api.dropSession();
+    // either way there is nothing to reconnect to
+    replacedByAnotherConnection = true;
   });
   socket.on('disconnect', (reason) => {
     if (reason === 'io server disconnect' && !replacedByAnotherConnection) {

@@ -8,7 +8,7 @@ import {
   type Suit,
 } from '@cardplay/shared';
 import { useState } from 'react';
-import { cardLabel } from './cards';
+import { cardLabel, cardSpoken } from './cards';
 import { useCountdown } from './hooks';
 
 const SUIT_NAMES: Record<Suit, string> = {
@@ -109,6 +109,7 @@ export function MacaoTable({ state, meId, onAction }: Props) {
         {state.hand.map((card) => (
           <button
             key={`${card.rank}${card.suit}`}
+            aria-label={cardSpoken(card)}
             onClick={() => clickCard(card)}
             disabled={!state.playable.some((p) => sameCard(p, card))}
           >

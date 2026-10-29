@@ -10,8 +10,9 @@ import type { Config } from '../../config';
 import type { Db } from '../../db/client';
 import { authenticate, currentUser } from '../../middleware/authenticate';
 import { createUserRateLimit } from '../../middleware/rate-limit';
-import { requireStaff } from '../../middleware/require-staff';
+import { requireActiveUser, requireRole } from '../../middleware/require-role';
 import { validate } from '../../validate';
+import type { ModerationService } from '../moderation/moderation.service';
 import type { Page, TicketsService } from './tickets.service';
 
 const HOUR_MS = 60 * 60 * 1000;
@@ -81,9 +82,14 @@ export function createTicketsRouter(tickets: TicketsService, config: Config): Ro
 }
 
 // every ticket, for moderators and admins; the role is checked in the database
-export function createStaffTicketsRouter(tickets: TicketsService, db: Db, config: Config): Router {
+export function createStaffTicketsRouter(
+  tickets: TicketsService,
+  moderation: ModerationService,
+  db: Db,
+  config: Config,
+): Router {
   const router = Router();
-  router.use(authenticate(config.jwtSecret), requireStaff(db));
+  router.use(authenticate(config.jwtSecret), requireActiveUser(db), requireRole('moderator'));
 
   router.get('/', async (req, res) => {
     const { status, ...paging } = validate<Page & { status?: TicketStatus }>(
@@ -101,14 +107,23 @@ export function createStaffTicketsRouter(tickets: TicketsService, db: Db, config
     const id = validate<string>(idSchema, req.params.id);
     const { body } = validate<{ body: string }>(replySchema, req.body);
     await tickets.staffReply(currentUser(res).userId, id, body);
-    res.status(201).json(await tickets.getAny(id));
+    const ticket = await tickets.getAny(id);
+    await moderation.record(currentUser(res).userId, 'ticket_reply', ticket.author?.id ?? null, {
+      ticketId: id,
+    });
+    res.status(201).json(ticket);
   });
 
   router.patch('/:id/status', async (req, res) => {
     const id = validate<string>(idSchema, req.params.id);
     const { status } = validate<{ status: TicketStatus }>(statusSchema, req.body);
     await tickets.setStatus(currentUser(res).userId, id, status);
-    res.json(await tickets.getAny(id));
+    const ticket = await tickets.getAny(id);
+    await moderation.record(currentUser(res).userId, 'ticket_status', ticket.author?.id ?? null, {
+      ticketId: id,
+      status,
+    });
+    res.json(ticket);
   });
 
   return router;

@@ -357,6 +357,6 @@ describe('the role is read from the database, not from the token', () => {
   it('refuses a token of a user that no longer exists', async () => {
     const staff = await newUser('ghost', 'moderator');
     await app.db.delete(users).where(eq(users.id, staff.id));
-    expect((await staffList(staff.token)).status).toBe(403);
+    expect((await staffList(staff.token)).status).toBe(401);
   });
 });

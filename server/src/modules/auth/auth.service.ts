@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import type { Config } from '../../config';
 import type { Db } from '../../db/client';
 import { HttpError } from '../../http-error';
+import { isBanned } from '../moderation/bans';
 import {
   findUserByEmail,
   findUserById,
@@ -74,7 +75,7 @@ export function createAuthService(db: Db, config: Config) {
     if (!user || !passwordOk) {
       throw new HttpError(401, 'UNAUTHORIZED', 'invalid email or password');
     }
-    if (user.isBanned) {
+    if (isBanned(user)) {
       throw new HttpError(403, 'FORBIDDEN', 'account is banned');
     }
     return issueSession(user);
@@ -89,7 +90,7 @@ export function createAuthService(db: Db, config: Config) {
       throw new HttpError(401, 'UNAUTHORIZED', 'invalid refresh token');
     }
     const user = await findUserById(db, userId);
-    if (!user || user.isBanned) {
+    if (!user || isBanned(user)) {
       await revokeAllForUser(db, userId);
       throw new HttpError(403, 'FORBIDDEN', 'account is not allowed to sign in');
     }

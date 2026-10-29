@@ -1,4 +1,6 @@
+import { eq } from 'drizzle-orm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { users } from '../../server/src/db/schema';
 import { ApiError, createApi } from '../../client/src/api';
 import { resetDb } from '../helpers/db';
 import { cookieFetch } from '../helpers/cookie-fetch';
@@ -139,6 +141,70 @@ describe('profile, ranking and friends', () => {
     await first.declineFriend(secondUser.id);
 
     expect((await first.friends()).outgoing).toEqual([]);
+  });
+});
+
+describe('moderation through the client', () => {
+  const staffUser = async (role: 'moderator' | 'admin') => {
+    const api = newApi();
+    const user = await api.register({
+      username: `staff_${role}`,
+      email: `${role}@example.com`,
+      password: 'correct horse',
+    });
+    await server.db.update(users).set({ role }).where(eq(users.id, user.id));
+    return { api, user };
+  };
+
+  it('lets a moderator find, ban and unban a user, and handle a ticket', async () => {
+    const [{ api: mod }, target] = [await staffUser('moderator'), newApi()];
+    const targetUser = await target.register(alice);
+    const ticket = await target.createTicket({ subject: 'Help', body: 'please' });
+
+    expect((await mod.manageUsers({ search: 'ALI' })).items).toMatchObject([{ username: 'alice' }]);
+    expect(await mod.banUser(targetUser.id, { durationHours: 2, reason: 'spam' })).toMatchObject({
+      ban: { active: true },
+    });
+    expect((await mod.manageUsers({ banned: true })).total).toBe(1);
+    expect((await mod.managedUser(targetUser.id)).bans).toHaveLength(1);
+    await mod.unbanUser(targetUser.id);
+    expect((await mod.manageUsers({ banned: true })).total).toBe(0);
+
+    expect((await mod.staffTickets({ status: 'open' })).total).toBe(1);
+    expect((await mod.staffReply(ticket.id, 'looking')).status).toBe('in_progress');
+    expect((await mod.staffSetStatus(ticket.id, 'resolved')).status).toBe('resolved');
+    expect((await mod.staffTicket(ticket.id)).replies).toHaveLength(1);
+  });
+
+  it('lets an admin change a role and read the audit log, and shuts the door on a moderator', async () => {
+    const [{ api: admin }, { api: mod }, target] = [
+      await staffUser('admin'),
+      await staffUser('moderator'),
+      newApi(),
+    ];
+    const targetUser = await target.register(alice);
+
+    expect((await admin.setUserRole(targetUser.id, 'moderator')).role).toBe('moderator');
+    expect((await admin.auditLog()).items[0]).toMatchObject({ action: 'role_change' });
+    await expect(mod.auditLog()).rejects.toMatchObject({ status: 403 });
+    await expect(mod.setUserRole(targetUser.id, 'user')).rejects.toMatchObject({ status: 403 });
+  });
+});
+
+describe('a banned account', () => {
+  it('is told so, and the app is told to sign out', async () => {
+    const api = newApi();
+    const user = await api.register(alice);
+    let signedOut = 0;
+    api.onSessionLost(() => signedOut++);
+
+    await server.db.update(users).set({ isBanned: true }).where(eq(users.id, user.id));
+
+    await expect(api.tickets()).rejects.toMatchObject({
+      status: 403,
+      message: 'account is banned',
+    });
+    expect(signedOut).toBe(1);
   });
 });
 

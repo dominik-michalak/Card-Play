@@ -18,7 +18,11 @@
     "build": "npm run build -w server && npm run build -w client",
     "test": "vitest run",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run test",
-    "db:migrate": "npm run db:migrate -w server"
+    "db:migrate": "npm run db:migrate -w server",
+    "app:up": "docker compose -p cardplay-app -f compose.app.yml up -d --build --wait",
+    "app:down": "docker compose -p cardplay-app -f compose.app.yml down",
+    "app:smoke": "node scripts/smoke.mjs",
+    "app:test": "sh scripts/run-smoke.sh"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

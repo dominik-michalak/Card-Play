@@ -22,6 +22,16 @@ describe('loadConfig', () => {
     });
   });
 
+  it('trusts no proxy unless told how many sit in front of the server', () => {
+    expect(loadConfig(validEnv).trustProxy).toBe(0);
+    expect(loadConfig({ ...validEnv, TRUST_PROXY: '1' }).trustProxy).toBe(1);
+    expect(loadConfig({ ...validEnv, TRUST_PROXY: '2' }).trustProxy).toBe(2);
+  });
+
+  it.each(['abc', '-1', '1.5', '11', 'true', ''])('throws on invalid TRUST_PROXY %s', (value) => {
+    expect(() => loadConfig({ ...validEnv, TRUST_PROXY: value })).toThrow('TRUST_PROXY');
+  });
+
   it('flags production', () => {
     expect(loadConfig({ ...validEnv, NODE_ENV: 'production' }).isProduction).toBe(true);
   });

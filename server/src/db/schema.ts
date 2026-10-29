@@ -3,6 +3,7 @@ import {
   FRIENDSHIP_STATUSES,
   GAME_KEYS,
   GAME_MODES,
+  MODERATION_ACTIONS,
   ROOM_STATUSES,
   TICKET_BODY_MAX,
   TICKET_STATUSES,
@@ -32,6 +33,7 @@ export const gameTypeEnum = pgEnum('game_type', GAME_KEYS);
 export const gameModeEnum = pgEnum('game_mode', GAME_MODES);
 export const roomStatusEnum = pgEnum('room_status', ROOM_STATUSES);
 export const terminationReasonEnum = pgEnum('termination_reason', TERMINATION_REASONS);
+export const moderationActionEnum = pgEnum('moderation_action', MODERATION_ACTIONS);
 export const ticketStatusEnum = pgEnum('ticket_status', TICKET_STATUSES);
 export const achievementIdEnum = pgEnum('achievement_id', ACHIEVEMENT_IDS);
 export const friendshipStatusEnum = pgEnum('friendship_status', FRIENDSHIP_STATUSES);
@@ -46,7 +48,9 @@ export const users = pgTable(
     email: text('email').notNull(),
     passwordHash: text('password_hash').notNull(),
     role: userRoleEnum('role').notNull().default('user'),
+    // a permanent ban; a temporary one is `bannedUntil` in the future
     isBanned: boolean('is_banned').notNull().default(false),
+    bannedUntil: timestamp('banned_until', { withTimezone: true }),
     createdAt: createdAt(),
   },
   (t) => [
@@ -266,4 +270,41 @@ export const ticketReplies = pgTable(
       sql`char_length(${t.body}) between 1 and ${sql.raw(String(TICKET_BODY_MAX))}`,
     ),
   ],
+);
+
+// the history of bans; the flags on `users` say what applies now
+export const bans = pgTable(
+  'bans',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    imposedBy: uuid('imposed_by').references(() => users.id, { onDelete: 'set null' }),
+    reason: text('reason').notNull(),
+    permanent: boolean('permanent').notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }),
+    createdAt: createdAt(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    revokedBy: uuid('revoked_by').references(() => users.id, { onDelete: 'set null' }),
+  },
+  (t) => [
+    index('bans_user_idx').on(t.userId, t.createdAt.desc()),
+    check('bans_reason_length', sql`char_length(${t.reason}) between 1 and 500`),
+    check('bans_permanent_has_no_end', sql`${t.permanent} = (${t.expiresAt} is null)`),
+  ],
+);
+
+// who did what to whom, kept even when an account is deleted (the ids are then null)
+export const moderationActions = pgTable(
+  'moderation_actions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    action: moderationActionEnum('action').notNull(),
+    actorId: uuid('actor_id').references(() => users.id, { onDelete: 'set null' }),
+    targetUserId: uuid('target_user_id').references(() => users.id, { onDelete: 'set null' }),
+    details: jsonb('details').notNull().default({}),
+    createdAt: createdAt(),
+  },
+  (t) => [index('moderation_actions_created_idx').on(t.createdAt.desc())],
 );

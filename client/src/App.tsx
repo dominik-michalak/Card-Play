@@ -7,6 +7,7 @@ import { LeaderboardView } from './LeaderboardView';
 import { ACHIEVEMENT_LABELS } from './labels';
 import { Lobby } from './Lobby';
 import { ProfileView } from './ProfileView';
+import { StaffView } from './StaffView';
 import { TicketsView } from './TicketsView';
 import { connectRealtime, type RealtimeSocket } from './realtime';
 import { RoomScreen } from './RoomScreen';
@@ -34,7 +35,10 @@ export function App() {
   }
 
   return (
-    <main>
+    <div className="app">
+      <a className="skip-link" href="#content">
+        Przejdź do treści
+      </a>
       <header>
         <h1>CardPlay</h1>
         {user && (
@@ -43,14 +47,16 @@ export function App() {
           </p>
         )}
       </header>
-      {user === undefined ? (
-        <p>Ładowanie…</p>
-      ) : user === null ? (
-        <AuthForm api={api} onSignedIn={setUser} />
-      ) : (
-        <Home api={api} user={user} />
-      )}
-    </main>
+      <main id="content" tabIndex={-1}>
+        {user === undefined ? (
+          <p role="status">Ładowanie…</p>
+        ) : user === null ? (
+          <AuthForm api={api} onSignedIn={setUser} />
+        ) : (
+          <Home api={api} user={user} />
+        )}
+      </main>
+    </div>
   );
 }
 
@@ -59,7 +65,8 @@ type View =
   | { name: 'profile'; ref: string }
   | { name: 'ranking' }
   | { name: 'friends' }
-  | { name: 'tickets' };
+  | { name: 'tickets' }
+  | { name: 'staff' };
 type Invitation = Parameters<ServerToClientEvents['friend:invited']>[0];
 
 function Home({ api, user }: { api: Api; user: SessionUser }) {
@@ -108,7 +115,7 @@ function Home({ api, user }: { api: Api; user: SessionUser }) {
     }
   }
 
-  if (!socket || room === undefined) return <p>Ładowanie…</p>;
+  if (!socket || room === undefined) return <p role="status">Ładowanie…</p>;
   const banner = unlocked && (
     <p role="status">
       Nowe osiągnięcie: <strong>{ACHIEVEMENT_LABELS[unlocked.id].name}</strong>{' '}
@@ -133,12 +140,18 @@ function Home({ api, user }: { api: Api; user: SessionUser }) {
   }
   return (
     <>
-      <nav>
+      <nav aria-label="Główne">
         <button onClick={() => setView({ name: 'lobby' })}>Lobby</button>{' '}
         <button onClick={() => setView({ name: 'profile', ref: 'me' })}>Mój profil</button>{' '}
         <button onClick={() => setView({ name: 'ranking' })}>Ranking</button>{' '}
         <button onClick={() => setView({ name: 'friends' })}>Znajomi</button>{' '}
         <button onClick={() => setView({ name: 'tickets' })}>Zgłoszenia</button>
+        {user.role !== 'user' && (
+          <>
+            {' '}
+            <button onClick={() => setView({ name: 'staff' })}>Obsługa</button>
+          </>
+        )}
       </nav>
       {banner}
       {error && <p role="alert">{error}</p>}
@@ -162,6 +175,7 @@ function Home({ api, user }: { api: Api; user: SessionUser }) {
         <LeaderboardView api={api} onOpenProfile={(ref) => setView({ name: 'profile', ref })} />
       )}
       {view.name === 'tickets' && <TicketsView api={api} />}
+      {view.name === 'staff' && user.role !== 'user' && <StaffView api={api} user={user} />}
       {view.name === 'friends' && (
         <FriendsView api={api} onOpenProfile={(ref) => setView({ name: 'profile', ref })} />
       )}

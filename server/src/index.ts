@@ -3,6 +3,7 @@ import { createApp } from './app';
 import { loadConfig } from './config';
 import { createDb } from './db/client';
 import { createResultsService } from './modules/results/results.service';
+import { createBanEvents } from './modules/moderation/ban-events';
 import { createFriendsService } from './modules/friends/friends.service';
 import { createRoomsService } from './modules/rooms/rooms.service';
 import { createPresence } from './realtime/presence';
@@ -13,6 +14,7 @@ async function main(): Promise<void> {
   const { db } = createDb(config.databaseUrl);
   const roomService = createRoomsService(db);
   const presence = createPresence();
+  const banEvents = createBanEvents();
   const friendsService = createFriendsService(db, presence);
   const results = createResultsService(db);
 
@@ -21,8 +23,16 @@ async function main(): Promise<void> {
   const cancelled = await results.cancelUnfinishedGames();
   console.log(`${cancelled} unfinished games from the previous run marked as cancelled`);
 
-  const server = createServer(createApp(config, db, { roomService, friendsService }));
-  createSocketServer(server, { config, roomService, results, presence, friendsService });
+  const server = createServer(createApp(config, db, { roomService, friendsService, banEvents }));
+  createSocketServer(server, {
+    config,
+    db,
+    roomService,
+    results,
+    presence,
+    friendsService,
+    banEvents,
+  });
   server.listen(config.port, () => {
     console.log(`server listening on port ${config.port}`);
   });
