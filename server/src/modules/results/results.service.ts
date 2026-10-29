@@ -1,11 +1,15 @@
-import type { GameResult, GameState, TerminationReason } from '@cardplay/shared';
-import { and, eq, inArray } from 'drizzle-orm';
+import type { GameResult, GameState, RatingChange, TerminationReason } from '@cardplay/shared';
+import { and, eq, inArray, isNull } from 'drizzle-orm';
 import type { Db } from '../../db/client';
-import { gameRecordPlayers, gameRecords, gameRooms, userRatings } from '../../db/schema';
+import {
+  gameRecordPlayers,
+  gameRecords,
+  gameRooms,
+  roomPlayers,
+  userRatings,
+} from '../../db/schema';
 import { HttpError } from '../../http-error';
 import { eloGain } from './elo';
-
-export type RatingChange = { userId: string; eloBefore: number; eloChange: number };
 
 export type GameOutcome = {
   recordId: string;
@@ -32,6 +36,20 @@ export function createResultsService(db: Db) {
       }
       if (room.status !== 'waiting') {
         throw new HttpError(409, 'INVALID_ACTION', 'the game has already started');
+      }
+
+      // a player may have left while the countdown was running
+      const seated = await tx
+        .select({ userId: roomPlayers.userId })
+        .from(roomPlayers)
+        .where(eq(roomPlayers.roomId, roomId));
+      const seatedIds = seated.map((s) => s.userId).sort();
+      const playingIds = state.players
+        .filter((p) => !p.isBot)
+        .map((p) => p.id)
+        .sort();
+      if (seatedIds.join() !== playingIds.join()) {
+        throw new HttpError(409, 'INVALID_ACTION', 'the players differ from the room');
       }
       await tx.update(gameRooms).set({ status: 'in_progress' }).where(eq(gameRooms.id, roomId));
 
@@ -129,7 +147,23 @@ export function createResultsService(db: Db) {
     });
   }
 
-  return { startGame, finishGame };
+  // after a restart no runner holds these games, and they are not resumed
+  async function cancelUnfinishedGames(): Promise<number> {
+    const open = await db
+      .select({ id: gameRecords.id, state: gameRecords.state })
+      .from(gameRecords)
+      .where(isNull(gameRecords.finishedAt));
+    for (const record of open) {
+      await finishGame(
+        record.id,
+        { terminationReason: 'cancelled', placements: [] },
+        record.state as GameState,
+      );
+    }
+    return open.length;
+  }
+
+  return { startGame, finishGame, cancelUnfinishedGames };
 }
 
 type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
@@ -174,3 +208,5 @@ async function updateRatings(
   }
   return changes;
 }
+
+export type ResultsService = ReturnType<typeof createResultsService>;

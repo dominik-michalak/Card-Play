@@ -18,6 +18,13 @@ export type LeaveResult = {
   newHostId: string | null;
 };
 
+// what happened to a room, for the socket layer to broadcast
+export type RoomChange = {
+  roomId: string;
+  kind: 'joined' | 'left' | 'seated' | 'closed';
+  userId: string;
+};
+
 export type RoomsServiceOptions = {
   generateInviteCode?: () => string;
 };
@@ -37,6 +44,14 @@ const roomNotFound = () => new HttpError(404, 'ROOM_NOT_FOUND', 'room not found'
 // every action here is shared by REST and the socket events, so the rules live in one place
 export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
   const newInviteCode = options.generateInviteCode ?? generateInviteCode;
+  const listeners: ((change: RoomChange) => void)[] = [];
+
+  // listeners run after the transaction committed, so they always see the stored state
+  function notify(change: RoomChange): void {
+    for (const listener of listeners) {
+      listener(change);
+    }
+  }
 
   async function snapshot(exec: Executor, room: RoomRow): Promise<Room> {
     const players = await exec
@@ -138,7 +153,7 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
   }
 
   async function joinByCode(userId: string, code: string): Promise<Room> {
-    return db.transaction(async (tx) => {
+    const joined = await db.transaction(async (tx) => {
       await lockUser(tx, userId);
       const [found] = await tx
         .select({ id: gameRooms.id })
@@ -170,6 +185,8 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
       await tx.insert(roomPlayers).values({ roomId: room.id, userId, seatIndex });
       return snapshot(tx, room);
     });
+    notify({ roomId: joined.id, kind: 'joined', userId });
+    return joined;
   }
 
   async function getRoom(roomId: string, userId: string): Promise<Room> {
@@ -177,7 +194,7 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
   }
 
   async function takeSeat(roomId: string, userId: string, seatIndex: number): Promise<Room> {
-    return db.transaction(async (tx) => {
+    const room = await db.transaction(async (tx) => {
       const room = await lockMemberRoom(tx, roomId, userId);
       requireWaiting(room);
       if (!Number.isInteger(seatIndex) || seatIndex < 0 || seatIndex >= room.targetPlayers) {
@@ -196,11 +213,13 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
         .where(and(eq(roomPlayers.roomId, roomId), eq(roomPlayers.userId, userId)));
       return snapshot(tx, room);
     });
+    notify({ roomId, kind: 'seated', userId });
+    return room;
   }
 
   // used by POST /lobbies/:id/leave and by the socket event `room:leave`
   async function leaveRoom(roomId: string, userId: string): Promise<LeaveResult> {
-    return db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const room = await lockMemberRoom(tx, roomId, userId);
       requireWaiting(room);
 
@@ -225,6 +244,14 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
       }
       return { roomId, roomClosed: false, newHostId: null };
     });
+    notify({ roomId, kind: result.roomClosed ? 'closed' : 'left', userId });
+    return result;
+  }
+
+  // for the socket layer, which has already authenticated the caller by other means
+  async function findRoom(roomId: string): Promise<Room | null> {
+    const [room] = await db.select().from(gameRooms).where(eq(gameRooms.id, roomId));
+    return room ? snapshot(db, room) : null;
   }
 
   return {
@@ -233,6 +260,10 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
     getRoom,
     takeSeat,
     leaveRoom,
+    findRoom,
+    onChange: (listener: (change: RoomChange) => void): void => {
+      listeners.push(listener);
+    },
   };
 }
 

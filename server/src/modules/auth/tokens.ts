@@ -19,8 +19,16 @@ export function signAccessToken(
   });
 }
 
+export type VerifiedAccessToken = AccessTokenPayload & {
+  // when the token stops being valid, in milliseconds since the epoch
+  expiresAt: number;
+};
+
 // returns null for any invalid, expired or malformed token
-export function verifyAccessToken(token: string, secret: string): AccessTokenPayload | null {
+export function verifyAccessTokenWithExpiry(
+  token: string,
+  secret: string,
+): VerifiedAccessToken | null {
   try {
     // algorithms are pinned so a token cannot pick "none" or a different scheme
     const decoded = jwt.verify(token, secret, { algorithms: ['HS256'], issuer: ISSUER });
@@ -28,10 +36,18 @@ export function verifyAccessToken(token: string, secret: string): AccessTokenPay
       return null;
     }
     const role = decoded.role as UserRole;
-    return USER_ROLES.includes(role) ? { userId: decoded.sub, role } : null;
+    if (!USER_ROLES.includes(role) || typeof decoded.exp !== 'number') {
+      return null;
+    }
+    return { userId: decoded.sub, role, expiresAt: decoded.exp * 1000 };
   } catch {
     return null;
   }
+}
+
+export function verifyAccessToken(token: string, secret: string): AccessTokenPayload | null {
+  const verified = verifyAccessTokenWithExpiry(token, secret);
+  return verified ? { userId: verified.userId, role: verified.role } : null;
 }
 
 // refresh tokens are opaque random strings, not JWTs: they are only ever looked up

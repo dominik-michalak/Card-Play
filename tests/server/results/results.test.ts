@@ -129,6 +129,51 @@ describe('startGame', () => {
   });
 });
 
+describe('startGame checks the table', () => {
+  it('refuses a game whose players differ from the people in the room', async () => {
+    const { roomId, gamers, state } = await seedGame({ mode: 'competitive' });
+    await app.db
+      .delete(roomPlayers)
+      .where(and(eq(roomPlayers.roomId, roomId), eq(roomPlayers.userId, gamers[1]!.id)));
+
+    await expect(results.startGame(roomId, state)).rejects.toMatchObject({
+      status: 409,
+      code: 'INVALID_ACTION',
+    });
+    expect(await roomStatus(roomId)).toBe('waiting');
+  });
+});
+
+describe('cancelUnfinishedGames', () => {
+  it('closes every running game as cancelled without touching Elo', async () => {
+    const { roomId, gamers, state } = await seedGame({ mode: 'competitive' });
+    const recordId = await results.startGame(roomId, state);
+
+    const count = await results.cancelUnfinishedGames();
+
+    expect(count).toBe(1);
+    expect(await recordOf(recordId)).toMatchObject({
+      terminationReason: 'cancelled',
+      winnerId: null,
+    });
+    expect(await roomStatus(roomId)).toBe('finished');
+    expect(await ratingOf(gamers[0]!.id)).toBeUndefined();
+  });
+
+  it('leaves finished games alone', async () => {
+    const { roomId, gamers, state } = await seedGame({ mode: 'private' });
+    const recordId = await results.startGame(roomId, state);
+    await results.finishGame(
+      recordId,
+      finished('all_cards', [gamers[0]!.id, gamers[1]!.id]),
+      state,
+    );
+
+    expect(await results.cancelUnfinishedGames()).toBe(0);
+    expect((await recordOf(recordId)).terminationReason).toBe('all_cards');
+  });
+});
+
 describe('finishGame in a ranked 1v1', () => {
   it.each(['all_cards', 'round_limit', 'timeout_forfeit', 'disconnect_forfeit'] as const)(
     'moves Elo after %s',

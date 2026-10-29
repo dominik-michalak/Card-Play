@@ -5,6 +5,7 @@ import {
   hashRefreshToken,
   signAccessToken,
   verifyAccessToken,
+  verifyAccessTokenWithExpiry,
 } from '../../../server/src/modules/auth/tokens';
 
 const secret = 'a'.repeat(64);
@@ -13,6 +14,16 @@ const payload = { userId: '11111111-1111-4111-8111-111111111111', role: 'moderat
 describe('access tokens', () => {
   it('round-trips the payload', () => {
     expect(verifyAccessToken(signAccessToken(payload, secret, 60), secret)).toEqual(payload);
+  });
+
+  it('reports when the token expires, in milliseconds', () => {
+    const before = Date.now();
+    const verified = verifyAccessTokenWithExpiry(signAccessToken(payload, secret, 60), secret);
+
+    expect(verified).toMatchObject(payload);
+    // jwt stores whole seconds, so the expiry may be up to a second earlier than ttl
+    expect(verified!.expiresAt).toBeGreaterThan(before + 58_000);
+    expect(verified!.expiresAt).toBeLessThanOrEqual(before + 60_000);
   });
 
   it('rejects a token signed with another secret', () => {

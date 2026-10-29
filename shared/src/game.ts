@@ -33,6 +33,8 @@ export type ClientGameState = {
   gameKey: GameKey;
   players: GamePlayer[];
   currentPlayerId: string | null;
+  // ISO time the current decision window ends, null while paused; filled by the room runner
+  turnDeadlineAt: string | null;
 };
 
 export const TERMINATION_REASONS = [
@@ -66,3 +68,6 @@ export type ServerGameModule<
   getResult(state: S): GameResult;
   sanitize(state: S, recipientId: string): C;
 };
+
+// Elo movement of one player after a rated game
+export type RatingChange = { userId: string; eloBefore: number; eloChange: number };

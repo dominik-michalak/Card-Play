@@ -211,6 +211,7 @@ function sanitize(state: WarState, _recipientId: string): ClientWarState {
     gameKey: 'war',
     players: state.players,
     currentPlayerId: null,
+    turnDeadlineAt: null,
     stackSizes: Object.fromEntries(
       state.players.map((player, seat) => [player.id, state.stacks[seat]!.length]),
     ),

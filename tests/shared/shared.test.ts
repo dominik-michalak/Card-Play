@@ -92,7 +92,12 @@ describe('contracts', () => {
         placements: state.players.map((p) => ({ playerId: p.id, rank: 1 })),
         terminationReason: 'draw',
       }),
-      sanitize: ({ gameKey, players, currentPlayerId }) => ({ gameKey, players, currentPlayerId }),
+      sanitize: ({ gameKey, players, currentPlayerId }) => ({
+        gameKey,
+        players,
+        currentPlayerId,
+        turnDeadlineAt: null,
+      }),
     };
     const state = module.createInitialState(
       [{ id: 'a', username: 'a', isBot: false }],
@@ -108,6 +113,7 @@ describe('contracts', () => {
     >();
     expectTypeOf<keyof ServerToClientEvents>().toEqualTypeOf<
       | 'room:players'
+      | 'room:countdown'
       | 'room:chat'
       | 'game:state_update'
       | 'game:event'

@@ -1,5 +1,5 @@
 import type { ErrorPayload } from './errors';
-import type { ClientGameState, GameAction, GameEvent, GameResult } from './game';
+import type { ClientGameState, GameAction, GameEvent, GameResult, RatingChange } from './game';
 import type { RoomPlayer } from './rooms';
 
 export type ChatMessage = { userId: string; username: string; message: string; sentAt: string };
@@ -16,10 +16,16 @@ export type ClientToServerEvents = {
 
 export type ServerToClientEvents = {
   'room:players': (payload: { roomId: string; players: RoomPlayer[] }) => void;
+  // ISO time the game starts, null when the countdown was cancelled
+  'room:countdown': (payload: { roomId: string; startsAt: string | null }) => void;
   'room:chat': (payload: { roomId: string } & ChatMessage) => void;
   'game:state_update': (payload: { roomId: string; state: ClientGameState }) => void;
   'game:event': (payload: { roomId: string; event: GameEvent }) => void;
-  'game:finished': (payload: { roomId: string; result: GameResult }) => void;
+  'game:finished': (payload: {
+    roomId: string;
+    result: GameResult;
+    ratings: RatingChange[];
+  }) => void;
   'matchmaking:found': (payload: { roomId: string }) => void;
   error: (payload: ErrorPayload) => void;
 };
