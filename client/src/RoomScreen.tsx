@@ -1,11 +1,12 @@
 import type {
   ClientMacaoState,
+  FriendEntry,
   ClientWarState,
   GameAction,
   GameResult,
   Room,
 } from '@cardplay/shared';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ApiError, type Api, type SessionUser } from './api';
 import { useCountdown, useRoomSession } from './hooks';
 import { matchModeLabel } from './matchmaking-state';
@@ -135,6 +136,9 @@ export function RoomScreen({ api, socket, user, room, onLeft }: Props) {
             </tbody>
           </table>
           {secondsToStart !== null && <p>Start za {secondsToStart} s</p>}
+          {room.mode === 'private' && state.players.length < room.targetPlayers && (
+            <InviteFriends api={api} socket={socket} roomId={room.id} />
+          )}
           {room.mode === 'private' ? (
             <>
               <button
@@ -164,5 +168,47 @@ function ResultSummary({ result, nameOf }: { result: GameResult; nameOf: (id: st
     <p>
       {text} ({REASONS[result.terminationReason] ?? result.terminationReason})
     </p>
+  );
+}
+
+// online friends who can be asked to the room; the server checks everything again
+function InviteFriends({
+  api,
+  socket,
+  roomId,
+}: {
+  api: Api;
+  socket: RealtimeSocket;
+  roomId: string;
+}) {
+  const [online, setOnline] = useState<FriendEntry[]>([]);
+  const [invited, setInvited] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    api.friends().then(
+      (list) => setOnline(list.friends.filter((f) => f.online)),
+      () => setOnline([]),
+    );
+  }, [api]);
+
+  if (online.length === 0) return <p>Brak znajomych online do zaproszenia.</p>;
+  return (
+    <div>
+      <h4>Zaproś znajomego</h4>
+      {online.map((f) => (
+        <p key={f.userId}>
+          {f.username}{' '}
+          <button
+            disabled={invited.has(f.userId)}
+            onClick={() => {
+              socket.emit('friend:invite', { userId: f.userId, roomId });
+              setInvited((current) => new Set(current).add(f.userId));
+            }}
+          >
+            {invited.has(f.userId) ? 'Zaproszono' : 'Zaproś'}
+          </button>
+        </p>
+      ))}
+    </div>
   );
 }

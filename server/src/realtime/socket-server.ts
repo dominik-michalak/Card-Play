@@ -20,11 +20,15 @@ import { validate } from '../validate';
 import { GAME_REGISTRY } from './game-registry';
 import { botPlayer } from '../bots/bots';
 import type { MatchRules } from '../matchmaking/pairing';
+import type { FriendsService } from '../modules/friends/friends.service';
 import { createGameRunner } from './game-runner';
 import { createMatchmaker } from './matchmaker';
+import type { Presence } from './presence';
 import { createLobbyState } from './lobby-state';
 import {
   actionSchema,
+  friendInviteSchema,
+  type FriendInvitePayload,
   matchmakingJoinSchema,
   readySchema,
   roomRefSchema,
@@ -52,6 +56,8 @@ export type SocketServerDeps = {
   timings?: Timings;
   random?: RandomSource;
   matchRules?: MatchRules;
+  presence: Presence;
+  friendsService: FriendsService;
 };
 
 const MAX_PAYLOAD_BYTES = 10_000;
@@ -282,6 +288,7 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
     // one live connection per user: the newest wins
     const previous = sockets.get(userId);
     sockets.set(userId, socket);
+    deps.presence.markOnline(userId);
     void socket.join(userChannel(userId));
     if (previous) {
       previous.emit('error', { code: 'FORBIDDEN', message: 'connected from another place' });
@@ -369,7 +376,7 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
         if (room.status !== 'waiting') {
           throw new HttpError(409, 'INVALID_ACTION', 'the game has already started');
         }
-        if (!GAME_REGISTRY[room.gameType]) {
+        if (!GAME_REGISTRY[room.gameType]?.rulesDefined) {
           throw new HttpError(
             409,
             'GAME_RULES_NOT_DEFINED',
@@ -399,12 +406,39 @@ export function createSocketServer(httpServer: HttpServer, deps: SocketServerDep
       }),
     );
 
+    socket.on(
+      'friend:invite',
+      guarded<FriendInvitePayload>(friendInviteSchema, async ({ userId: friendId, roomId }) => {
+        if (!(await deps.friendsService.areFriends(userId, friendId))) {
+          throw new HttpError(403, 'FORBIDDEN', 'this player is not your friend');
+        }
+        const room = await roomService.getRoom(roomId, userId); // must be a member
+        if (room.mode !== 'private' || room.status !== 'waiting' || !room.inviteCode) {
+          throw new HttpError(409, 'INVALID_ACTION', 'only a waiting private room can be shared');
+        }
+        if (room.players.length >= room.targetPlayers) {
+          throw new HttpError(409, 'ROOM_FULL', 'room is full');
+        }
+        if (!deps.presence.isOnline(friendId)) {
+          throw new HttpError(409, 'INVALID_ACTION', 'your friend is offline');
+        }
+        const me = room.players.find((p) => p.userId === userId);
+        io.to(userChannel(friendId)).emit('friend:invited', {
+          fromUserId: userId,
+          fromUsername: me?.username ?? '',
+          gameType: room.gameType,
+          inviteCode: room.inviteCode,
+        });
+      }),
+    );
+
     socket.on('matchmaking:leave', () => {
       matchmaker.leave(userId);
     });
 
     socket.on('disconnect', () => {
       clearTimeout(expiry);
+      deps.presence.markOffline(userId);
       // a player who is gone cannot accept a match
       matchmaker.leave(userId);
       if (sockets.get(userId) === socket) {

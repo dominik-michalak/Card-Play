@@ -1,8 +1,11 @@
-import type { Room } from '@cardplay/shared';
+import type { Room, ServerToClientEvents } from '@cardplay/shared';
 import { useEffect, useMemo, useState } from 'react';
 import { ApiError, createApi, type Api, type SessionUser } from './api';
 import { AuthForm } from './AuthForm';
+import { FriendsView } from './FriendsView';
+import { LeaderboardView } from './LeaderboardView';
 import { Lobby } from './Lobby';
+import { ProfileView } from './ProfileView';
 import { connectRealtime, type RealtimeSocket } from './realtime';
 import { RoomScreen } from './RoomScreen';
 
@@ -49,15 +52,22 @@ export function App() {
   );
 }
 
+type View =
+  { name: 'lobby' } | { name: 'profile'; ref: string } | { name: 'ranking' } | { name: 'friends' };
+type Invitation = Parameters<ServerToClientEvents['friend:invited']>[0];
+
 function Home({ api, user }: { api: Api; user: SessionUser }) {
   const [socket, setSocket] = useState<RealtimeSocket | null>(null);
   // undefined while the current room is being looked up (also after a page reload)
   const [room, setRoom] = useState<Room | null | undefined>(undefined);
+  const [view, setView] = useState<View>({ name: 'lobby' });
+  const [invitation, setInvitation] = useState<Invitation | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const connection = connectRealtime(api, { autoConnect: false });
     setSocket(connection);
+    connection.on('friend:invited', setInvitation);
     // Connecting on the next tick skips the throwaway mount of React StrictMode. A connection
     // that is opened and closed at once can still reach the server after the real one, and the
     // server would then treat the dead one as the newest and drop the live one.
@@ -75,11 +85,26 @@ function Home({ api, user }: { api: Api; user: SessionUser }) {
     });
   }, [api]);
 
+  const enter = (next: Room) => {
+    setInvitation(null);
+    setRoom(next);
+  };
+
+  async function acceptInvitation() {
+    if (!invitation) return;
+    try {
+      enter(await api.joinRoom(invitation.inviteCode));
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Nie udało się dołączyć do pokoju');
+      setInvitation(null);
+    }
+  }
+
   if (!socket || room === undefined) return <p>Ładowanie…</p>;
-  return (
-    <>
-      {error && <p role="alert">{error}</p>}
-      {room ? (
+  if (room) {
+    return (
+      <>
+        {error && <p role="alert">{error}</p>}
         <RoomScreen
           key={room.id}
           api={api}
@@ -88,8 +113,39 @@ function Home({ api, user }: { api: Api; user: SessionUser }) {
           room={room}
           onLeft={() => setRoom(null)}
         />
-      ) : (
-        <Lobby api={api} socket={socket} onEnter={setRoom} />
+      </>
+    );
+  }
+  return (
+    <>
+      <nav>
+        <button onClick={() => setView({ name: 'lobby' })}>Lobby</button>{' '}
+        <button onClick={() => setView({ name: 'profile', ref: 'me' })}>Mój profil</button>{' '}
+        <button onClick={() => setView({ name: 'ranking' })}>Ranking</button>{' '}
+        <button onClick={() => setView({ name: 'friends' })}>Znajomi</button>
+      </nav>
+      {error && <p role="alert">{error}</p>}
+      {invitation && (
+        <p role="alert">
+          {invitation.fromUsername} zaprasza do gry ({invitation.gameType}){' '}
+          <button onClick={() => void acceptInvitation()}>Dołącz</button>{' '}
+          <button onClick={() => setInvitation(null)}>Ignoruj</button>
+        </p>
+      )}
+      {view.name === 'lobby' && <Lobby api={api} socket={socket} onEnter={enter} />}
+      {view.name === 'profile' && (
+        <ProfileView
+          api={api}
+          user={user}
+          userRef={view.ref}
+          onOpenProfile={(ref) => setView({ name: 'profile', ref })}
+        />
+      )}
+      {view.name === 'ranking' && (
+        <LeaderboardView api={api} onOpenProfile={(ref) => setView({ name: 'profile', ref })} />
+      )}
+      {view.name === 'friends' && (
+        <FriendsView api={api} onOpenProfile={(ref) => setView({ name: 'profile', ref })} />
       )}
     </>
   );

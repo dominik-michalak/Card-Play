@@ -1,4 +1,5 @@
 import {
+  FRIENDSHIP_STATUSES,
   GAME_KEYS,
   GAME_MODES,
   ROOM_STATUSES,
@@ -27,6 +28,7 @@ export const gameTypeEnum = pgEnum('game_type', GAME_KEYS);
 export const gameModeEnum = pgEnum('game_mode', GAME_MODES);
 export const roomStatusEnum = pgEnum('room_status', ROOM_STATUSES);
 export const terminationReasonEnum = pgEnum('termination_reason', TERMINATION_REASONS);
+export const friendshipStatusEnum = pgEnum('friendship_status', FRIENDSHIP_STATUSES);
 
 const createdAt = () => timestamp('created_at', { withTimezone: true }).notNull().defaultNow();
 
@@ -165,5 +167,31 @@ export const gameRecordPlayers = pgTable(
     index('game_record_players_user_idx').on(t.userId),
     index('game_record_players_record_idx').on(t.recordId),
     check('game_record_players_rank', sql`${t.finalRank} >= 1`),
+  ],
+);
+
+// one row per pair of users, whoever invited whom; an invitation that is declined is deleted
+export const friendships = pgTable(
+  'friendships',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    requesterId: uuid('requester_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    addresseeId: uuid('addressee_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    status: friendshipStatusEnum('status').notNull().default('pending'),
+    createdAt: createdAt(),
+    respondedAt: timestamp('responded_at', { withTimezone: true }),
+  },
+  (t) => [
+    // the same pair cannot appear twice, in either direction
+    uniqueIndex('friendships_pair_idx').on(
+      sql`least(${t.requesterId}, ${t.addresseeId})`,
+      sql`greatest(${t.requesterId}, ${t.addresseeId})`,
+    ),
+    index('friendships_addressee_idx').on(t.addresseeId),
+    check('friendships_not_self', sql`${t.requesterId} <> ${t.addresseeId}`),
   ],
 );

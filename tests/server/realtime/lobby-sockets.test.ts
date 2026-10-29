@@ -166,6 +166,21 @@ describe('ready and the start countdown', () => {
     expect((await hostSocket.next<ErrorPayload>('error')).code).toBe('GAME_RULES_NOT_DEFINED');
   });
 
+  it('answers GAME_RULES_NOT_DEFINED for Texas Clinch and never starts a countdown', async () => {
+    const host = await seedUser(server.db, 'host');
+    const guest = await seedUser(server.db, 'guest');
+    const room = await server.roomService.createRoom(host.id, { gameType: 'texas_clinch' });
+    await server.roomService.joinByCode(guest.id, room.inviteCode!);
+    const socket = await server.connectAs(host.id);
+    socket.emit('room:join', { roomId: room.id });
+    await socket.next('room:players');
+
+    socket.emit('room:ready', { roomId: room.id, ready: true });
+
+    expect((await socket.next<ErrorPayload>('error')).code).toBe('GAME_RULES_NOT_DEFINED');
+    await socket.quiet('room:countdown', 250);
+  });
+
   it('starts the game after the countdown once the table is full and ready', async () => {
     const { hostSocket, guestSocket, roomId } = await table();
 

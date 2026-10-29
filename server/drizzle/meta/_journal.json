@@ -15,6 +15,13 @@
       "when": 1793273722576,
       "tag": "0001_unique_madrox",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793276610418,
+      "tag": "0002_abandoned_cerise",
+      "breakpoints": true
     }
   ]
 }

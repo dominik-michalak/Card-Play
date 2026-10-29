@@ -8,12 +8,16 @@ import { createErrorHandler, notFoundHandler } from './middleware/error-handler'
 import { requireSameOrigin } from './middleware/require-same-origin';
 import { createAuthRouter } from './modules/auth/auth.routes';
 import { createAuthService } from './modules/auth/auth.service';
+import { createFriendsRouter } from './modules/friends/friends.routes';
+import type { FriendsService } from './modules/friends/friends.service';
+import { createProfileRouter } from './modules/profile/profile.routes';
+import { createProfileService } from './modules/profile/profile.service';
 import { createRoomsRouter } from './modules/rooms/rooms.routes';
 import type { RoomsService } from './modules/rooms/rooms.service';
 
 // services with in-memory state are created once by the composition root and shared with the
 // socket layer, so REST and Socket.IO always act on the same rooms
-export type AppServices = { roomService: RoomsService };
+export type AppServices = { roomService: RoomsService; friendsService: FriendsService };
 
 export function createApp(config: Config, db: Db, services: AppServices): express.Express {
   const app = express();
@@ -31,6 +35,8 @@ export function createApp(config: Config, db: Db, services: AppServices): expres
   app.use('/api/v1', requireSameOrigin(config.clientOrigin));
   app.use('/api/v1/auth', createAuthRouter(createAuthService(db, config), config));
   app.use('/api/v1/lobbies', createRoomsRouter(services.roomService, config));
+  app.use('/api/v1/users/me/friends', createFriendsRouter(services.friendsService, config));
+  app.use('/api/v1', createProfileRouter(createProfileService(db), config));
 
   app.use(notFoundHandler);
   app.use(createErrorHandler());

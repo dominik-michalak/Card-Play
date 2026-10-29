@@ -15,6 +15,8 @@ export type ClientToServerEvents = {
   'game:action': (payload: { roomId: string; action: GameAction }) => void;
   'matchmaking:join': (payload: { gameType: GameKey; mode: MatchmakingMode }) => void;
   'matchmaking:leave': () => void;
+  // invites an online friend to the caller's private room, which must have a free seat
+  'friend:invite': (payload: { userId: string; roomId: string }) => void;
 };
 
 export type ServerToClientEvents = {
@@ -30,6 +32,13 @@ export type ServerToClientEvents = {
     ratings: RatingChange[];
   }) => void;
   'matchmaking:found': (payload: { roomId: string }) => void;
+  // a friend asks to join their private room; `inviteCode` is what POST /lobbies/join needs
+  'friend:invited': (payload: {
+    fromUserId: string;
+    fromUsername: string;
+    gameType: GameKey;
+    inviteCode: string;
+  }) => void;
   // `reason` explains why the player is no longer queued when they did not ask for it
   'matchmaking:status': (payload: {
     queued: boolean;

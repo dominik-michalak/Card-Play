@@ -3,13 +3,17 @@ import { createApp } from './app';
 import { loadConfig } from './config';
 import { createDb } from './db/client';
 import { createResultsService } from './modules/results/results.service';
+import { createFriendsService } from './modules/friends/friends.service';
 import { createRoomsService } from './modules/rooms/rooms.service';
+import { createPresence } from './realtime/presence';
 import { createSocketServer } from './realtime/socket-server';
 
 async function main(): Promise<void> {
   const config = loadConfig();
   const { db } = createDb(config.databaseUrl);
   const roomService = createRoomsService(db);
+  const presence = createPresence();
+  const friendsService = createFriendsService(db, presence);
   const results = createResultsService(db);
 
   // no runner holds the games of the previous run and they are not resumed: they are marked
@@ -17,8 +21,8 @@ async function main(): Promise<void> {
   const cancelled = await results.cancelUnfinishedGames();
   console.log(`${cancelled} unfinished games from the previous run marked as cancelled`);
 
-  const server = createServer(createApp(config, db, { roomService }));
-  createSocketServer(server, { config, roomService, results });
+  const server = createServer(createApp(config, db, { roomService, friendsService }));
+  createSocketServer(server, { config, roomService, results, presence, friendsService });
   server.listen(config.port, () => {
     console.log(`server listening on port ${config.port}`);
   });

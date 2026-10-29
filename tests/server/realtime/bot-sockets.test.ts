@@ -75,13 +75,14 @@ describe('a game against the bot', () => {
     );
 
     if (first.state.currentPlayerId !== 'bot') {
-      // hand the turn over: draw, and pass if the drawn card was playable
+      // hand the turn over: draw, and pass if the drawn card was playable. The bot may also
+      // answer at once (an automatic move), so either event can come first.
+      const mustPass = client
+        .next<{ state: ClientMacaoState }>('game:state_update', (e) => e.state.canPass, 3000)
+        .catch(() => null);
       client.emit('game:action', { roomId: room.id, action: { type: 'draw' } });
-      const next = await client.next<{ state: ClientMacaoState }>(
-        'game:state_update',
-        (e) => e.state.canPass || e.state.currentPlayerId === 'bot',
-      );
-      if (next.state.canPass) {
+      const winner = await Promise.race([botMoved.then(() => 'bot'), mustPass.then(() => 'pass')]);
+      if (winner === 'pass') {
         client.emit('game:action', { roomId: room.id, action: { type: 'pass' } });
       }
     }

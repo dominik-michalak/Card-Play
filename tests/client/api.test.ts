@@ -94,6 +94,54 @@ describe('requests with an expired access token', () => {
   });
 });
 
+describe('profile, ranking and friends', () => {
+  const bob = { username: 'bob', email: 'bob@example.com', password: 'correct horse' };
+
+  it('reads a profile and the history of games, by name and as "me"', async () => {
+    const api = newApi();
+    await api.register(alice);
+
+    expect(await api.profile('me')).toMatchObject({ username: 'alice', totals: { played: 0 } });
+    expect((await api.profile('ALICE')).username).toBe('alice');
+    expect(await api.history('me', { limit: 5, offset: 0 })).toEqual({ total: 0, items: [] });
+    await expect(api.profile('nobody_here')).rejects.toMatchObject({ code: 'NOT_FOUND' });
+  });
+
+  it('reads a leaderboard page', async () => {
+    const api = newApi();
+    await api.register(alice);
+    expect(await api.leaderboard('war', { limit: 10 })).toEqual({ total: 0, items: [] });
+  });
+
+  it('walks through inviting, accepting, listing and removing a friend', async () => {
+    const [first, second] = [newApi(), newApi()];
+    const firstUser = await first.register(alice);
+    const secondUser = await second.register(bob);
+
+    expect(await first.inviteFriend('BOB')).toMatchObject({ status: 'pending' });
+    expect((await second.friends()).incoming).toMatchObject([{ userId: firstUser.id }]);
+
+    await second.acceptFriend(firstUser.id);
+    expect((await first.friends()).friends).toMatchObject([
+      { userId: secondUser.id, online: false },
+    ]);
+
+    await first.removeFriend(secondUser.id);
+    expect((await first.friends()).friends).toEqual([]);
+  });
+
+  it('withdraws an invitation', async () => {
+    const [first, second] = [newApi(), newApi()];
+    await first.register(alice);
+    const secondUser = await second.register(bob);
+    await first.inviteFriend('bob');
+
+    await first.declineFriend(secondUser.id);
+
+    expect((await first.friends()).outgoing).toEqual([]);
+  });
+});
+
 describe('rooms', () => {
   it('creates, finds, joins and leaves a room', async () => {
     const host = newApi();

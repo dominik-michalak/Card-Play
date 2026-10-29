@@ -3,6 +3,9 @@ import type { GameKey } from './game';
 export const USER_ROLES = ['user', 'moderator', 'admin'] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 
+export const FRIENDSHIP_STATUSES = ['pending', 'accepted'] as const;
+export type FriendshipStatus = (typeof FRIENDSHIP_STATUSES)[number];
+
 export const GAME_MODES = ['competitive', 'unrated', 'private', 'bot'] as const;
 export type GameMode = (typeof GAME_MODES)[number];
 

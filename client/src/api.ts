@@ -1,4 +1,14 @@
-import type { ErrorCode, GameKey, Room, UserRole } from '@cardplay/shared';
+import type {
+  ErrorCode,
+  FriendListView,
+  GameKey,
+  HistoryEntry,
+  LeaderboardEntry,
+  Paged,
+  ProfileView,
+  Room,
+  UserRole,
+} from '@cardplay/shared';
 
 export type SessionUser = { id: string; username: string; email: string; role: UserRole };
 type Session = { accessToken: string; user: SessionUser };
@@ -25,6 +35,13 @@ export type CreateRoomRequest = {
   // a private room unless the player wants the bot as the opponent
   mode?: 'private' | 'bot';
 };
+function pageQuery(page: { limit?: number; offset?: number }): Record<string, string> {
+  const query: Record<string, string> = {};
+  if (page.limit !== undefined) query.limit = String(page.limit);
+  if (page.offset !== undefined) query.offset = String(page.offset);
+  return query;
+}
+
 export type LeaveResult = { roomId: string; roomClosed: boolean; newHostId: string | null };
 
 // The access token lives only in this closure (never in storage); the refresh token is an
@@ -131,6 +148,31 @@ export function createApi(options: ApiOptions = {}) {
     createRoom: (input: CreateRoomRequest) => request<Room>('/api/v1/lobbies', 'POST', input),
     joinRoom: (code: string) => request<Room>('/api/v1/lobbies/join', 'POST', { code }),
     leaveRoom: (roomId: string) => request<LeaveResult>(`/api/v1/lobbies/${roomId}/leave`, 'POST'),
+    // `ref` is a user id, a user name or "me"
+    profile: (ref: string) =>
+      request<ProfileView>(`/api/v1/users/${encodeURIComponent(ref)}/profile`),
+    history: (ref: string, page: { limit?: number; offset?: number } = {}) =>
+      request<Paged<HistoryEntry>>(
+        `/api/v1/users/${encodeURIComponent(ref)}/games?${new URLSearchParams(pageQuery(page))}`,
+      ),
+    leaderboard: (gameType: GameKey, page: { limit?: number; offset?: number } = {}) =>
+      request<Paged<LeaderboardEntry>>(
+        `/api/v1/leaderboard/${gameType}?${new URLSearchParams(pageQuery(page))}`,
+      ),
+
+    friends: () => request<FriendListView>('/api/v1/users/me/friends'),
+    inviteFriend: (username: string) =>
+      request<{ status: 'pending' | 'accepted'; user: { id: string; username: string } }>(
+        '/api/v1/users/me/friends',
+        'POST',
+        { username },
+      ),
+    acceptFriend: (userId: string) =>
+      request<{ status: 'accepted' }>(`/api/v1/users/me/friends/${userId}/accept`, 'POST'),
+    declineFriend: (userId: string) =>
+      request<void>(`/api/v1/users/me/friends/${userId}/decline`, 'POST'),
+    removeFriend: (userId: string) => request<void>(`/api/v1/users/me/friends/${userId}`, 'DELETE'),
+
     async currentRoom(): Promise<Room | null> {
       try {
         return await request<Room>('/api/v1/lobbies/current');

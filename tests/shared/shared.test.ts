@@ -118,6 +118,7 @@ describe('contracts', () => {
       | 'game:action'
       | 'matchmaking:join'
       | 'matchmaking:leave'
+      | 'friend:invite'
     >();
     expectTypeOf<keyof ServerToClientEvents>().toEqualTypeOf<
       | 'room:players'
@@ -128,6 +129,7 @@ describe('contracts', () => {
       | 'game:finished'
       | 'matchmaking:found'
       | 'matchmaking:status'
+      | 'friend:invited'
       | 'error'
     >();
   });

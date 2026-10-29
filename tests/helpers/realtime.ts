@@ -3,6 +3,8 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { io as connectClient, type Socket } from 'socket.io-client';
 import { createApp } from '../../server/src/app';
+import { createFriendsService } from '../../server/src/modules/friends/friends.service';
+import { createPresence } from '../../server/src/realtime/presence';
 import { createResultsService } from '../../server/src/modules/results/results.service';
 import { createRoomsService } from '../../server/src/modules/rooms/rooms.service';
 import { createSocketServer } from '../../server/src/realtime/socket-server';
@@ -83,13 +85,17 @@ export async function startRealtimeServer(
   const { db, pool } = openTestDb();
   const roomService = createRoomsService(db);
   const results = createResultsService(db);
-  const http = createServer(createApp(config, db, { roomService }));
+  const presence = createPresence();
+  const friendsService = createFriendsService(db, presence);
+  const http = createServer(createApp(config, db, { roomService, friendsService }));
   const realtime = createSocketServer(http, {
     config,
     roomService,
     results,
     timings,
     matchRules: options.matchRules,
+    presence,
+    friendsService,
   });
   await new Promise<void>((resolve) => http.listen(0, '127.0.0.1', resolve));
   const url = `http://127.0.0.1:${(http.address() as AddressInfo).port}`;
@@ -115,6 +121,8 @@ export async function startRealtimeServer(
     config,
     roomService,
     results,
+    presence,
+    friendsService,
     connectAs: (userId: string) => open(tokenFor(config, userId)),
     connectWithToken: open,
     // disconnecting leaves any matchmaking queue, so tests do not see each other's players

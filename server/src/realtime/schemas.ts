@@ -28,6 +28,9 @@ export const matchmakingJoinSchema = Joi.object({
   mode: Joi.string().valid('competitive', 'unrated').required(),
 });
 
+export const friendInviteSchema = Joi.object({ userId: Joi.string().uuid().required(), roomId });
+
+export type FriendInvitePayload = { userId: string; roomId: string };
 export type MatchmakingJoinPayload = { gameType: GameKey; mode: MatchmakingMode };
 export type RoomRef = { roomId: string };
 export type SeatPayload = { roomId: string; seatIndex: number };

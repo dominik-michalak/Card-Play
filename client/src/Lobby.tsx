@@ -16,6 +16,8 @@ import type { RealtimeSocket } from './realtime';
 export const PLAYABLE_GAMES: { key: GameKey; label: string }[] = [
   { key: 'war', label: 'Wojna' },
   { key: 'macao', label: 'Makao' },
+  // listed so players see it, but the server refuses to start it
+  { key: 'texas_clinch', label: 'Texas Clinch (zasady w przygotowaniu)' },
 ];
 
 const gameLabel = (key: GameKey) => PLAYABLE_GAMES.find((g) => g.key === key)?.label ?? key;
