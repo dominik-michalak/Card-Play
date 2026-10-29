@@ -55,6 +55,7 @@ describe('error codes', () => {
       [
         'all_cards',
         'round_limit',
+        'turn_limit',
         'timeout_forfeit',
         'disconnect_forfeit',
         'double_timeout',

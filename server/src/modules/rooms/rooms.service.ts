@@ -193,6 +193,19 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
     return db.transaction(async (tx) => snapshot(tx, await lockMemberRoom(tx, roomId, userId)));
   }
 
+  // the room the user is bound to by the one-active-room rule
+  async function getCurrentRoom(userId: string): Promise<Room> {
+    const [found] = await db
+      .select({ room: gameRooms })
+      .from(roomPlayers)
+      .innerJoin(gameRooms, eq(gameRooms.id, roomPlayers.roomId))
+      .where(and(eq(roomPlayers.userId, userId), inArray(gameRooms.status, ACTIVE_STATUSES)));
+    if (!found) {
+      throw roomNotFound();
+    }
+    return snapshot(db, found.room);
+  }
+
   async function takeSeat(roomId: string, userId: string, seatIndex: number): Promise<Room> {
     const room = await db.transaction(async (tx) => {
       const room = await lockMemberRoom(tx, roomId, userId);
@@ -258,6 +271,7 @@ export function createRoomsService(db: Db, options: RoomsServiceOptions = {}) {
     createRoom,
     joinByCode,
     getRoom,
+    getCurrentRoom,
     takeSeat,
     leaveRoom,
     findRoom,

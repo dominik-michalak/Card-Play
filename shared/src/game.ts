@@ -40,6 +40,7 @@ export type ClientGameState = {
 export const TERMINATION_REASONS = [
   'all_cards',
   'round_limit',
+  'turn_limit',
   'timeout_forfeit',
   'disconnect_forfeit',
   'double_timeout',

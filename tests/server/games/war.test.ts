@@ -13,6 +13,7 @@ import { createDeck } from '../../../server/src/games/deck';
 import {
   createWarState,
   createWarStateFromStacks,
+  forfeitWar,
   resolveFlipTimeout,
   warModule,
   type WarState,
@@ -455,5 +456,31 @@ describe('whole games', () => {
       expect(placements).toHaveLength(2);
       expect(['all_cards', 'round_limit', 'draw']).toContain(terminationReason);
     }
+  });
+});
+
+describe('forfeitWar', () => {
+  it.each(['timeout_forfeit', 'disconnect_forfeit'] as const)(
+    'gives the other player the win after a %s',
+    (reason) => {
+      const state = startWith(filler(26), filler(26));
+      expect(warModule.getResult(forfeitWar(state, 'alice', reason))).toEqual({
+        terminationReason: reason,
+        placements: [
+          { playerId: 'alice', rank: 2 },
+          { playerId: 'bob', rank: 1 },
+        ],
+      });
+      expect(warModule.getResult(forfeitWar(state, 'bob', reason)).placements).toEqual([
+        { playerId: 'alice', rank: 1 },
+        { playerId: 'bob', rank: 2 },
+      ]);
+    },
+  );
+
+  it('does not change the state it was given', () => {
+    const state = startWith(filler(26), filler(26));
+    forfeitWar(state, 'alice', 'timeout_forfeit');
+    expect(state.result).toBeNull();
   });
 });

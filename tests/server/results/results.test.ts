@@ -317,6 +317,23 @@ describe('finishGame in a ranked 1v1', () => {
   });
 });
 
+describe('finishGame after a turn limit', () => {
+  it('accepts turn_limit and rates a clear winner like any other result', async () => {
+    const { roomId, gamers, state } = await seedGame({ mode: 'competitive' });
+    const recordId = await results.startGame(roomId, state);
+
+    const outcome = await results.finishGame(
+      recordId,
+      finished('turn_limit', [gamers[0]!.id, gamers[1]!.id]),
+      state,
+    );
+
+    expect(outcome.winnerId).toBe(gamers[0]!.id);
+    expect(outcome.ratings).toHaveLength(2);
+    expect((await recordOf(recordId)).terminationReason).toBe('turn_limit');
+  });
+});
+
 describe('finishGame in unranked games', () => {
   it.each(['private', 'unrated'] as const)('counts a %s 1v1 but keeps Elo', async (mode) => {
     const { roomId, gamers, state } = await seedGame({ mode });

@@ -1,0 +1,124 @@
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { ApiError, createApi } from '../../client/src/api';
+import { resetDb } from '../helpers/db';
+import { cookieFetch } from '../helpers/cookie-fetch';
+import { startRealtimeServer } from '../helpers/realtime';
+
+let server: Awaited<ReturnType<typeof startRealtimeServer>>;
+
+beforeAll(async () => {
+  server = await startRealtimeServer();
+});
+afterAll(() => server.close());
+beforeEach(() => resetDb(server.db));
+
+const newApi = () => createApi({ baseUrl: server.url, fetchFn: cookieFetch() });
+const alice = { username: 'alice', email: 'alice@example.com', password: 'correct horse' };
+
+describe('session', () => {
+  it('keeps the access token in memory after login and registration', async () => {
+    const api = newApi();
+    expect(api.getAccessToken()).toBeNull();
+
+    const user = await api.register(alice);
+
+    expect(user).toMatchObject({ username: 'alice', role: 'user' });
+    expect(api.getAccessToken()).toEqual(expect.any(String));
+  });
+
+  it('reports the server error code of a failed login', async () => {
+    const api = newApi();
+    await expect(api.login({ email: alice.email, password: 'wrong' })).rejects.toMatchObject({
+      status: 401,
+      code: 'UNAUTHORIZED',
+    });
+    expect(api.getAccessToken()).toBeNull();
+  });
+
+  it('restores the session from the refresh cookie, as after a page reload', async () => {
+    const fetchFn = cookieFetch();
+    await createApi({ baseUrl: server.url, fetchFn }).register(alice);
+
+    const reloaded = createApi({ baseUrl: server.url, fetchFn });
+    const user = await reloaded.restoreSession();
+
+    expect(user?.username).toBe('alice');
+    expect(reloaded.getAccessToken()).toEqual(expect.any(String));
+  });
+
+  it('has no session without a cookie', async () => {
+    expect(await newApi().restoreSession()).toBeNull();
+  });
+
+  it('forgets the session on logout', async () => {
+    const fetchFn = cookieFetch();
+    const api = createApi({ baseUrl: server.url, fetchFn });
+    await api.register(alice);
+
+    await api.logout();
+
+    expect(api.getAccessToken()).toBeNull();
+    expect(await createApi({ baseUrl: server.url, fetchFn }).restoreSession()).toBeNull();
+  });
+});
+
+describe('requests with an expired access token', () => {
+  it('refreshes once and repeats the request', async () => {
+    const api = newApi();
+    await api.register(alice);
+    api.setAccessToken('expired.or.forged');
+
+    expect(await api.currentRoom()).toBeNull();
+    expect(api.getAccessToken()).not.toBe('expired.or.forged');
+  });
+
+  it('shares one refresh between parallel requests', async () => {
+    const api = newApi();
+    await api.register(alice);
+    api.setAccessToken('expired.or.forged');
+
+    const results = await Promise.all([api.currentRoom(), api.currentRoom(), api.currentRoom()]);
+
+    expect(results).toEqual([null, null, null]);
+  });
+
+  it('tells the app when the session cannot be saved', async () => {
+    const api = newApi();
+    api.setAccessToken('expired.or.forged');
+    let lost = 0;
+    api.onSessionLost(() => lost++);
+
+    await expect(api.currentRoom()).rejects.toBeInstanceOf(ApiError);
+
+    expect(lost).toBe(1);
+  });
+});
+
+describe('rooms', () => {
+  it('creates, finds, joins and leaves a room', async () => {
+    const host = newApi();
+    const guest = newApi();
+    await host.register(alice);
+    await guest.register({ ...alice, username: 'bob', email: 'bob@example.com' });
+
+    const room = await host.createRoom({ gameType: 'war' });
+    expect((await host.currentRoom())?.id).toBe(room.id);
+    const joined = await guest.joinRoom(room.inviteCode!);
+    expect(joined.players).toHaveLength(2);
+
+    await guest.leaveRoom(room.id);
+    expect(await guest.currentRoom()).toBeNull();
+    expect((await host.currentRoom())?.players).toHaveLength(1);
+  });
+
+  it('exposes the server error of a full room', async () => {
+    const [a, b, c] = [newApi(), newApi(), newApi()];
+    await a.register(alice);
+    await b.register({ ...alice, username: 'bob', email: 'bob@example.com' });
+    await c.register({ ...alice, username: 'carol', email: 'carol@example.com' });
+    const room = await a.createRoom({ gameType: 'war' });
+    await b.joinRoom(room.inviteCode!);
+
+    await expect(c.joinRoom(room.inviteCode!)).rejects.toMatchObject({ code: 'ROOM_FULL' });
+  });
+});

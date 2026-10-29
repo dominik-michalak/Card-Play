@@ -27,6 +27,11 @@ export function createRoomsRouter(rooms: RoomsService, config: Config): Router {
     res.json(await rooms.joinByCode(currentUser(res).userId, code));
   });
 
+  // declared before '/:id', which would otherwise take "current" for a room id
+  router.get('/current', async (_req, res) => {
+    res.json(await rooms.getCurrentRoom(currentUser(res).userId));
+  });
+
   router.get('/:id', async (req, res) => {
     const roomId = validate<string>(roomIdSchema, req.params.id);
     res.json(await rooms.getRoom(roomId, currentUser(res).userId));

@@ -72,6 +72,10 @@ export function createGameRunner(options: GameRunnerOptions) {
     }
   }
 
+  const activeIds = (game: ActiveGame): string[] => game.definition.activePlayerIds(game.state);
+  const everyoneActiveIsBack = (game: ActiveGame): boolean =>
+    activeIds(game).every((id) => game.connected.has(id));
+
   function clearDeadline(game: ActiveGame): void {
     if (game.deadlineTimer) {
       clearTimeout(game.deadlineTimer);
@@ -83,7 +87,7 @@ export function createGameRunner(options: GameRunnerOptions) {
   // a full window starts; while someone is away the game stays paused instead
   function restartDeadline(game: ActiveGame): void {
     clearDeadline(game);
-    if (game.connected.size < game.playerIds.length) {
+    if (!everyoneActiveIsBack(game)) {
       return;
     }
     game.deadlineAt = Date.now() + timings.turnMs;
@@ -95,8 +99,8 @@ export function createGameRunner(options: GameRunnerOptions) {
     if (game.finished) {
       return;
     }
-    const timedOut = game.definition.resolveTimeout(game.state);
-    await finish(game, game.definition.module.getResult(timedOut), timedOut);
+    const step = game.definition.resolveTimeout(game.state);
+    await settle(game, step.newState, step.events);
   }
 
   async function finish(
@@ -126,33 +130,24 @@ export function createGameRunner(options: GameRunnerOptions) {
       await finish(game, game.definition.module.getResult(newState), newState);
       return;
     }
-    if (game.definition.startsNewWindow(events)) {
+    if (game.definition.startsNewWindow(events) || game.deadlineAt === null) {
       restartDeadline(game);
     }
     broadcastState(game);
   }
 
-  // 1v1 only: the other player wins. Elimination in games with 3+ players comes with Makao.
-  function forfeitResult(game: ActiveGame, forfeiter: string): GameResult {
-    return {
-      terminationReason: 'disconnect_forfeit',
-      placements: game.playerIds.map((playerId) => ({
-        playerId,
-        rank: playerId === forfeiter ? game.playerIds.length : 1,
-      })),
-    };
-  }
-
   async function onForfeitTimer(game: ActiveGame, userId: string): Promise<void> {
     game.forfeitTimers.delete(userId);
-    if (game.finished || game.connected.has(userId)) {
+    const active = activeIds(game);
+    if (game.finished || game.connected.has(userId) || !active.includes(userId)) {
       return;
     }
-    if (game.connected.size === 0) {
+    if (active.every((id) => !game.connected.has(id))) {
       await finish(game, { terminationReason: 'cancelled', placements: [] }, game.state);
       return;
     }
-    await finish(game, forfeitResult(game, userId), game.state);
+    const step = game.definition.forfeit(game.state, userId, 'disconnect_forfeit');
+    await settle(game, step.newState, step.events);
   }
 
   function markAway(game: ActiveGame, userId: string): void {
@@ -210,7 +205,7 @@ export function createGameRunner(options: GameRunnerOptions) {
       if (game.finished) {
         throw new GameRuleError('GAME_OVER', 'the game is already finished');
       }
-      if (game.connected.size < game.playerIds.length) {
+      if (!everyoneActiveIsBack(game)) {
         throw new GameRuleError('INVALID_ACTION', 'the game is paused until everyone is back');
       }
       const { newState, events } = game.definition.module.applyAction(game.state, action, userId);
@@ -227,7 +222,9 @@ export function createGameRunner(options: GameRunnerOptions) {
       if (game.finished || !game.connected.has(userId)) {
         return;
       }
-      markAway(game, userId);
+      game.connected.delete(userId);
+      // an eliminated player is not missed
+      if (activeIds(game).includes(userId)) markAway(game, userId);
       broadcastState(game);
     });
   }

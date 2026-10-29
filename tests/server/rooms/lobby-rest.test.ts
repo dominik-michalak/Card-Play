@@ -281,3 +281,49 @@ describe('one active room per player', () => {
     expect(results.map((r) => r.status).sort()).toEqual([201, 409]);
   });
 });
+
+describe('GET /lobbies/current', () => {
+  const current = (token: string) =>
+    api(app.url, '/api/v1/lobbies/current', { method: 'GET', token, origin: null });
+
+  it('requires authentication', async () => {
+    const res = await api(app.url, '/api/v1/lobbies/current', { method: 'GET', origin: null });
+    expect(res.status).toBe(401);
+  });
+
+  it('returns the room the player sits in, so a page refresh can find it again', async () => {
+    const host = await newUser('host');
+    const created = (await create(host.token)).body!;
+
+    const res = await current(host.token);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(created);
+  });
+
+  it('also finds a game that is in progress', async () => {
+    const host = await newUser('host');
+    const created = (await create(host.token)).body!;
+    await app.db
+      .update(gameRooms)
+      .set({ status: 'in_progress' })
+      .where(eq(gameRooms.id, created.id));
+
+    expect((await current(host.token)).body?.status).toBe('in_progress');
+  });
+
+  it.each(['finished'] as const)('answers 404 when the only room is %s', async (status) => {
+    const host = await newUser('host');
+    const created = (await create(host.token)).body!;
+    await app.db.update(gameRooms).set({ status }).where(eq(gameRooms.id, created.id));
+
+    const res = await current(host.token);
+    expect(res.status).toBe(404);
+    expect(res.body?.error.code).toBe('ROOM_NOT_FOUND');
+  });
+
+  it('answers 404 to a player without a room', async () => {
+    const host = await newUser('host');
+    expect((await current(host.token)).status).toBe(404);
+  });
+});

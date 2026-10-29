@@ -197,6 +197,17 @@ export function resolveFlipTimeout(state: WarState): WarState {
   return { ...state, result };
 }
 
+// the other player wins; used for timeouts and disconnects that the room detects
+export function forfeitWar(
+  state: WarState,
+  loserId: string,
+  reason: 'timeout_forfeit' | 'disconnect_forfeit',
+): WarState {
+  const loserSeat = state.players.findIndex((p) => p.id === loserId);
+  const winnerSeat: Seat = loserSeat === 0 ? 1 : 0;
+  return { ...state, result: makeResult(state.players, winnerSeat, reason) };
+}
+
 function isTerminal(state: WarState): boolean {
   return state.result !== null;
 }
